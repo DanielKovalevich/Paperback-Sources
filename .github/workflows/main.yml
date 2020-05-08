@@ -32,7 +32,7 @@ jobs:
         with:
             commit_message: Sources Re-Bundle
             branch: ${{ github.head_ref }}
-            file_pattern: bundles/*
+            file_pattern: bundles/*.ts bundles/*.json
 
             commit_user_name: GitAction Bot
             commit_user_email: literally_github@notreal.nope
