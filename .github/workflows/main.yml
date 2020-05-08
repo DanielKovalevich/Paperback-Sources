@@ -1,7 +1,10 @@
 on:
   push:
-    tags:
-    - 'v*'
+    branches:
+      - master
+  pull_request:
+      branches:
+          - master
 
 name: Bundle and Publish Sources
 jobs:
@@ -22,17 +25,15 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - run: npm install
-      - run: npm test
       - run: gulp bundle
 
-      - name: Publish Artifacts
-        uses: softprops/action-gh-release@v0.1.5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Publish Artifacts to Bundle Directory
+        uses: stefanzweifel/git-auto-commit-action@v4.1.6
         with:
-          files: |
-            ./bundles/source.MangaDex.js
-            ./bundles/source.Manganelo.js
-            ./bundles/source.MangaPark.js
-            ./bundles/source.Mangasee.js
-            ./bundles/versioning.json
+            commit_message: Sources Re-Bundle
+            branch: ${{ github.head_ref }}
+            file_pattern: bundles/*
+
+            commit_user_name: GitAction Bot
+            commit_user_email: literally_github@notreal.nope
+            commit_Author: GitActions
