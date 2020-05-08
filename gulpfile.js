@@ -115,7 +115,7 @@ const generateVersioningFile = async function () {
     await Promise.all(promises)
 
     // Write the JSON payload to file
-    fs.writeFileSync(directoryPath + "\\versioning.json", JSON.stringify(jsonObject))
+    fs.writeFileSync(directoryPath + "/versioning.json", JSON.stringify(jsonObject))
 }
 
 // exports.bundle = bundleSources
