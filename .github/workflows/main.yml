@@ -1,12 +1,8 @@
 on:
   push:
-    branches:
-      - master
-  pull_request:
-    types: [closed]
-    branches:
-      - master
-    
+    tags:
+    - 'v*'
+
 name: Bundle and Publish Sources
 jobs:
   build:
@@ -28,10 +24,14 @@ jobs:
       - run: npm install
       - run: gulp bundle
 
-      - name: Deploy
-        uses: s0/git-publish-subdir-action@master
+      - name: Publish Artifacts
+        uses: softprops/action-gh-release@v0.1.5
         env:
-          REPO: self
-          BRANCH: bundles
-          FOLDER: bundles
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: |
+            ./bundles/source.MangaDex.js
+            ./bundles/source.Manganelo.js
+            ./bundles/source.MangaPark.js
+            ./bundles/source.Mangasee.js
+            ./bundles/versioning.json
