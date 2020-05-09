@@ -9,6 +9,9 @@ class MangaPark extends Source_1.Source {
     }
     get version() { return '1.0'; }
     get name() { return 'MangaPark'; }
+    get icon() { return '//static.mangapark.net/img/logo-2019.png'; }
+    get author() { return 'Daniel Kovalevich'; }
+    get authorWebsite() { return 'https://github.com/DanielKovalevich'; }
     get description() { return 'Extension that pulls manga from MangaPark, includes Advanced Search and Updated manga fetching'; }
     getMangaDetailsRequest(ids) {
         let requests = [];
@@ -295,10 +298,88 @@ class MangaPark extends Source_1.Source {
         return sections;
     }
     getViewMoreRequest(key, page) {
-        throw new Error("Method not implemented.");
+        let param = '';
+        switch (key) {
+            case 'popular_titles': {
+                param = `/genre/${page}`;
+                break;
+            }
+            case 'popular_new_titles': {
+                param = `/search?orderby=views&page=${page}`;
+                break;
+            }
+            case 'recently_updated': {
+                param = `/latest/${page}`;
+                break;
+            }
+            default: return null;
+        }
+        return createRequestObject({
+            url: `${MP_DOMAIN}`,
+            method: 'GET',
+            param: param
+        });
     }
     getViewMoreItems(data, key) {
-        throw new Error("Method not implemented.");
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
+        let $ = this.cheerio.load(data);
+        let manga = [];
+        if (key == 'popular_titles') {
+            for (let item of $('.item', '.row.mt-2.ls1').toArray()) {
+                let id = (_b = (_a = $('a', item).first().attr('href')) === null || _a === void 0 ? void 0 : _a.split('/').pop()) !== null && _b !== void 0 ? _b : '';
+                let title = (_c = $('a', item).first().attr('title')) !== null && _c !== void 0 ? _c : '';
+                let image = (_d = $('img', item).attr('src')) !== null && _d !== void 0 ? _d : '';
+                let elems = $('small.ml-1', item);
+                let rating = $(elems[0]).text().trim();
+                let rank = $(elems[1]).text().split('-')[0].trim();
+                let chapters = $('span.small', item).text().trim();
+                manga.push(createMangaTile({
+                    id: id,
+                    image: image,
+                    title: createIconText({ text: title }),
+                    subtitleText: createIconText({ text: chapters }),
+                    primaryText: createIconText({ text: rating, icon: 'star.fill' }),
+                    secondaryText: createIconText({ text: rank, icon: 'chart.bar.fill' })
+                }));
+            }
+        }
+        else if (key == 'popular_new_titles') {
+            for (let item of $('.item', '.manga-list').toArray()) {
+                let id = (_f = (_e = $('.cover', item).attr('href')) === null || _e === void 0 ? void 0 : _e.split('/').pop()) !== null && _f !== void 0 ? _f : '';
+                let title = (_g = $('.cover', item).attr('title')) !== null && _g !== void 0 ? _g : '';
+                let image = (_h = $('img', item).attr('src')) !== null && _h !== void 0 ? _h : '';
+                let rank = $('[title=rank]', item).text().split('·')[1].trim();
+                let rating = $('.rate', item).text().trim();
+                let time = $('.justify-content-between', item).first().find('i').text();
+                manga.push(createMangaTile({
+                    id: id,
+                    image: image,
+                    title: createIconText({ text: title }),
+                    subtitleText: createIconText({ text: time }),
+                    primaryText: createIconText({ text: rating, icon: 'star.fill' }),
+                    secondaryText: createIconText({ text: rank, icon: 'chart.bar.fill' })
+                }));
+            }
+        }
+        else if (key == 'recently_updated') {
+            for (let item of $('.item', '.ls1').toArray()) {
+                let id = (_k = (_j = $('.cover', item).attr('href')) === null || _j === void 0 ? void 0 : _j.split('/').pop()) !== null && _k !== void 0 ? _k : '';
+                let title = (_l = $('.cover', item).attr('title')) !== null && _l !== void 0 ? _l : '';
+                let image = (_m = $('img', item).attr('src')) !== null && _m !== void 0 ? _m : '';
+                let chapter = $('.visited', item).first().text();
+                let time = $('.time', item).first().text();
+                manga.push(createMangaTile({
+                    id: id,
+                    image: image,
+                    title: createIconText({ text: title }),
+                    subtitleText: createIconText({ text: chapter }),
+                    secondaryText: createIconText({ text: time, icon: 'clock.fill' })
+                }));
+            }
+        }
+        else
+            return null;
+        return manga;
     }
     searchRequest(query, page) {
         var _a, _b, _c, _d;
@@ -399,6 +480,7 @@ class Source {
     constructor(cheerio) {
         this.cheerio = cheerio;
     }
+    get authorWebsite() { return null; }
     // <-----------        OPTIONAL METHODS        -----------> //
     // Retrieves all the tags for the source to help with advanced searching
     getTagsRequest() { return null; }

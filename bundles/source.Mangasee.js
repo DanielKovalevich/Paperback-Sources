@@ -9,6 +9,9 @@ class Mangasee extends Source_1.Source {
     }
     get version() { return '1.0'; }
     get name() { return 'Mangasee'; }
+    get icon() { return 'https://mangaseeonline.us/img/navbar.brand.png'; }
+    get author() { return 'Daniel Kovalevich'; }
+    get authorWebsite() { return 'https://github.com/DanielKovalevich'; }
     get description() { return 'Extension that pulls manga from Mangasee, includes Advanced Search and Updated manga fetching'; }
     getMangaDetailsRequest(ids) {
         let requests = [];
@@ -299,6 +302,7 @@ class Source {
     constructor(cheerio) {
         this.cheerio = cheerio;
     }
+    get authorWebsite() { return null; }
     // <-----------        OPTIONAL METHODS        -----------> //
     // Retrieves all the tags for the source to help with advanced searching
     getTagsRequest() { return null; }
