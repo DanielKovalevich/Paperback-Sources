@@ -3,9 +3,10 @@ on:
     branches:
       - master
   pull_request:
+    types: [closed]
     branches:
       - master
-
+    
 name: Bundle and Publish Sources
 jobs:
   build:
