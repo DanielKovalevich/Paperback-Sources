@@ -16,7 +16,7 @@ export class Manganelo extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.0.1.1' }
+  get version(): string { return '1.0.2' }
   get name(): string { return 'Manganelo' }
   get icon(): string { return 'icon.png' }
   get author(): string { return 'Daniel Kovalevich' }
@@ -55,8 +55,7 @@ export class Manganelo extends Source {
       let lastUpdate = ''
       let hentai = false
 
-      let tagSections: TagSection[] = [createTagSection({ id: '0', label: 'genres', tags: [] }),
-      createTagSection({ id: '1', label: 'format', tags: [] })]
+      let tagSections: TagSection[] = [createTagSection({ id: '0', label: 'genres', tags: [] })]
 
       for (let row of $('tr', table).toArray()) {
         if ($(row).find('.info-alternative').length > 0) {
@@ -79,10 +78,11 @@ export class Manganelo extends Source {
           let elems = $('.table-value', row).find('a').toArray()
           for (let elem of elems) {
             let text = $(elem).text()
+            let id = $(elem).attr('href')?.split('/').pop()?.split('-').pop() ?? ''
             if (text.toLowerCase().includes('smut')) {
               hentai = true
             }
-            tagSections[0].tags.push(createTag({ id: text, label: text }))
+            tagSections[0].tags.push(createTag({ id: id, label: text }))
           }
         }
       }

@@ -15,7 +15,7 @@ export class MangaPark extends Source {
 		super(cheerio)
 	}
 
-	get version(): string { return '1.0.1' }
+	get version(): string { return '1.0.2' }
 	get name(): string { return 'MangaPark' }
 	get icon(): string { return 'icon.png' }
 	get author(): string { return 'Daniel Kovalevich' }
@@ -86,11 +86,12 @@ export class MangaPark extends Source {
 					case 'Genre(s)': {
 						for (let genre of $('a', row).toArray()) {
 							let item = $(genre).html() ?? ""
+							let id = $(genre).attr('href')?.split('/').pop() ?? ''
 							let tag = item.replace(/<[a-zA-Z\/][^>]*>/g, "")
 							if (item.includes('Hentai')) {
 								hentai = true
 							}
-							tagSections[0].tags.push(createTag({ id: tag, label: tag }))
+							tagSections[0].tags.push(createTag({ id: id, label: tag }))
 						}
 						break
 					}
@@ -105,7 +106,12 @@ export class MangaPark extends Source {
 					}
 					case 'Type': {
 						let type = $('td', row).text().split('-')[0].trim()
-						tagSections[1].tags.push(createTag({ id: type.trim(), label: type.trim() }))
+						let id = ''
+						if (type.includes('Manga')) id = 'manga'
+						else if (type.includes('Manhwa')) id = 'manhwa'
+						else if (type.includes('Manhua')) id = 'manhua'
+						else id = 'unknown'
+						tagSections[1].tags.push(createTag({ id: id, label: type.trim() }))
 					}
 				}
 			}
