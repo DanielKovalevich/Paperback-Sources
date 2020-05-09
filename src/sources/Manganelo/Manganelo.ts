@@ -8,6 +8,7 @@ import { Request } from '../../models/RequestObject/RequestObject'
 import { ChapterDetails } from '../../models/ChapterDetails/ChapterDetails'
 import { TagSection } from '../../models/TagSection/TagSection'
 import { HomeSectionRequest, HomeSection } from '../../models/HomeSection/HomeSection'
+import { LanguageCode } from '../../models/Constants/Constants'
 
 const MN_DOMAIN = 'https://manganelo.com'
 
@@ -145,7 +146,7 @@ export class Manganelo extends Source {
         id: id,
         mangaId: metadata.id,
         name: name,
-        langCode: 'en',
+        langCode: LanguageCode.ENGLISH,
         chapNum: chNum,
         time: time
       }))

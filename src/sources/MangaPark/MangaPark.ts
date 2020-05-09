@@ -7,6 +7,7 @@ import { Request } from '../../models/RequestObject/RequestObject'
 import { ChapterDetails } from '../../models/ChapterDetails/ChapterDetails'
 import { TagSection } from '../../models/TagSection/TagSection'
 import { HomeSectionRequest, HomeSection } from '../../models/HomeSection/HomeSection'
+import { LanguageCode } from '../../models/Constants/Constants'
 
 const MP_DOMAIN = 'https://mangapark.net'
 
@@ -177,7 +178,7 @@ export class MangaPark extends Source {
 						volume: volNum,
 						time: time,
 						group: groupName,
-						langCode: 'en'
+						langCode: LanguageCode.ENGLISH
 					}))
 					chapNum++
 				}

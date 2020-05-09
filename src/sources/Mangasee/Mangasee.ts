@@ -7,6 +7,7 @@ import { Request } from '../../models/RequestObject/RequestObject'
 import { ChapterDetails } from '../../models/ChapterDetails/ChapterDetails'
 import { Tag, TagSection } from '../../models/TagSection/TagSection'
 import { HomeSection, HomeSectionRequest } from '../../models/HomeSection/HomeSection'
+import { LanguageCode } from '../../models/Constants/Constants'
 
 const MS_DOMAIN = 'https://mangaseeonline.us'
 
@@ -134,7 +135,7 @@ export class Mangasee extends Source {
         name: title,
         chapNum: chNum,
         time: time,
-        langCode: "en",
+        langCode: LanguageCode.ENGLISH,
       }))
     }
     return chapters
