@@ -20,6 +20,7 @@ export class NHentai extends Source {
   get name(): string { return 'nHentai' }
   get description(): string { return 'Extension that pulls manga from nHentai' }
   get author(): string {return 'Conrad Weiser'}
+  get icon(): string {return "https://i.imgur.com/uLAimaY.png"} // The website has SVG versions, I had to find one off of a different source
 
   convertLanguageToCode(language: string) {
       switch(language.toLowerCase()) {
@@ -253,6 +254,10 @@ export class NHentai extends Source {
         }
     }
 
+    if(query.artist) {
+      param += ("Artist:" + query.artist + " ")
+    }
+
     return createRequestObject({
       url: `${NHENTAI_DOMAIN}/search/?q=${param}`,
       metadata: query,
@@ -349,13 +354,3 @@ export class NHentai extends Source {
   getTags(data: any): TagSection[] | null { return null }           // Temporarily disabled, there are 26 pages of tags. I'd like to discuss with paper how to handle this
   
 }
-
-const cheerio = require('cheerio')
-let application = new APIWrapper();
-// application.getMangaDetails(new NHentai(cheerio), ['13780']).then((data) => {console.log(data)})
-// application.getChapters(new NHentai(cheerio), "13780").then((data) => {console.log(data)})
-// application.getChapterDetails(new NHentai(cheerio), "13780", "1").then((data) => {console.log(data)})
-let test = createSearchRequest({
-	title: '311943'
-})
-application.search(new NHentai(cheerio), test, 1).then((data) => { console.log("done") })

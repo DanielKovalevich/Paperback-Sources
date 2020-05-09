@@ -105,6 +105,29 @@ describe('N-Hentai Tests', function () {
         expect(result).to.not.exist;    // There should be no entries with this tag!
     });
 
+
+    it("Searching for Manga by artist", async() => {
+        let testSearch = createSearchRequest({
+            artist: 'shiraichigo'
+        })
+
+        let search = await wrapper.search(source, testSearch, 1)
+        let result = search[0]
+        expect(result).to.exist
+    })
+
+    it("Searching for Manga by invalid artist", async() => {
+        let testSearch = createSearchRequest({
+            artist: 'Daniel Kovalevich'
+        })
+
+        let search = await wrapper.search(source, testSearch, 1)
+        let result = search[0]
+
+        expect(result).to.not.exist
+    })
+
+
     it("Retrieve Home Page Sections", async () => {
 
         let data = await wrapper.getHomePageSections(source);
