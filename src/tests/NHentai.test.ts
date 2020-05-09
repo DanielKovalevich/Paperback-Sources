@@ -70,6 +70,30 @@ describe('N-Hentai Tests', function () {
 
     });
 
+    it("Searching for Manga With A Valid six-digit query", async () => {
+        let testSearch = createSearchRequest({
+            title: '312483',
+        });
+
+        let search = await wrapper.search(source, testSearch, 1);
+        let result = search[0];
+        expect(result).to.exist
+
+        expect(result.id).to.exist
+        expect(result.image).to.exist
+        expect(result.title).to.exist
+    });
+
+    it("Searching for Manga With an invalid six-digit query", async () => {
+        let testSearch = createSearchRequest({
+            title: '999999',
+        });
+
+        let search = await wrapper.search(source, testSearch, 1);
+        let result = search[0];
+        expect(result).to.not.exist;    // There should be no entries with this tag!
+    });
+
     it("Searching for Manga With Invalid Tags", async () => {
         let testSearch = createSearchRequest({
             title: 'Ratiaion House',

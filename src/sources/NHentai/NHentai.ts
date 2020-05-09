@@ -226,6 +226,16 @@ export class NHentai extends Source {
 
   searchRequest(query: SearchRequest, page: number): Request | null {
 
+    // If the search query is a six digit direct link to a manga, create a request to just that URL and alert the handler via metadata
+    if(query.title?.match(/\d{6}/)) {
+      return createRequestObject({
+        url: `${NHENTAI_DOMAIN}/g/${query.title}`,
+        metadata: {sixDigit: true},
+        timeout: 4000,
+        method: "GET"
+      })
+    }
+
     // Concat all of the available options together into a search keyword which can be supplied as a GET request param
     let param = ''
     if(query.title){
@@ -251,8 +261,26 @@ export class NHentai extends Source {
   }
 
   search(data: any): MangaTile[] {
+
     let $ = this.cheerio.load(data)
     let mangaTiles: MangaTile[] = []
+
+    // Was this a six digit request? We can check by seeing if we're on a manga page rather than a standard search page -- Metadata for hentai only exists on specific results, not searches, use that
+    let title = $('[itemprop=name]').attr('content') ?? ''
+    if(title) {
+      // Retrieve the ID from the body
+      let contextNode = $('#bigcontainer')
+      let href = $('a', contextNode).attr('href')
+
+      let mangaId = parseInt(href?.match(/g\/(\d*)\/\d/)![1])
+      
+      mangaTiles.push({
+        id: mangaId.toString(),
+        title: createIconText({text: $('[itemprop=name]').attr('content') ?? ''}),
+        image: $('[itemprop=image]').attr('content') ?? ''
+      })
+      return mangaTiles
+    }
 
     let containerNode = $('.index-container')
     for(let item of $('.gallery', containerNode).toArray()) {
@@ -300,7 +328,6 @@ export class NHentai extends Source {
             image = 'http:' + $('img', currNode).attr('src')!
         }
 
-
         let title = $('.caption', currNode).text()
         let idHref = $('a', currNode).attr('href')?.match(/\/(\d*)\//)!
         
@@ -327,3 +354,7 @@ let application = new APIWrapper();
 // application.getMangaDetails(new NHentai(cheerio), ['13780']).then((data) => {console.log(data)})
 // application.getChapters(new NHentai(cheerio), "13780").then((data) => {console.log(data)})
 // application.getChapterDetails(new NHentai(cheerio), "13780", "1").then((data) => {console.log(data)})
+let test = createSearchRequest({
+	title: '311943'
+})
+application.search(new NHentai(cheerio), test, 1).then((data) => { console.log("done") })
