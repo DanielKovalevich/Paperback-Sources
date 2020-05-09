@@ -3,8 +3,8 @@ on:
     branches:
       - master
   pull_request:
-      branches:
-          - master
+    branches:
+      - master
 
 name: Bundle and Publish Sources
 jobs:
@@ -27,9 +27,10 @@ jobs:
       - run: npm install
       - run: gulp bundle
 
-      - name: Publish Artifacts to Bundle Directory
-        uses: stefanzweifel/git-auto-commit-action@v4.1.6
-        with:
-            commit_message: Sources Re-Bundle
-            branch: ${{ github.head_ref }}
-            file_pattern: bundles/*
+      - name: Deploy
+        uses: s0/git-publish-subdir-action@master
+        env:
+          REPO: self
+          BRANCH: bundles
+          FOLDER: bundles
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

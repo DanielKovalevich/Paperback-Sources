@@ -355,6 +355,7 @@ let application = new APIWrapper()
 // application.search(new MangaPark(cheerio), test, 1).then((data) => { console.log(data) })
 // application.getHomePageSections(new MangaPark(cheerio)).then((data) => console.log(data))
 // application.getTags(new MangaPark(cheerio)).then((data) => console.log(data))
+// application.getViewMoreItems(new MangaPark(cheerio), 'recently_updated', 1).then(data => console.log(data))
 
 // Manganelo
 // application.getMangaDetails(new Manganelo(cheerio), ['bt920017', 'read_one_piece_manga_online_free4']).then((data) => { console.log(data) })
