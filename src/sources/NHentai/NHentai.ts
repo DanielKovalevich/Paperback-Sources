@@ -16,11 +16,11 @@ export class NHentai extends Source {
     super(cheerio)
   }
 
-  get version(): string { return 'v0.5' }
+  get version(): string { return '0.5' }
   get name(): string { return 'nHentai' }
   get description(): string { return 'Extension that pulls manga from nHentai' }
   get author(): string {return 'Conrad Weiser'}
-  get icon(): string {return "https://i.imgur.com/uLAimaY.png"} // The website has SVG versions, I had to find one off of a different source
+  get icon(): string {return "logo.png"} // The website has SVG versions, I had to find one off of a different source
 
   convertLanguageToCode(language: string) {
       switch(language.toLowerCase()) {
@@ -214,18 +214,6 @@ export class NHentai extends Source {
   }
 
 
-  filterUpdatedMangaRequest(ids: any, time: Date, page: number): Request {
-    return createRequestObject({
-      url: `http://niceme.me`,              // We do not use this method, but we need to implement it. Load a page which is tiny in size I guess
-      method: "GET",
-    })
-  }
-
-  filterUpdatedManga(data: any, metadata: any): { 'updatedMangaIds': string[], 'nextPage': boolean } {
-    // There's no chapters, so we can just ignore empty stuff! Horray!
-    return {updatedMangaIds : [], nextPage: false}
-  }
-
   searchRequest(query: SearchRequest, page: number): Request | null {
 
     // If the search query is a six digit direct link to a manga, create a request to just that URL and alert the handler via metadata
@@ -348,9 +336,5 @@ export class NHentai extends Source {
     return section
   }
 
-  getViewMoreRequest(key: string, page: number): Request | null { return null }
-  getViewMoreItems(data: any, key: string): MangaTile[] | null { return null }
-  getTagsRequest(): Request | null { return null }
-  getTags(data: any): TagSection[] | null { return null }           // Temporarily disabled, there are 26 pages of tags. I'd like to discuss with paper how to handle this
   
 }
