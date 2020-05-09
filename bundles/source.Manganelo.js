@@ -9,6 +9,9 @@ class Manganelo extends Source_1.Source {
     }
     get version() { return '1.0'; }
     get name() { return 'Manganelo'; }
+    get icon() { return 'https://manganelo.com/themes/hm/images/logo.png'; }
+    get author() { return 'Daniel Kovalevich'; }
+    get authorWebsite() { return 'https://github.com/DanielKovalevich'; }
     get description() { return 'Extension that pulls manga from Manganelo, includes Advanced Search and Updated manga fetching'; }
     getMangaDetailsRequest(ids) {
         let requests = [];
@@ -401,6 +404,7 @@ class Source {
     constructor(cheerio) {
         this.cheerio = cheerio;
     }
+    get authorWebsite() { return null; }
     // <-----------        OPTIONAL METHODS        -----------> //
     // Retrieves all the tags for the source to help with advanced searching
     getTagsRequest() { return null; }
