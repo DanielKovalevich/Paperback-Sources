@@ -58,7 +58,7 @@ export class MangaPark extends Source {
 			let author = ""
 			let artist = ""
 			let views = 0
-			let status = MangaStatus.UNKNOWN
+			let status = MangaStatus.ONGOING
 			for (let row of $('tr', tableBody).toArray()) {
 				let elem = $('th', row).html()
 				switch (elem) {

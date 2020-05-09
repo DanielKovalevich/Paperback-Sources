@@ -51,7 +51,7 @@ export class Mangasee extends Source {
       let tagSections: TagSection[] = [createTagSection({ id: '0', label: 'genres', tags: [] }),
       createTagSection({ id: '1', label: 'format', tags: [] })]
 
-      let status = MangaStatus.UNKNOWN
+      let status = MangaStatus.ONGOING
       let summary = ''
       let hentai = false
 
@@ -84,7 +84,7 @@ export class Mangasee extends Source {
             break
           }
           case 'Status: ': {
-            status = $(row).text().includes('Ongoing') ? MangaStatus.ONGOING : MangaStatus.UNKNOWN
+            status = $(row).text().includes('Ongoing') ? MangaStatus.ONGOING : MangaStatus.COMPLETED
             break
           }
         }
