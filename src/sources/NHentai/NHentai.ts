@@ -19,6 +19,7 @@ export class NHentai extends Source {
   get version(): string { return 'v0.5' }
   get name(): string { return 'nHentai' }
   get description(): string { return 'Extension that pulls manga from nHentai' }
+  get author(): string {return 'Conrad Weiser'}
 
   convertLanguageToCode(language: string) {
       switch(language.toLowerCase()) {
