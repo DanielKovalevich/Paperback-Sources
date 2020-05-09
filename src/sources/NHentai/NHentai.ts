@@ -8,6 +8,7 @@ import { ChapterDetails } from '../../models/ChapterDetails/ChapterDetails'
 import { Tag, TagSection } from '../../models/TagSection/TagSection'
 import { HomeSection, HomeSectionRequest } from '../../models/HomeSection/HomeSection'
 import { APIWrapper } from '../../API'
+import { LanguageCode } from '../../models/Constants/Constants'
 
 const NHENTAI_DOMAIN = 'https://nhentai.net'
 
@@ -24,10 +25,10 @@ export class NHentai extends Source {
 
   convertLanguageToCode(language: string) {
       switch(language.toLowerCase()) {
-          case "english": return "en"
-          case "japanese": return "jp"
-          case "chinese": return "chi"
-          default: return ""
+          case "english": return LanguageCode.ENGLISH
+          case "japanese": return LanguageCode.JAPANESE
+          case "chinese": return LanguageCode.CHINEESE
+          default: return LanguageCode.UNKNOWN
       }
   }
 
