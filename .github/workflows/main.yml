@@ -31,5 +31,6 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4.1.6
         with:
             commit_message: Sources Re-Bundle
+            commit_options: '-f'      # bundles is in the gitignore, we want to bypass that here
             branch: ${{ github.head_ref }}
             file_pattern: bundles/*
