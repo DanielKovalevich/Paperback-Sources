@@ -23,6 +23,9 @@ export class MangaDex extends Source {
 
   get version(): string { return '1.0' }
   get name(): string { return 'MangaDex' }
+  get icon(): string { return 'https://mangadex.org/images/misc/navbar.svg?3' }
+  get author(): string { return 'Faizan Durrani' }
+  get authorWebsite(): string { return 'https://github.com/FaizanDurrani' }
   get description(): string { return 'Extension that pulls manga from MangaDex, includes Advanced Search and Updated manga fetching' }
 
   getMangaDetailsRequest(ids: string[]): Request[] {

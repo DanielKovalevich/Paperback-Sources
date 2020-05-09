@@ -23,7 +23,10 @@ export abstract class Source {
   // Ensures that the app is using the most up to date version
   abstract get version(): string
   abstract get name(): string
+  abstract get icon(): string
+  abstract get author(): string
   abstract get description(): string
+  get authorWebsite(): string | null { return null }
 
   // Get information about particular manga
   abstract getMangaDetailsRequest(ids: string[]): Request[]

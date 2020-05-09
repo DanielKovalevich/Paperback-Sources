@@ -18,6 +18,9 @@ export class Manganelo extends Source {
 
   get version(): string { return '1.0' }
   get name(): string { return 'Manganelo' }
+  get icon(): string { return 'https://manganelo.com/themes/hm/images/logo.png' }
+  get author(): string { return 'Daniel Kovalevich' }
+  get authorWebsite(): string { return 'https://github.com/DanielKovalevich' }
   get description(): string { return 'Extension that pulls manga from Manganelo, includes Advanced Search and Updated manga fetching' }
 
   getMangaDetailsRequest(ids: string[]): Request[] {
