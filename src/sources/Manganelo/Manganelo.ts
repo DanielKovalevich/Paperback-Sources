@@ -1,6 +1,6 @@
 
 import { Source } from '../Source'
-import { Manga } from '../../models/Manga/Manga'
+import { Manga, MangaStatus } from '../../models/Manga/Manga'
 import { Chapter } from '../../models/Chapter/Chapter'
 import { MangaTile } from '../../models/MangaTile/MangaTile'
 import { SearchRequest } from '../../models/SearchRequest/SearchRequest'
@@ -8,6 +8,7 @@ import { Request } from '../../models/RequestObject/RequestObject'
 import { ChapterDetails } from '../../models/ChapterDetails/ChapterDetails'
 import { TagSection } from '../../models/TagSection/TagSection'
 import { HomeSectionRequest, HomeSection } from '../../models/HomeSection/HomeSection'
+import { LanguageCode } from '../../models/Constants/Constants'
 
 const MN_DOMAIN = 'https://manganelo.com'
 
@@ -16,9 +17,9 @@ export class Manganelo extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.0' }
+  get version(): string { return '1.0.2' }
   get name(): string { return 'Manganelo' }
-  get icon(): string { return 'https://manganelo.com/themes/hm/images/logo.png' }
+  get icon(): string { return 'icon.png' }
   get author(): string { return 'Daniel Kovalevich' }
   get authorWebsite(): string { return 'https://github.com/DanielKovalevich' }
   get description(): string { return 'Extension that pulls manga from Manganelo, includes Advanced Search and Updated manga fetching' }
@@ -48,15 +49,14 @@ export class Manganelo extends Source {
       let author = ''
       let artist = ''
       let rating = 0
-      let status = 0
+      let status = MangaStatus.ONGOING
       let titles = [title]
       let follows = 0
       let views = 0
       let lastUpdate = ''
       let hentai = false
 
-      let tagSections: TagSection[] = [createTagSection({ id: '0', label: 'genres', tags: [] }),
-      createTagSection({ id: '1', label: 'format', tags: [] })]
+      let tagSections: TagSection[] = [createTagSection({ id: '0', label: 'genres', tags: [] })]
 
       for (let row of $('tr', table).toArray()) {
         if ($(row).find('.info-alternative').length > 0) {
@@ -73,16 +73,17 @@ export class Manganelo extends Source {
           }
         }
         else if ($(row).find('.info-status').length > 0) {
-          status = $('.table-value', row).text() == 'Ongoing' ? 1 : 0
+          status = $('.table-value', row).text() == 'Ongoing' ? MangaStatus.ONGOING : MangaStatus.COMPLETED
         }
         else if ($(row).find('.info-genres').length > 0) {
           let elems = $('.table-value', row).find('a').toArray()
           for (let elem of elems) {
             let text = $(elem).text()
+            let id = $(elem).attr('href')?.split('/').pop()?.split('-').pop() ?? ''
             if (text.toLowerCase().includes('smut')) {
               hentai = true
             }
-            tagSections[0].tags.push(createTag({ id: text, label: text }))
+            tagSections[0].tags.push(createTag({ id: id, label: text }))
           }
         }
       }
@@ -145,7 +146,7 @@ export class Manganelo extends Source {
         id: id,
         mangaId: metadata.id,
         name: name,
-        langCode: 'en',
+        langCode: LanguageCode.ENGLISH,
         chapNum: chNum,
         time: time
       }))

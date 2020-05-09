@@ -47,9 +47,14 @@ const bundleSources = async function () {
                     browserify([finalPath], { standalone: 'Sources' })
                         .plugin(tsify, { noImplicitAny: true })
                         .bundle()
-                        .pipe(source('source.' + file + '.js'))
-                        .pipe(gulp.dest(destDir))
+                        .pipe(source('source.js'))
+                        .pipe(gulp.dest(path.join(destDir, file)))
                         .on('end', () => {
+                            copyFolderRecursive(
+                                path.join(directoryPath, filePath, 'includes'),
+                                path.join(destDir, file)
+                            )
+
                             res()
                         })
                 })
@@ -59,14 +64,7 @@ const bundleSources = async function () {
 
     const bundlesPath = path.join(__dirname, 'bundles')
 
-    const emptyDir = function (files) {
-        for (let file of files) {
-            fs.unlinkSync(path.join(bundlesPath, file))
-        }
-    }
-
-    emptyDir(fs.readdirSync(bundlesPath))
-
+    deleteFolderRecursive(bundlesPath)
     bundleThis(fs.readdirSync(directoryPath))
 
     await Promise.all(promises) //.then(function () { done() })
@@ -83,34 +81,37 @@ const generateVersioningFile = async function () {
     var promises = []
 
     var generateSourceList = function (srcArray) {
-        for (let file of srcArray) {
-            let filePath = file
-            let tags = filePath.match(/source.(\w*).*/)
-            let sourceName = tags[1] // Pull the sourceName from the path
-
+        for (let sourceId of srcArray) {
             // If its a directory
-            if (fs.statSync(path.join(directoryPath, filePath)).isDirectory()) {
-                console.log('Directory, skipping ' + filePath)
+            if (!fs.statSync(path.join(directoryPath, sourceId)).isDirectory()) {
+                console.log('not a Directory, skipping ' + sourceId)
                 return
             }
 
-            let finalPath = `./bundles/${file}`
+            let finalPath = `./bundles/${sourceId}/source.js`
 
             promises.push(
                 new Promise((res, rej) => {
                     let req = require(finalPath)
-                    let className = file.split('.')[1]
-                    let extension = req[className]
+                    let extension = req[sourceId]
 
                     let classInstance = new extension(null)
 
+                    // make sure the icon is present in the includes folder.
+                    if (!fs.existsSync(path.join(directoryPath, sourceId, 'includes', classInstance.icon))) {
+                        console.log('[ERROR] [' + sourceId + '] Icon must be inside the includes folder')
+                        rej()
+                        return
+                    }
+
                     jsonObject.sources.push({
-                        id: sourceName,
+                        id: sourceId,
                         name: classInstance.name,
                         author: classInstance.author,
                         desc: classInstance.description,
                         website: classInstance.authorWebsite,
-                        version: classInstance.version
+                        version: classInstance.version,
+                        icon: classInstance.icon
                     })
 
                     res()
@@ -127,6 +128,53 @@ const generateVersioningFile = async function () {
         path.join(directoryPath, 'versioning.json'),
         JSON.stringify(jsonObject)
     )
+}
+
+const deleteFolderRecursive = function (folderPath) {
+    folderPath = folderPath.trim()
+    if (folderPath.length == 0 || folderPath === '/') return
+
+    if (fs.existsSync(folderPath)) {
+        fs.readdirSync(folderPath).forEach((file, index) => {
+            const curPath = path.join(folderPath, file);
+            if (fs.lstatSync(curPath).isDirectory()) { // recurse
+                deleteFolderRecursive(curPath);
+            } else { // delete file
+                fs.unlinkSync(curPath);
+            }
+        });
+        fs.rmdirSync(folderPath);
+    }
+};
+
+const copyFolderRecursive = function (source, target) {
+    source = source.trim()
+    if (source.length == 0 || source === '/') return
+
+    target = target.trim()
+    if (target.length == 0 || target === '/') return
+
+    if (!fs.existsSync(source)) return
+
+    var files = [];
+    //check if folder needs to be created or integrated
+    var targetFolder = path.join(target, path.basename(source));
+    if (!fs.existsSync(targetFolder)) {
+        fs.mkdirSync(targetFolder);
+    }
+
+    //copy
+    if (fs.lstatSync(source).isDirectory()) {
+        files = fs.readdirSync(source);
+        files.forEach(function (file) {
+            var curSource = path.join(source, file);
+            if (fs.lstatSync(curSource).isDirectory()) {
+                copyFolderRecursive(curSource, targetFolder);
+            } else {
+                fs.copyFileSync(curSource, path.join(targetFolder, file));
+            }
+        });
+    }
 }
 
 // exports.bundle = bundleSources

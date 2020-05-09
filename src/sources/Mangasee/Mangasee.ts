@@ -1,5 +1,5 @@
 import { Source } from '../Source'
-import { Manga } from '../../models/Manga/Manga'
+import { Manga, MangaStatus } from '../../models/Manga/Manga'
 import { Chapter } from '../../models/Chapter/Chapter'
 import { MangaTile } from '../../models/MangaTile/MangaTile'
 import { SearchRequest } from '../../models/SearchRequest/SearchRequest'
@@ -7,6 +7,7 @@ import { Request } from '../../models/RequestObject/RequestObject'
 import { ChapterDetails } from '../../models/ChapterDetails/ChapterDetails'
 import { Tag, TagSection } from '../../models/TagSection/TagSection'
 import { HomeSection, HomeSectionRequest } from '../../models/HomeSection/HomeSection'
+import { LanguageCode } from '../../models/Constants/Constants'
 
 const MS_DOMAIN = 'https://mangaseeonline.us'
 
@@ -15,9 +16,9 @@ export class Mangasee extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.0' }
+  get version(): string { return '1.0.1' }
   get name(): string { return 'Mangasee' }
-  get icon(): string { return 'https://mangaseeonline.us/img/navbar.brand.png' }
+  get icon(): string { return 'icon.png' }
   get author(): string { return 'Daniel Kovalevich' }
   get authorWebsite(): string { return 'https://github.com/DanielKovalevich' }
   get description(): string { return 'Extension that pulls manga from Mangasee, includes Advanced Search and Updated manga fetching' }
@@ -50,7 +51,7 @@ export class Mangasee extends Source {
       let tagSections: TagSection[] = [createTagSection({ id: '0', label: 'genres', tags: [] }),
       createTagSection({ id: '1', label: 'format', tags: [] })]
 
-      let status = 1
+      let status = MangaStatus.ONGOING
       let summary = ''
       let hentai = false
 
@@ -83,7 +84,7 @@ export class Mangasee extends Source {
             break
           }
           case 'Status: ': {
-            status = $(row).text().includes('Ongoing') ? 1 : 0
+            status = $(row).text().includes('Ongoing') ? MangaStatus.ONGOING : MangaStatus.COMPLETED
             break
           }
         }
@@ -134,7 +135,7 @@ export class Mangasee extends Source {
         name: title,
         chapNum: chNum,
         time: time,
-        langCode: "en",
+        langCode: LanguageCode.ENGLISH,
       }))
     }
     return chapters

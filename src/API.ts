@@ -38,6 +38,7 @@ export class APIWrapper {
 		for (let request of requests) {
 			let headers: any = request.headers == undefined ? {} : request.headers
 			headers['Cookie'] = this.formatCookie(request)
+			headers['User-Agent'] = 'Paperback-iOS'
 
 			try {
 				responses.push(await axios.request({
@@ -68,6 +69,7 @@ export class APIWrapper {
 		let request = source.getChaptersRequest(mangaId)
 		let headers: any = request.headers == undefined ? {} : request.headers
 		headers['Cookie'] = this.formatCookie(request)
+		headers['User-Agent'] = 'Paperback-iOS'
 
 		try {
 			var data = await axios.request({
@@ -98,6 +100,7 @@ export class APIWrapper {
 		let metadata = request.metadata
 		let headers: any = request.headers == undefined ? {} : request.headers
 		headers['Cookie'] = this.formatCookie(request)
+		headers['User-Agent'] = 'Paperback-iOS'
 
 		try {
 			var data = await axios.request({
@@ -154,6 +157,7 @@ export class APIWrapper {
 		let url = request.url
 		let headers: any = request.headers == undefined ? {} : request.headers
 		headers['Cookie'] = this.formatCookie(request)
+		headers['User-Agent'] = 'Paperback-iOS'
 
 		let retries = 0
 		do {
@@ -263,6 +267,7 @@ export class APIWrapper {
 
 		let headers: any = request.headers == undefined ? {} : request.headers
 		headers['Cookie'] = this.formatCookie(request)
+		headers['User-Agent'] = 'Paperback-iOS'
 
 		try {
 			var data = await axios.request({
@@ -285,6 +290,7 @@ export class APIWrapper {
 		if (request == null) return Promise.resolve([])
 		let headers: any = request.headers == undefined ? {} : request.headers
 		headers['Cookie'] = this.formatCookie(request)
+		headers['User-Agent'] = 'Paperback-iOS'
 
 		try {
 			var data = await axios.request({
@@ -308,6 +314,7 @@ export class APIWrapper {
 		if (request == null) return Promise.resolve([])
 		let headers: any = request.headers == undefined ? {} : request.headers
 		headers['Cookie'] = this.formatCookie(request)
+		headers['User-Agent'] = 'Paperback-iOS'
 
 		try {
 			var data = await axios.request({

@@ -1,5 +1,5 @@
 import { Source } from '../Source'
-import { Manga } from '../../models/Manga/Manga'
+import { Manga, MangaStatus } from '../../models/Manga/Manga'
 import { Chapter } from '../../models/Chapter/Chapter'
 import { MangaTile } from '../../models/MangaTile/MangaTile'
 import { SearchRequest } from '../../models/SearchRequest/SearchRequest'
@@ -7,6 +7,7 @@ import { Request } from '../../models/RequestObject/RequestObject'
 import { ChapterDetails } from '../../models/ChapterDetails/ChapterDetails'
 import { TagSection } from '../../models/TagSection/TagSection'
 import { HomeSectionRequest, HomeSection } from '../../models/HomeSection/HomeSection'
+import { LanguageCode } from '../../models/Constants/Constants'
 
 const MP_DOMAIN = 'https://mangapark.net'
 
@@ -15,9 +16,9 @@ export class MangaPark extends Source {
 		super(cheerio)
 	}
 
-	get version(): string { return '1.0' }
+	get version(): string { return '1.0.2' }
 	get name(): string { return 'MangaPark' }
-	get icon(): string { return '//static.mangapark.net/img/logo-2019.png' }
+	get icon(): string { return 'icon.png' }
 	get author(): string { return 'Daniel Kovalevich' }
 	get authorWebsite(): string { return 'https://github.com/DanielKovalevich' }
 	get description(): string { return 'Extension that pulls manga from MangaPark, includes Advanced Search and Updated manga fetching' }
@@ -57,7 +58,7 @@ export class MangaPark extends Source {
 			let author = ""
 			let artist = ""
 			let views = 0
-			let status = 0
+			let status = MangaStatus.ONGOING
 			for (let row of $('tr', tableBody).toArray()) {
 				let elem = $('th', row).html()
 				switch (elem) {
@@ -86,26 +87,32 @@ export class MangaPark extends Source {
 					case 'Genre(s)': {
 						for (let genre of $('a', row).toArray()) {
 							let item = $(genre).html() ?? ""
+							let id = $(genre).attr('href')?.split('/').pop() ?? ''
 							let tag = item.replace(/<[a-zA-Z\/][^>]*>/g, "")
 							if (item.includes('Hentai')) {
 								hentai = true
 							}
-							tagSections[0].tags.push(createTag({ id: tag, label: tag }))
+							tagSections[0].tags.push(createTag({ id: id, label: tag }))
 						}
 						break
 					}
 					case 'Status': {
 						let stat = $('td', row).text()
 						if (stat.includes('Ongoing'))
-							status = 1
+							status = MangaStatus.ONGOING
 						else if (stat.includes('Completed')) {
-							status = 0
+							status = MangaStatus.COMPLETED
 						}
 						break
 					}
 					case 'Type': {
 						let type = $('td', row).text().split('-')[0].trim()
-						tagSections[1].tags.push(createTag({ id: type.trim(), label: type.trim() }))
+						let id = ''
+						if (type.includes('Manga')) id = 'manga'
+						else if (type.includes('Manhwa')) id = 'manhwa'
+						else if (type.includes('Manhua')) id = 'manhua'
+						else id = 'unknown'
+						tagSections[1].tags.push(createTag({ id: id, label: type.trim() }))
 					}
 				}
 			}
@@ -171,7 +178,7 @@ export class MangaPark extends Source {
 						volume: volNum,
 						time: time,
 						group: groupName,
-						langCode: 'en'
+						langCode: LanguageCode.ENGLISH
 					}))
 					chapNum++
 				}
