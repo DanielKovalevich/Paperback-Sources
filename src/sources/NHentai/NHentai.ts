@@ -16,9 +16,9 @@ export class NHentai extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.0' }
-  get name(): string { return 'NHentai' }
-  get description(): string { return 'Extension that pulls manga from NHentai, includes Advanced Search and Updated manga fetching' }
+  get version(): string { return 'v0.5' }
+  get name(): string { return 'nHentai' }
+  get description(): string { return 'Extension that pulls manga from nHentai' }
 
   convertLanguageToCode(language: string) {
       switch(language.toLowerCase()) {
