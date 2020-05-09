@@ -1,5 +1,5 @@
 import { Source } from '../Source'
-import { Manga } from '../../models/Manga/Manga'
+import { Manga, MangaStatus } from '../../models/Manga/Manga'
 import { Chapter } from '../../models/Chapter/Chapter'
 import { MangaTile } from '../../models/MangaTile/MangaTile'
 import { SearchRequest } from '../../models/SearchRequest/SearchRequest'
@@ -50,7 +50,7 @@ export class Mangasee extends Source {
       let tagSections: TagSection[] = [createTagSection({ id: '0', label: 'genres', tags: [] }),
       createTagSection({ id: '1', label: 'format', tags: [] })]
 
-      let status = 1
+      let status = MangaStatus.UNKNOWN
       let summary = ''
       let hentai = false
 
@@ -83,7 +83,7 @@ export class Mangasee extends Source {
             break
           }
           case 'Status: ': {
-            status = $(row).text().includes('Ongoing') ? 1 : 0
+            status = $(row).text().includes('Ongoing') ? MangaStatus.ONGOING : MangaStatus.UNKNOWN
             break
           }
         }

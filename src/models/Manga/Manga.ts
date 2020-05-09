@@ -6,7 +6,7 @@ export interface Manga {
 	image: string
 
 	rating: number
-	status: number
+	status: MangaStatus
 
 	langFlag?: string
 	langName?: string
@@ -28,6 +28,12 @@ export interface Manga {
 	hentai?: boolean
 	relatedIds?: string[]
 	lastUpdate?: string
+}
+
+export enum MangaStatus {
+	UNKNOWN = 0,
+	ONGOING = 1,
+	COMPLETED = 2
 }
 
 declare global {

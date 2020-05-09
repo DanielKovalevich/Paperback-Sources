@@ -1,5 +1,5 @@
 import { Source } from '../Source'
-import { Manga } from '../../models/Manga/Manga'
+import { Manga, MangaStatus } from '../../models/Manga/Manga'
 import { Chapter } from '../../models/Chapter/Chapter'
 import { MangaTile } from '../../models/MangaTile/MangaTile'
 import { SearchRequest } from '../../models/SearchRequest/SearchRequest'
@@ -57,7 +57,7 @@ export class MangaPark extends Source {
 			let author = ""
 			let artist = ""
 			let views = 0
-			let status = 0
+			let status = MangaStatus.UNKNOWN
 			for (let row of $('tr', tableBody).toArray()) {
 				let elem = $('th', row).html()
 				switch (elem) {
@@ -98,9 +98,9 @@ export class MangaPark extends Source {
 					case 'Status': {
 						let stat = $('td', row).text()
 						if (stat.includes('Ongoing'))
-							status = 1
+							status = MangaStatus.ONGOING
 						else if (stat.includes('Completed')) {
-							status = 0
+							status = MangaStatus.COMPLETED
 						}
 						break
 					}
