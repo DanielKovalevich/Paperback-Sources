@@ -4,7 +4,7 @@ export declare const APP_IS_PUBLIC: boolean
 export declare const CACHE_MANGA_DETAILS: string
 
 export enum LanguageCode {
-    UNKNOWN = '?',
+    UNKNOWN = 'unknown',
     BENGALI = 'bd',
     BULGARIAN = 'bg',
     BRAZILIAN = 'br',
