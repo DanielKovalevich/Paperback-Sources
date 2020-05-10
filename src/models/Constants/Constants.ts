@@ -65,5 +65,5 @@ export enum LanguageCode {
     THAI = 'th',
     TURKISH = 'tr',
     UKRAINIAN = 'ua',
-}
     VIETNAMESE = 'vn'
+}
