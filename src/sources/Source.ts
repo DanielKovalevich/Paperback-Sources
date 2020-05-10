@@ -51,6 +51,11 @@ export abstract class Source {
   abstract get author(): string
 
   /**
+ * An optional field where the author may put a link to their website
+ */
+  get authorWebsite(): string | null { return null }
+
+  /**
    * A brief description of what this source targets. This is additional content displayed to the user when 
    * browsing sources. 
    * What website does it target? What features are working? Etc.
@@ -58,9 +63,10 @@ export abstract class Source {
   abstract get description(): string
 
   /**
-   * An optional field where the author may put a link to their website
+   * Whether the source is a hentai source. This allows us to make sure that hentai sources do not appear
+   * if the user doesn't have hentai enabled
    */
-  get authorWebsite(): string | null { return null }
+  abstract get hentaiSource(): boolean
 
   /**
    * A function returning a request for manga information on a list of multiple mangas.
@@ -107,13 +113,16 @@ export abstract class Source {
    */
   abstract getChapterDetailsRequest(mangaId: string, chapId: string): Request
 
-  //TODO: I don't really know what nextPage or param does myself. This comment may need to be ammended -- Conrad
   /**
    * A function which should handle parsing apart HTML returned from {@link Source.getChapterDetailsRequest} 
    * and generate a {@link ChapterDetails} object
    * @param data HTML which can be parsed to get information on a chapter
    * @param metadata Anything that is passed to {@link Source.getChapterDetailsRequest}'s Request object as
    * metadata, will be available populating this field as well. 
+   * NextPage will tell us whether or not the source is paged. Some sources will only allow one page at a time
+   * so this allows us to get around that. 
+   * The param will only utilized if nextPage is true. The param is what is attached to the base url. This allows
+   * us to change the page in url in the http request
    */
   abstract getChapterDetails(data: any, metadata: any): { 'details': ChapterDetails, 'nextPage': boolean, 'param': string | null }
 
@@ -137,7 +146,7 @@ export abstract class Source {
   abstract search(data: any): MangaTile[] | null
 
   // <-----------        OPTIONAL METHODS        -----------> //
-  
+
   /**
    * (OPTIONAL METHOD) Different sources have different tags available for searching. This method
    * should target a URL which allows you to parse apart all of the available tags which a website has.
@@ -204,7 +213,6 @@ export abstract class Source {
    */
   getHomePageSections(data: any, section: HomeSection[]): HomeSection[] | null { return null }
 
-  //TODO: I don't think I understand this function correctly, the TypeDoc may need to be updated
   /**
    * (OPTIONAL METHOD) For many of the home page sections, there is an ability to view more of that selection
    * Calling this function should generate a {@link Request} targeting a new page of a given key
