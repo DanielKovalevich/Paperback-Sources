@@ -32,7 +32,7 @@ describe('Mangasee Tests', function () {
         expect(data.status, "Missing Status").to.exist;
         expect(data.author, "Missing Author").to.be.not.empty;
         expect(data.author, "Missing Tags").to.be.not.empty;
-        expect(data.description, "Missing Description").to.be.not.empty;
+        expect(data.desc, "Missing Description").to.be.not.empty;
         expect(data.hentai, "Missing Hentai").to.exist
     });
 

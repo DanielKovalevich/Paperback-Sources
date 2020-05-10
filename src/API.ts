@@ -347,7 +347,7 @@ let application = new APIWrapper()
 // MangaDex
 //application.getMangaDetails(new MangaDex(cheerio), ['1'])
 // application.filterUpdatedManga(new MangaDex(cheerio), ['1'], new Date("2020-04-25 02:33:30 UTC")).then((data) => {console.log(data)})
-// application.getHomePageSections(new MangaDex(cheerio)).then((data => console.log(data)))
+// application.getHomePageSections(new MangaDex(cheerio)).then((data => console.log(JSON.stringify(data, null, 4))))
 
 // MangaPark
 // application.getMangaDetails(new MangaPark(cheerio), ['radiation-house', 'boku-no-hero-academia-horikoshi-kouhei']).then((data) => { console.log(data) })

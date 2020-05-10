@@ -6,44 +6,95 @@ import { SearchRequest } from '../../models/SearchRequest/SearchRequest'
 import { Request } from '../../models/RequestObject/RequestObject'
 import { ChapterDetails } from '../../models/ChapterDetails/ChapterDetails'
 
-import { CACHE_MANGA_DETAILS } from '../../models/Constants/Constants'
 import { HomeSectionRequest, HomeSection } from '../../models/HomeSection/HomeSection'
+import { CACHE_MANGA } from '../../models/Constants/Constants'
 
 const MD_DOMAIN = 'https://mangadex.org'
 const MD_CHAPTERS_API = `${MD_DOMAIN}/api/manga`                // /:mangaId
 const MD_CHAPTER_DETAILS_API = `${MD_DOMAIN}/api/chapter`       // /:chapterId
 
 export class MangaDex extends Source {
-  private hMode: number
 
   constructor(cheerio: CheerioAPI) {
     super(cheerio)
-    this.hMode = 0
   }
 
-  get version(): string { return '1.0.1' }
+  get version(): string { return '1.0.3' }
   get name(): string { return 'MangaDex' }
   get icon(): string { return 'icon.png' }
   get author(): string { return 'Faizan Durrani' }
   get authorWebsite(): string { return 'https://github.com/FaizanDurrani' }
   get description(): string { return 'Extension that pulls manga from MangaDex, includes Advanced Search and Updated manga fetching' }
+  get hentaiSource(): boolean { return false }
 
   getMangaDetailsRequest(ids: string[]): Request[] {
     return [createRequestObject({
       metadata: { ids },
-      url: `${CACHE_MANGA_DETAILS}`,
+      url: `${CACHE_MANGA}`,
       method: 'POST',
       headers: {
         "content-type": "application/json"
       },
-      data: JSON.stringify({
+      data: {
         ids: ids
-      })
+      }
     })]
   }
-
   getMangaDetails(data: any, metadata: any): Manga[] {
-    throw new Error("Method not implemented.");
+    let result = JSON.parse(data)
+
+    let mangas = []
+    for (let mangaDetails of result["results"]) {
+      mangas.push(createManga({
+        id: mangaDetails["id"].toString(),
+        titles: mangaDetails["titles"],
+        image: mangaDetails["image"],
+        rating: mangaDetails["rating"],
+        status: mangaDetails["status"],
+        langFlag: mangaDetails["langFlag"],
+        langName: mangaDetails["langName"],
+        artist: mangaDetails["artist"],
+        author: mangaDetails["author"],
+        avgRating: mangaDetails["avgRating"],
+        covers: mangaDetails["covers"],
+        desc: mangaDetails["description"],
+        follows: mangaDetails["follows"],
+        tags: [
+          createTagSection({
+            id: "content",
+            label: "Content",
+            tags: mangaDetails["content"].map((x: any) => createTag({ id: x["id"], label: x["value"] }))
+          }),
+          createTagSection({
+            id: "demographic",
+            label: "Demographic",
+            tags: mangaDetails["demographic"].map((x: any) => createTag({ id: x["id"], label: x["value"] }))
+          }),
+          createTagSection({
+            id: "formats",
+            label: "Formats",
+            tags: mangaDetails["formats"].map((x: any) => createTag({ id: x["id"], label: x["value"] }))
+          }),
+          createTagSection({
+            id: "genres",
+            label: "Genres",
+            tags: mangaDetails["genres"].map((x: any) => createTag({ id: x["id"], label: x["value"] }))
+          }),
+          createTagSection({
+            id: "themes",
+            label: "Themes",
+            tags: mangaDetails["themes"].map((x: any) => createTag({ id: x["id"], label: x["value"] }))
+          })
+        ],
+        users: mangaDetails["users"],
+        views: mangaDetails["views"],
+        hentai: mangaDetails["hentai"],
+        relatedIds: mangaDetails["relatedIds"],
+        lastUpdate: mangaDetails["lastUpdate"]
+      }))
+    }
+
+    return mangas
   }
 
   getChaptersRequest(mangaId: string): Request {
@@ -230,7 +281,7 @@ export class MangaDex extends Source {
       let idStr: string = $('a.manga_title', elem[i]).attr('href') ?? ''
       let id: string = (idStr.match(/(\d+)(?=\/)/) ?? '')[0] ?? ''
       let title: string = $('a.manga_title', elem[i]).text() ?? ''
-      let image: string = $('img', elem[i]).attr('src') ?? ''
+      let image: string = (MD_DOMAIN + $('img', elem[i]).attr('src')) ?? ''
 
       // in this case: badge will be number of updates
       // that the manga has received within last week
