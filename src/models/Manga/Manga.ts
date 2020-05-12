@@ -106,8 +106,8 @@ export interface Manga {
 }
 
 export enum MangaStatus {
-	ONGOING = 0,
-	COMPLETED = 1
+	ONGOING = 1,
+	COMPLETED = 0
 }
 
 declare global {

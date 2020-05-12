@@ -2,24 +2,24 @@
 import './models/impl_export'
 
 import cheerio from 'cheerio'
-import {Source} from './sources/Source'
+import { Source } from './sources/Source'
 
 // Sources
-import {MangaDex} from './sources/MangaDex/MangaDex'
+import { MangaDex } from './sources/MangaDex/MangaDex'
 // import { MangaPark } from './sources/Mangapark'
 // import { Manganelo } from './sources/Manganelo'
 // import { Mangasee } from './sources/Mangasee'
 
-import {Manga} from './models/Manga/Manga'
-import {Chapter} from './models/Chapter/Chapter'
-import {ChapterDetails} from './models/ChapterDetails/ChapterDetails'
-import {SearchRequest} from './models/SearchRequest/SearchRequest'
-import {Request} from './models/RequestObject/RequestObject'
-import {MangaTile} from './models/MangaTile/MangaTile'
-import {Mangasee} from './sources/Mangasee/Mangasee'
-import {MangaPark} from './sources/MangaPark/MangaPark'
-import {Manganelo} from './sources/Manganelo/Manganelo'
-import {MangaFox} from './sources/MangaFox/MangaFox';
+import { Manga } from './models/Manga/Manga'
+import { Chapter } from './models/Chapter/Chapter'
+import { ChapterDetails } from './models/ChapterDetails/ChapterDetails'
+import { SearchRequest } from './models/SearchRequest/SearchRequest'
+import { Request } from './models/RequestObject/RequestObject'
+import { MangaTile } from './models/MangaTile/MangaTile'
+import { Mangasee } from './sources/Mangasee/Mangasee'
+import { MangaPark } from './sources/MangaPark/MangaPark'
+import { Manganelo } from './sources/Manganelo/Manganelo'
+import { MangaFox } from './sources/MangaFox/MangaFox';
 
 // import axios from 'axios'  <- use this when you've fixed the typings
 const axios = require('axios')
@@ -390,12 +390,12 @@ let application = new APIWrapper()
 // application.getChapters(new MangaFox(cheerio), "tokyo_ghoul_re").then((data) => { console.log(data) })
 // application.getChapterDetails(new MangaFox(cheerio), 'yakusoku_no_neverland', 'c167').then((data) => console.log(data))
 //application.filterUpdatedManga(new MangaFox(cheerio), ["no-longer-a-heroine-gi-meng-gi", "the-wicked-queen-shin-ji-sang", "tower-of-god"], new Date("2020-04-25 02:33:30 UTC")).then((data) => { console.log(data) })
- let test = createSearchRequest({
- 	title: 'isekai',
- 	includeDemographic: ['Shounen'],
- 	excludeGenre: ['Mature']
- })
- application.search(new MangaFox(cheerio), test, 1).then((data) => { console.log(data) })
+// let test = createSearchRequest({
+//   title: 'isekai',
+//   includeDemographic: ['Shounen'],
+//   excludeGenre: ['Mature']
+// })
+// application.search(new MangaFox(cheerio), test, 1).then((data) => { console.log(data) })
 //application.getHomePageSections(new MangaFox(cheerio)).then((data) => console.log(data))
 //application.getTags(new MangaFox(cheerio)).then((data) => console.log(data))
 //application.getViewMoreItems(new MangaFox(cheerio), 'recently_updated', 1).then(data => console.log(data))

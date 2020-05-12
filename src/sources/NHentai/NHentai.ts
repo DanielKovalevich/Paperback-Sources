@@ -17,7 +17,7 @@ export class NHentai extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.7' }
+  get version(): string { return '0.5.7' }
   get name(): string { return 'nHentai' }
   get description(): string { return 'Extension that pulls manga from nHentai' }
   get author(): string { return 'Conrad Weiser' }
@@ -149,7 +149,6 @@ export class NHentai extends Source {
       }
     }
 
-
     chapters.push(createChapter({
       id: "1",                                    // Only ever one chapter on this source
       mangaId: metadata.id,
@@ -270,11 +269,11 @@ export class NHentai extends Source {
 
       let mangaId = parseInt(href?.match(/g\/(\d*)\/\d/)![1])
 
-      mangaTiles.push({
+      mangaTiles.push(createMangaTile({
         id: mangaId.toString(),
         title: createIconText({ text: $('[itemprop=name]').attr('content') ?? '' }),
         image: $('[itemprop=image]').attr('content') ?? ''
-      })
+      }))
       return mangaTiles
     }
 
