@@ -32,7 +32,7 @@ describe('Mangasee Tests', function () {
         expect(data.status, "Missing Status").to.exist;
         expect(data.author, "Missing Author").to.be.not.empty;
         expect(data.author, "Missing Tags").to.be.not.empty;
-        expect(data.description, "Missing Description").to.be.not.empty;
+        expect(data.desc, "Missing Description").to.be.not.empty;
         expect(data.hentai, "Missing Hentai").to.exist
     });
 
@@ -83,29 +83,6 @@ describe('Mangasee Tests', function () {
         let search = await wrapper.search(source, testSearch, 1);
         let result = search[0];
         expect(result).to.not.exist;    // There should be no entries with this tag!
-    });
-
-    it("Retrieve Home Page Sections", async () => {
-
-        let data = await wrapper.getHomePageSections(source);
-        expect(data, "No response from server").to.exist;
-        expect(data, "No response from server").to.be.not.empty;
-
-        // Do some MangaPark specific validation for this server response
-        let popularTitles = data[0];
-        expect(popularTitles.id, "Popular Titles ID does not exist").to.not.be.empty;
-        expect(popularTitles.title, "Popular manga section does not exist").to.not.be.empty;
-        expect(popularTitles.items, "No items available for popular titles").to.not.be.empty;
-
-        let popularNewTitles = data[1];
-        expect(popularNewTitles.id, "Popular New Titles ID does not exist").to.not.be.empty;
-        expect(popularNewTitles.title, "Popular New manga section does not exist").to.not.be.empty;
-        expect(popularNewTitles.items, "No items available for popular new titles").to.not.be.empty;
-
-        let recentlyUpdated = data[2];
-        expect(recentlyUpdated.id, "Recently Updated ID does not exist").to.not.be.empty;
-        expect(recentlyUpdated.title, "Recently Updated manga section does not exist").to.not.be.empty;
-        expect(recentlyUpdated.items, "No items available for Recently Updated").to.not.be.empty;
     });
 
     /**

@@ -24,7 +24,7 @@ export interface Manga {
 	 * The rating which users have given this manga
 	 */
 	rating: number
-  
+
 	/**
 	 * A status code for this manga. This is likely different each source.
 	 * For example, a zero might mean that it is unreleased. A one may mean it is ongoing. etc.
@@ -68,7 +68,7 @@ export interface Manga {
 	/**
 	 * A description of this manga, if available
 	 */
-	description?: string
+	desc?: string
 
 	/**
 	 * The number of followers on the source, which follow this manga

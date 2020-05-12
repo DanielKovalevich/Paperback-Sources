@@ -8,7 +8,7 @@ import { Request } from '../../models/RequestObject/RequestObject'
 import { ChapterDetails } from '../../models/ChapterDetails/ChapterDetails'
 import { TagSection } from '../../models/TagSection/TagSection'
 import { HomeSectionRequest, HomeSection } from '../../models/HomeSection/HomeSection'
-import { LanguageCode } from '../../models/Constants/Constants'
+import { LanguageCode } from '../../models/Languages/Languages'
 
 const MN_DOMAIN = 'https://manganelo.com'
 
@@ -17,12 +17,13 @@ export class Manganelo extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.0.2' }
+  get version(): string { return '1.0.6' }
   get name(): string { return 'Manganelo' }
   get icon(): string { return 'icon.png' }
   get author(): string { return 'Daniel Kovalevich' }
   get authorWebsite(): string { return 'https://github.com/DanielKovalevich' }
   get description(): string { return 'Extension that pulls manga from Manganelo, includes Advanced Search and Updated manga fetching' }
+  get hentaiSource(): boolean { return false }
 
   getMangaDetailsRequest(ids: string[]): Request[] {
     let requests: Request[] = []
@@ -38,87 +39,85 @@ export class Manganelo extends Source {
     return requests
   }
 
-  getMangaDetails(data: any[], metadata: any[]): Manga[] {
+  getMangaDetails(data: any, metadata: any): Manga[] {
     let manga: Manga[] = []
-    for (let [i, response] of data.entries()) {
-      let $ = this.cheerio.load(response)
-      let panel = $('.panel-story-info')
-      let title = $('.img-loading', panel).attr('title') ?? ''
-      let image = $('.img-loading', panel).attr('src') ?? ''
-      let table = $('.variations-tableInfo', panel)
-      let author = ''
-      let artist = ''
-      let rating = 0
-      let status = MangaStatus.ONGOING
-      let titles = [title]
-      let follows = 0
-      let views = 0
-      let lastUpdate = ''
-      let hentai = false
+    let $ = this.cheerio.load(data)
+    let panel = $('.panel-story-info')
+    let title = $('.img-loading', panel).attr('title') ?? ''
+    let image = $('.img-loading', panel).attr('src') ?? ''
+    let table = $('.variations-tableInfo', panel)
+    let author = ''
+    let artist = ''
+    let rating = 0
+    let status = MangaStatus.ONGOING
+    let titles = [title]
+    let follows = 0
+    let views = 0
+    let lastUpdate = ''
+    let hentai = false
 
-      let tagSections: TagSection[] = [createTagSection({ id: '0', label: 'genres', tags: [] })]
+    let tagSections: TagSection[] = [createTagSection({ id: '0', label: 'genres', tags: [] })]
 
-      for (let row of $('tr', table).toArray()) {
-        if ($(row).find('.info-alternative').length > 0) {
-          let alts = $('h2', table).text().split(/,|;/)
-          for (let alt of alts) {
-            titles.push(alt.trim())
-          }
-        }
-        else if ($(row).find('.info-author').length > 0) {
-          let autart = $('.table-value', row).find('a').toArray()
-          author = $(autart[0]).text()
-          if (autart.length > 1) {
-            artist = $(autart[1]).text()
-          }
-        }
-        else if ($(row).find('.info-status').length > 0) {
-          status = $('.table-value', row).text() == 'Ongoing' ? MangaStatus.ONGOING : MangaStatus.COMPLETED
-        }
-        else if ($(row).find('.info-genres').length > 0) {
-          let elems = $('.table-value', row).find('a').toArray()
-          for (let elem of elems) {
-            let text = $(elem).text()
-            let id = $(elem).attr('href')?.split('/').pop()?.split('-').pop() ?? ''
-            if (text.toLowerCase().includes('smut')) {
-              hentai = true
-            }
-            tagSections[0].tags.push(createTag({ id: id, label: text }))
-          }
+    for (let row of $('tr', table).toArray()) {
+      if ($(row).find('.info-alternative').length > 0) {
+        let alts = $('h2', table).text().split(/,|;/)
+        for (let alt of alts) {
+          titles.push(alt.trim())
         }
       }
-
-      table = $('.story-info-right-extent', panel)
-      for (let row of $('p', table).toArray()) {
-        if ($(row).find('.info-time').length > 0) {
-          let time = new Date($('.stre-value', row).text().replace(/(-*(AM)*(PM)*)/g, ''))
-          lastUpdate = time.toDateString()
-        }
-        else if ($(row).find('.info-view').length > 0) {
-          views = Number($('.stre-value', row).text().replace(/,/g, ''))
+      else if ($(row).find('.info-author').length > 0) {
+        let autart = $('.table-value', row).find('a').toArray()
+        author = $(autart[0]).text()
+        if (autart.length > 1) {
+          artist = $(autart[1]).text()
         }
       }
-
-      rating = Number($('[property=v\\:average]', table).text())
-      follows = Number($('[property=v\\:votes]', table).text())
-      let summary = $('.panel-story-info-description', panel).text()
-
-      manga.push({
-        id: metadata[i].id,
-        titles: titles,
-        image: image,
-        rating: Number(rating),
-        status: status,
-        artist: artist,
-        author: author,
-        tags: tagSections,
-        views: views,
-        follows: follows,
-        lastUpdate: lastUpdate,
-        description: summary,
-        hentai: hentai
-      })
+      else if ($(row).find('.info-status').length > 0) {
+        status = $('.table-value', row).text() == 'Ongoing' ? MangaStatus.ONGOING : MangaStatus.COMPLETED
+      }
+      else if ($(row).find('.info-genres').length > 0) {
+        let elems = $('.table-value', row).find('a').toArray()
+        for (let elem of elems) {
+          let text = $(elem).text()
+          let id = $(elem).attr('href')?.split('/').pop()?.split('-').pop() ?? ''
+          if (text.toLowerCase().includes('smut')) {
+            hentai = true
+          }
+          tagSections[0].tags.push(createTag({ id: id, label: text }))
+        }
+      }
     }
+
+    table = $('.story-info-right-extent', panel)
+    for (let row of $('p', table).toArray()) {
+      if ($(row).find('.info-time').length > 0) {
+        let time = new Date($('.stre-value', row).text().replace(/(-*(AM)*(PM)*)/g, ''))
+        lastUpdate = time.toDateString()
+      }
+      else if ($(row).find('.info-view').length > 0) {
+        views = Number($('.stre-value', row).text().replace(/,/g, ''))
+      }
+    }
+
+    rating = Number($('[property=v\\:average]', table).text())
+    follows = Number($('[property=v\\:votes]', table).text())
+    let summary = $('.panel-story-info-description', panel).text()
+
+    manga.push({
+      id: metadata.id,
+      titles: titles,
+      image: image,
+      rating: Number(rating),
+      status: status,
+      artist: artist,
+      author: author,
+      tags: tagSections,
+      views: views,
+      follows: follows,
+      lastUpdate: lastUpdate,
+      desc: summary,
+      hentai: hentai
+    })
 
     return manga
   }
@@ -168,7 +167,7 @@ export class Manganelo extends Source {
     })
   }
 
-  getChapterDetails(data: any, metadata: any): { 'details': ChapterDetails, 'nextPage': boolean, 'param': string | null } {
+  getChapterDetails(data: any, metadata: any): ChapterDetails {
     let $ = this.cheerio.load(data)
     let pages: string[] = []
     for (let item of $('img', '.container-chapter-reader').toArray()) {
@@ -181,12 +180,8 @@ export class Manganelo extends Source {
       pages: pages,
       longStrip: false
     })
-    let returnObject = {
-      'details': chapterDetails,
-      'nextPage': metadata.nextPage,
-      'param': null
-    }
-    return returnObject
+
+    return chapterDetails
   }
 
   filterUpdatedMangaRequest(ids: any, time: Date, page: number): Request {
@@ -243,7 +238,7 @@ export class Manganelo extends Source {
   }
 
   getHomePageSections(data: any, sections: HomeSection[]): HomeSection[] | null {
-    let $ = cheerio.load(data)
+    let $ = this.cheerio.load(data)
     let topManga: MangaTile[] = []
     let updateManga: MangaTile[] = []
     let newManga: MangaTile[] = []

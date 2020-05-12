@@ -7,7 +7,7 @@ import { Request } from '../../models/RequestObject/RequestObject'
 import { ChapterDetails } from '../../models/ChapterDetails/ChapterDetails'
 import { Tag, TagSection } from '../../models/TagSection/TagSection'
 import { HomeSection, HomeSectionRequest } from '../../models/HomeSection/HomeSection'
-import { LanguageCode } from '../../models/Constants/Constants'
+import { LanguageCode } from '../../models/Languages/Languages'
 
 const MS_DOMAIN = 'https://mangaseeonline.us'
 
@@ -16,12 +16,13 @@ export class Mangasee extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.0.1' }
+  get version(): string { return '1.0.4' }
   get name(): string { return 'Mangasee' }
   get icon(): string { return 'icon.png' }
   get author(): string { return 'Daniel Kovalevich' }
   get authorWebsite(): string { return 'https://github.com/DanielKovalevich' }
   get description(): string { return 'Extension that pulls manga from Mangasee, includes Advanced Search and Updated manga fetching' }
+  get hentaiSource(): boolean { return false }
 
   getMangaDetailsRequest(ids: string[]): Request[] {
     let requests: Request[] = []
@@ -37,73 +38,71 @@ export class Mangasee extends Source {
     return requests
   }
 
-  getMangaDetails(data: any[], metadata: any[]): Manga[] {
+  getMangaDetails(data: any, metadata: any): Manga[] {
     let manga: Manga[] = []
-    for (let [i, response] of data.entries()) {
-      let $ = this.cheerio.load(response)
-      let info = $('.row')
-      let image = $('img', '.row').attr('src') ?? ''
-      let title = $('.SeriesName', info).text() ?? ''
-      let titles = [title]
-      let details = $('.details', info)
-      let author = ''
+    let $ = this.cheerio.load(data)
+    let info = $('.row')
+    let image = $('img', '.row').attr('src') ?? ''
+    let title = $('.SeriesName', info).text() ?? ''
+    let titles = [title]
+    let details = $('.details', info)
+    let author = ''
 
-      let tagSections: TagSection[] = [createTagSection({ id: '0', label: 'genres', tags: [] }),
-      createTagSection({ id: '1', label: 'format', tags: [] })]
+    let tagSections: TagSection[] = [createTagSection({ id: '0', label: 'genres', tags: [] }),
+    createTagSection({ id: '1', label: 'format', tags: [] })]
 
-      let status = MangaStatus.ONGOING
-      let summary = ''
-      let hentai = false
+    let status = MangaStatus.ONGOING
+    let summary = ''
+    let hentai = false
 
-      for (let row of $('.row', details).toArray()) {
-        let text = $('b', row).text()
-        switch (text) {
-          case 'Alternate Name(s): ': {
-            titles.push($(row).text().replace(/(Alternate Name\(s\):)*(\t*\n*)/g, '').trim())
-            break
-          }
-          case 'Author(s): ': {
-            author = $(row).text().replace(/(Author\(s\):)*(\t*\n*)/g, '').trim()
-            break
-          }
-          case 'Genre(s): ': {
-            let items = $(row).text().replace(/(Genre\(s\):)*(\t*\n*)/g, '').split(',')
-            for (let item of items) {
-              if (item.toLowerCase().includes('hentai')) {
-                hentai = true
-              }
-              else {
-                tagSections[0].tags.push(createTag({ id: item.trim(), label: item.trim() }))
-              }
-            }
-            break
-          }
-          case 'Type:': {
-            let type = $(row).text().replace(/(Type:)*(\t*\n*)/g, '').trim()
-            tagSections[1].tags.push(createTag({ id: type.trim(), label: type.trim() }))
-            break
-          }
-          case 'Status: ': {
-            status = $(row).text().includes('Ongoing') ? MangaStatus.ONGOING : MangaStatus.COMPLETED
-            break
-          }
+    for (let row of $('.row', details).toArray()) {
+      let text = $('b', row).text()
+      switch (text) {
+        case 'Alternate Name(s): ': {
+          titles.push($(row).text().replace(/(Alternate Name\(s\):)*(\t*\n*)/g, '').trim())
+          break
         }
-
-        summary = $('.description', row).text()
+        case 'Author(s): ': {
+          author = $(row).text().replace(/(Author\(s\):)*(\t*\n*)/g, '').trim()
+          break
+        }
+        case 'Genre(s): ': {
+          let items = $(row).text().replace(/(Genre\(s\):)*(\t*\n*)/g, '').split(',')
+          for (let item of items) {
+            if (item.toLowerCase().includes('hentai')) {
+              hentai = true
+            }
+            else {
+              tagSections[0].tags.push(createTag({ id: item.trim(), label: item.trim() }))
+            }
+          }
+          break
+        }
+        case 'Type:': {
+          let type = $(row).text().replace(/(Type:)*(\t*\n*)/g, '').trim()
+          tagSections[1].tags.push(createTag({ id: type.trim(), label: type.trim() }))
+          break
+        }
+        case 'Status: ': {
+          status = $(row).text().includes('Ongoing') ? MangaStatus.ONGOING : MangaStatus.COMPLETED
+          break
+        }
       }
 
-      manga.push(createManga({
-        id: metadata[i].id,
-        titles: titles,
-        image: image,
-        rating: 0,
-        status: status,
-        author: author,
-        tags: tagSections,
-        description: summary,
-        hentai: hentai
-      }))
+      summary = $('.description', row).text()
     }
+
+    manga.push(createManga({
+      id: metadata.id,
+      titles: titles,
+      image: image,
+      rating: 0,
+      status: status,
+      author: author,
+      tags: tagSections,
+      desc: summary,
+      hentai: hentai
+    }))
     return manga
   }
 
@@ -154,7 +153,7 @@ export class Mangasee extends Source {
     })
   }
 
-  getChapterDetails(data: any, metadata: any): { 'details': ChapterDetails, 'nextPage': boolean, 'param': string | null } {
+  getChapterDetails(data: any, metadata: any): ChapterDetails {
     let script = JSON.parse((/PageArr=(.*);/g.exec(data) ?? [])[1])
     let pages: string[] = []
     let images: string[] = Object.values(script)
@@ -170,13 +169,14 @@ export class Mangasee extends Source {
       pages, longStrip: false
     })
 
+    // Unused, idk what you're using this for so keeping it
     let returnObject = {
       'details': chapterDetails,
       'nextPage': metadata.nextPage,
       'param': null
     }
 
-    return returnObject
+    return chapterDetails
   }
 
 
@@ -242,10 +242,10 @@ export class Mangasee extends Source {
       'genreNo': excluded
     }
     let metadata = data
-    data = Object.keys(data).map(function (key: any) {
-      if (data[key] != '')
-        return encodeURIComponent(key) + '=' + encodeURIComponent(data[key])
-    }).join('&').replace(/&&/g, '&')
+    // data = Object.keys(data).map(function (key: any) {
+    //   if (data[key] != '')
+    //     return encodeURIComponent(key) + '=' + encodeURIComponent(data[key])
+    // }).join('&').replace(/&&/g, '&')
 
     return createRequestObject({
       url: `${MS_DOMAIN}/search/request.php`,
@@ -253,13 +253,13 @@ export class Mangasee extends Source {
       headers: {
         "content-type": "application/x-www-form-urlencoded"
       },
-      timeout: 4000,
       method: "POST",
       data: data
     })
   }
 
-  search(data: any): MangaTile[] {
+  search(data: any): MangaTile[] | null {
+
     let $ = this.cheerio.load(data)
 
     let mangaTiles: MangaTile[] = []
@@ -268,7 +268,7 @@ export class Mangasee extends Source {
       let id = $('.resultLink', item).attr('href')?.split('/').pop() ?? ''
       let title = $('.resultLink', item).text()
       let author = $('p', item).first().find('a').text()
-      mangaTiles.push({
+      mangaTiles.push(createMangaTile({
         id: id,
         title: createIconText({
           text: title
@@ -277,7 +277,7 @@ export class Mangasee extends Source {
         subtitleText: createIconText({
           text: author
         })
-      })
+      }))
     }
 
     return mangaTiles
@@ -313,10 +313,5 @@ export class Mangasee extends Source {
 
     return tagSections
   }
-
-  getHomePageSectionRequest(): HomeSectionRequest[] | null { return null }
-  getHomePageSections(data: any, section: HomeSection[]): HomeSection[] | null { return null }
-  getViewMoreRequest(key: string, page: number): Request | null { return null }
-  getViewMoreItems(data: any, key: string): MangaTile[] | null { return null }
 }
 

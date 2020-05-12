@@ -1,4 +1,5 @@
-import { LanguageCode } from "../Constants/Constants";
+
+import { LanguageCode } from '../../models/Languages/Languages'
 
 export interface Chapter {
 
@@ -20,7 +21,7 @@ export interface Chapter {
    * An identifier of which chapter number this is, in a given {@link Manga}
    */
   chapNum: number
-  
+
   /**
    * The language code which this chapter is associated with.
    * This allows the application to filter by language

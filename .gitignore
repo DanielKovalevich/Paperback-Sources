@@ -11,3 +11,5 @@ reference
 .nyc_output
 coverage
 docs
+
+.idea
