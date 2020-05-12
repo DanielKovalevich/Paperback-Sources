@@ -292,11 +292,11 @@ export class NHentai extends Source {
       let title = $('.caption', currNode).text()
       let idHref = $('a', currNode).attr('href')?.match(/\/(\d*)\//)!
 
-      mangaTiles.push({
+      mangaTiles.push(createMangaTile({
         id: idHref[1],
         title: createIconText({ text: title }),
         image: image
-      })
+      }))
     }
 
     return mangaTiles
@@ -327,11 +327,11 @@ export class NHentai extends Source {
       let title = $('.caption', currNode).text()
       let idHref = $('a', currNode).attr('href')?.match(/\/(\d*)\//)!
 
-      updatedHentai.push({
+      updatedHentai.push(createMangaTile({
         id: idHref[1],
-        title: createIconText({ text: title }),
+        title: createIconText({text: title}),
         image: image
-      })
+      }))
     }
 
     section[0].items = updatedHentai
