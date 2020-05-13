@@ -134,11 +134,16 @@ describe('N-Hentai Tests', function () {
         expect(data, "No response from server").to.exist;
         expect(data, "No response from server").to.be.not.empty;
 
-        // Do some MangaPark specific validation for this server response
         let newHentai = data[0];
         expect(newHentai.id, "Popular Titles ID does not exist").to.not.be.empty;
         expect(newHentai.title, "Popular manga section does not exist").to.not.be.empty;
         expect(newHentai.items, "No items available for popular titles").to.not.be.empty;
-
     });
+
+    it("Retrieve Tags", async() => {
+        let data = await wrapper.getTags(source)
+        expect(data, "No response from server").to.exist
+        expect(data[0].tags).to.not.be.empty
+        
+    })
 });

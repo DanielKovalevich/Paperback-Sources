@@ -17,10 +17,11 @@ export class NHentai extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.5.7' }
+  get version(): string { return '0.6.0' }
   get name(): string { return 'nHentai' }
   get description(): string { return 'Extension that pulls manga from nHentai' }
   get author(): string { return 'Conrad Weiser' }
+  get authorWebsite(): string { return 'http://github.com/conradweiser'}
   get icon(): string { return "logo.png" } // The website has SVG versions, I had to find one off of a different source
   get hentaiSource(): boolean { return true }
 
@@ -299,6 +300,43 @@ export class NHentai extends Source {
     }
 
     return mangaTiles
+  }
+
+  getTagsRequest(): Request | null {
+    return createRequestObject({
+      url: `${NHENTAI_DOMAIN}/tags/popular`,
+      timeout: 4000,
+      method: "GET"
+    })
+  }
+
+  getTags(data: any): TagSection[] | null {
+    let tagCategoryId = 'Popular'     // There are no tag categories, just 'tags', as we're parsing the first page of popular tags, just label it as popular
+    let tagLabel = 'Popular'
+    let tagSection : TagSection = createTagSection({
+      id: tagCategoryId,
+      label: tagLabel,
+      tags: []
+    })
+
+    let $ = this.cheerio.load(data)
+    let container = $("#tag-container")
+
+    for(let item of $('a', container).toArray()) {
+      let currNode = $(item)
+
+      // Grab the tag and add it to the list
+      let tagName = currNode.text()     // Consider pulling the legitimate tag IDs instead of the names?
+
+      // Tags come in the form 'Sole female (99,999) or some form of numbers in parenths. Remove that from the string
+      tagName = tagName.replace(/\(\d*,*\d*\)/, "").trim()
+
+      tagSection.tags.push(createTag({
+        id: tagName,
+        label: tagName
+      }))
+    }
+    return [tagSection]
   }
 
   getHomePageSectionRequest(): HomeSectionRequest[] | null {
