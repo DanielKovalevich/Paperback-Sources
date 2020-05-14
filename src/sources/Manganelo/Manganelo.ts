@@ -103,7 +103,7 @@ export class Manganelo extends Source {
     follows = Number($('[property=v\\:votes]', table).text())
     let summary = $('.panel-story-info-description', panel).text()
 
-    manga.push({
+    manga.push(createManga({
       id: metadata.id,
       titles: titles,
       image: image,
@@ -117,7 +117,7 @@ export class Manganelo extends Source {
       lastUpdate: lastUpdate,
       desc: summary,
       hentai: hentai
-    })
+    }))
 
     return manga
   }
