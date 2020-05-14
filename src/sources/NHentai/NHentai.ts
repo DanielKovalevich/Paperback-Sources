@@ -17,7 +17,7 @@ export class NHentai extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.6.0' }
+  get version(): string { return '0.6.1' }
   get name(): string { return 'nHentai' }
   get description(): string { return 'Extension that pulls manga from nHentai' }
   get author(): string { return 'Conrad Weiser' }
@@ -202,15 +202,10 @@ export class NHentai extends Source {
     let chapterDetails = createChapterDetails({
       id: metadata.chapterId,
       mangaId: metadata.mangaId,
-      pages, longStrip: false
+      pages: pages,
+      longStrip: false
     })
 
-    // Unused, idk if you'll need this later so keeping it
-    let returnObject = {
-      'details': chapterDetails,
-      'nextPage': metadata.nextPage,
-      'param': null
-    }
 
     return chapterDetails
   }
