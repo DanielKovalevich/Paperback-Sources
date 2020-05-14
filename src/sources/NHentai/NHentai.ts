@@ -245,7 +245,7 @@ export class NHentai extends Source {
 
     return createRequestObject({
       url: `${NHENTAI_DOMAIN}/search/?q=${param}`,
-      metadata: query,
+      metadata: { sixDigit: false },
       timeout: 4000,
       method: "GET"
     })
@@ -256,9 +256,8 @@ export class NHentai extends Source {
     let $ = this.cheerio.load(data)
     let mangaTiles: MangaTile[] = []
 
-    // Was this a six digit request? We can check by seeing if we're on a manga page rather than a standard search page -- Metadata for hentai only exists on specific results, not searches, use that
-    let title = $('[itemprop=name]').attr('content') ?? ''
-    if (title) {
+    // Was this a six digit request? 
+    if (metadata.sixDigit) {
       // Retrieve the ID from the body
       let contextNode = $('#bigcontainer')
       let href = $('a', contextNode).attr('href')
