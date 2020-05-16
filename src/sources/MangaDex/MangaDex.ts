@@ -118,7 +118,7 @@ export class MangaDex extends Source {
         mangaId: metadata.mangaId,
         group: chapter.group_name,
         name: chapter.title,
-        time: new Date(chapter.timestamp)
+        time: new Date(Number(chapter.timestamp) * 1000)
       })
     })
   }
@@ -334,10 +334,26 @@ export class MangaDex extends Source {
   }
 
   searchRequest(query: SearchRequest, page: number): Request | null {
-    return null
+    return createRequestObject({
+      url: CACHE_SEARCH,
+      method: "POST",
+      data: {
+        title: query.title
+      },
+      headers: {
+        "content-type": "application/json"
+      }
+    })
   }
 
-  search(data: any): MangaTile[] | null {
-    return null
+  search(data: any, metadata: any): MangaTile[] | null {
+    let mangas = this.getMangaDetails(data, {})
+    return mangas.map(manga => createMangaTile({
+      id: manga.id,
+      image: manga.image,
+      title: createIconText({
+        text: manga.titles[0] ?? "UNKNOWN"
+      })
+    }))
   }
 }

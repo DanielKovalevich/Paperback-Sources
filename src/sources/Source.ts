@@ -148,7 +148,7 @@ export abstract class Source {
    * and generate a list of {@link MangaTile} objects, one for each result on this page
    * @param data HTML which can be parsed to get a list of all manga matching your search query
    */
-  abstract search(data: any): MangaTile[] | null
+  abstract search(data: any, metadata: any): MangaTile[] | null
 
   // <-----------        OPTIONAL METHODS        -----------> //
 

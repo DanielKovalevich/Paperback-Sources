@@ -183,7 +183,8 @@ export class Mangasee extends Source {
   filterUpdatedMangaRequest(ids: any, time: Date, page: number): Request {
     let metadata = { 'ids': ids, 'referenceTime': time }
     let data: any = { 'page': page }
-    data = Object.keys(data).map(function (key: any) { return encodeURIComponent(key) + '=' + encodeURIComponent(data[key]) }).join('&')
+    // only for testing with axios
+    // data = Object.keys(data).map(function (key: any) { return encodeURIComponent(key) + '=' + encodeURIComponent(data[key]) }).join('&')
     return createRequestObject({
       url: `${MS_DOMAIN}/home/latest.request.php`,
       metadata: metadata,
@@ -242,10 +243,10 @@ export class Mangasee extends Source {
       'genreNo': excluded
     }
     let metadata = data
-    data = Object.keys(data).map(function (key: any) {
-      if (data[key] != '')
-        return encodeURIComponent(key) + '=' + encodeURIComponent(data[key])
-    }).join('&').replace(/&&/g, '&')
+    // data = Object.keys(data).map(function (key: any) {
+    //   if (data[key] != '')
+    //     return encodeURIComponent(key) + '=' + encodeURIComponent(data[key])
+    // }).join('&').replace(/&&/g, '&')
 
     return createRequestObject({
       url: `${MS_DOMAIN}/search/request.php`,
@@ -253,13 +254,13 @@ export class Mangasee extends Source {
       headers: {
         "content-type": "application/x-www-form-urlencoded"
       },
-      timeout: 4000,
       method: "POST",
       data: data
     })
   }
 
-  search(data: any): MangaTile[] {
+  search(data: any, metadata: any): MangaTile[] | null {
+
     let $ = this.cheerio.load(data)
 
     let mangaTiles: MangaTile[] = []
@@ -268,7 +269,7 @@ export class Mangasee extends Source {
       let id = $('.resultLink', item).attr('href')?.split('/').pop() ?? ''
       let title = $('.resultLink', item).text()
       let author = $('p', item).first().find('a').text()
-      mangaTiles.push({
+      mangaTiles.push(createMangaTile({
         id: id,
         title: createIconText({
           text: title
@@ -277,7 +278,7 @@ export class Mangasee extends Source {
         subtitleText: createIconText({
           text: author
         })
-      })
+      }))
     }
 
     return mangaTiles

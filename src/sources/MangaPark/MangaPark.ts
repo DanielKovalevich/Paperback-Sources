@@ -437,7 +437,7 @@ export class MangaPark extends Source {
 		})
 	}
 
-	search(data: any) {
+	search(data: any, metadata: any): MangaTile[] | null {
 		let $ = this.cheerio.load(data)
 		let mangaList = $('.manga-list')
 		let manga: MangaTile[] = []

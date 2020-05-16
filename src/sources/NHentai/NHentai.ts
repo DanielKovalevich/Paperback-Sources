@@ -17,10 +17,11 @@ export class NHentai extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.7' }
+  get version(): string { return '0.6.1' }
   get name(): string { return 'nHentai' }
   get description(): string { return 'Extension that pulls manga from nHentai' }
   get author(): string { return 'Conrad Weiser' }
+  get authorWebsite(): string { return 'http://github.com/conradweiser'}
   get icon(): string { return "logo.png" } // The website has SVG versions, I had to find one off of a different source
   get hentaiSource(): boolean { return true }
 
@@ -149,7 +150,6 @@ export class NHentai extends Source {
       }
     }
 
-
     chapters.push(createChapter({
       id: "1",                                    // Only ever one chapter on this source
       mangaId: metadata.id,
@@ -202,15 +202,10 @@ export class NHentai extends Source {
     let chapterDetails = createChapterDetails({
       id: metadata.chapterId,
       mangaId: metadata.mangaId,
-      pages, longStrip: false
+      pages: pages,
+      longStrip: false
     })
 
-    // Unused, idk if you'll need this later so keeping it
-    let returnObject = {
-      'details': chapterDetails,
-      'nextPage': metadata.nextPage,
-      'param': null
-    }
 
     return chapterDetails
   }
@@ -250,31 +245,30 @@ export class NHentai extends Source {
 
     return createRequestObject({
       url: `${NHENTAI_DOMAIN}/search/?q=${param}`,
-      metadata: query,
+      metadata: { sixDigit: false },
       timeout: 4000,
       method: "GET"
     })
   }
 
-  search(data: any): MangaTile[] {
+  search(data: any, metadata: any): MangaTile[] {
 
     let $ = this.cheerio.load(data)
     let mangaTiles: MangaTile[] = []
 
-    // Was this a six digit request? We can check by seeing if we're on a manga page rather than a standard search page -- Metadata for hentai only exists on specific results, not searches, use that
-    let title = $('[itemprop=name]').attr('content') ?? ''
-    if (title) {
+    // Was this a six digit request? 
+    if (metadata.sixDigit) {
       // Retrieve the ID from the body
       let contextNode = $('#bigcontainer')
       let href = $('a', contextNode).attr('href')
 
       let mangaId = parseInt(href?.match(/g\/(\d*)\/\d/)![1])
 
-      mangaTiles.push({
+      mangaTiles.push(createMangaTile({
         id: mangaId.toString(),
         title: createIconText({ text: $('[itemprop=name]').attr('content') ?? '' }),
         image: $('[itemprop=image]').attr('content') ?? ''
-      })
+      }))
       return mangaTiles
     }
 
@@ -292,14 +286,51 @@ export class NHentai extends Source {
       let title = $('.caption', currNode).text()
       let idHref = $('a', currNode).attr('href')?.match(/\/(\d*)\//)!
 
-      mangaTiles.push({
+      mangaTiles.push(createMangaTile({
         id: idHref[1],
         title: createIconText({ text: title }),
         image: image
-      })
+      }))
     }
 
     return mangaTiles
+  }
+
+  getTagsRequest(): Request | null {
+    return createRequestObject({
+      url: `${NHENTAI_DOMAIN}/tags/popular`,
+      timeout: 4000,
+      method: "GET"
+    })
+  }
+
+  getTags(data: any): TagSection[] | null {
+    let tagCategoryId = 'Popular'     // There are no tag categories, just 'tags', as we're parsing the first page of popular tags, just label it as popular
+    let tagLabel = 'Popular'
+    let tagSection : TagSection = createTagSection({
+      id: tagCategoryId,
+      label: tagLabel,
+      tags: []
+    })
+
+    let $ = this.cheerio.load(data)
+    let container = $("#tag-container")
+
+    for(let item of $('a', container).toArray()) {
+      let currNode = $(item)
+
+      // Grab the tag and add it to the list
+      let tagName = currNode.text()     // Consider pulling the legitimate tag IDs instead of the names?
+
+      // Tags come in the form 'Sole female (99,999) or some form of numbers in parenths. Remove that from the string
+      tagName = tagName.replace(/\(\d*,*\d*\)/, "").trim()
+
+      tagSection.tags.push(createTag({
+        id: tagName,
+        label: tagName
+      }))
+    }
+    return [tagSection]
   }
 
   getHomePageSectionRequest(): HomeSectionRequest[] | null {
@@ -327,11 +358,11 @@ export class NHentai extends Source {
       let title = $('.caption', currNode).text()
       let idHref = $('a', currNode).attr('href')?.match(/\/(\d*)\//)!
 
-      updatedHentai.push({
+      updatedHentai.push(createMangaTile({
         id: idHref[1],
-        title: createIconText({ text: title }),
+        title: createIconText({text: title}),
         image: image
-      })
+      }))
     }
 
     section[0].items = updatedHentai
