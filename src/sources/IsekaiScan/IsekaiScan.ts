@@ -19,4 +19,5 @@ export class IsekaiScan extends Madara {
     get langCode(): LanguageCode { return LanguageCode.ENGLISH }
     get MadaraDomain(): string { return 'https://isekaiscan.com' }
     get pageImageAttr(): string { return 'data-src' }
+    get searchCoverAttr(): string { return 'data-src' }
 }
