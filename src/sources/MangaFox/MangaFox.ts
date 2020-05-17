@@ -1,12 +1,13 @@
-import { Source } from '../Source'
-import { Manga, MangaStatus } from '../../models/Manga/Manga'
-import { Chapter } from '../../models/Chapter/Chapter'
-import { MangaTile } from '../../models/MangaTile/MangaTile'
-import { SearchRequest } from '../../models/SearchRequest/SearchRequest'
-import { Request } from '../../models/RequestObject/RequestObject'
-import { ChapterDetails } from '../../models/ChapterDetails/ChapterDetails'
-import { LanguageCode } from '../../models/Languages/Languages'
-import { TagSection } from "../../models/TagSection/TagSection";
+import {Source} from '../Source'
+import {Manga, MangaStatus} from '../../models/Manga/Manga'
+import {Chapter} from '../../models/Chapter/Chapter'
+import {MangaTile} from '../../models/MangaTile/MangaTile'
+import {SearchRequest} from '../../models/SearchRequest/SearchRequest'
+import {Request} from '../../models/RequestObject/RequestObject'
+import {ChapterDetails} from '../../models/ChapterDetails/ChapterDetails'
+import {LanguageCode} from '../../models/Languages/Languages'
+import {TagSection} from "../../models/TagSection/TagSection";
+import {HomeSection, HomeSectionRequest} from "../../models/HomeSection/HomeSection";
 
 const MF_DOMAIN = 'https://fanfox.net'
 const MF_DOMAIN_MOBILE = 'https://m.fanfox.net'
@@ -36,11 +37,11 @@ export class MangaFox extends Source {
     getMangaDetailsRequest(ids: string[]): Request[] {
         let requests: Request[] = []
         for (let id of ids) {
-            let metadata = { 'id': id };
+            let metadata = {'id': id};
             requests.push(createRequestObject({
                 url: `${MF_DOMAIN}/manga/${id}`,
                 method: 'GET',
-                cookies: [createCookie({ name: 'isAdult', value: '1', domain: MF_DOMAIN })],
+                cookies: [createCookie({name: 'isAdult', value: '1', domain: MF_DOMAIN})],
                 metadata: metadata
             }));
         }
@@ -55,8 +56,8 @@ export class MangaFox extends Source {
 
         let $ = this.cheerio.load(data);
 
-        let tagSections: TagSection[] = [createTagSection({ id: '0', label: 'genres', tags: [] }),
-        createTagSection({ id: '1', label: 'format', tags: [] })]
+        let tagSections: TagSection[] = [createTagSection({id: '0', label: 'genres', tags: []}),
+            createTagSection({id: '1', label: 'format', tags: []})]
 
         let details = $('.detail-info-right');
         let cover = $('img.detail-bg-img').first().attr('src');
@@ -70,7 +71,7 @@ export class MangaFox extends Source {
             let label = $(tag).text().trim();
             if (label?.includes('Adult') || label?.includes('Mature'))
                 isAdult = true;
-            tagSections[0].tags.push(createTag({ id: id, label: label! }));
+            tagSections[0].tags.push(createTag({id: id, label: label!}));
         })
 
         for (let tag in tags) {
@@ -111,12 +112,12 @@ export class MangaFox extends Source {
     }
 
     getChaptersRequest(mangaId: string): Request {
-        let metadata = { mangaId }
+        let metadata = {mangaId}
         return createRequestObject({
             url: `${MF_DOMAIN}/manga/${mangaId}`,
             method: "GET",
             metadata: metadata,
-            cookies: [createCookie({ name: 'isAdult', value: '1', domain: MF_DOMAIN })]
+            cookies: [createCookie({name: 'isAdult', value: '1', domain: MF_DOMAIN})]
         })
     }
 
@@ -150,12 +151,12 @@ export class MangaFox extends Source {
     }
 
     getChapterDetailsRequest(mangaId: string, chapId: string): Request {
-        let metadata = { 'mangaId': mangaId, 'chapterId': chapId, 'nextPage': false, 'page': 1 }
+        let metadata = {'mangaId': mangaId, 'chapterId': chapId, 'nextPage': false, 'page': 1}
         return createRequestObject({
             url: `${MF_DOMAIN_MOBILE}/roll_manga/${mangaId}/${chapId}`,
             method: "GET",
             metadata: metadata,
-            cookies: [createCookie({ name: 'isAdult', value: '1', domain: MF_DOMAIN })]
+            cookies: [createCookie({name: 'isAdult', value: '1', domain: MF_DOMAIN})]
         });
     }
 
@@ -175,6 +176,95 @@ export class MangaFox extends Source {
         });
 
         return chapterDetails;
+    }
+
+    getHomePageSectionRequest(): HomeSectionRequest[] {
+        let request = createRequestObject({url: `${MF_DOMAIN}`, method: 'GET'})
+        let section1 = createHomeSection({id: 'hot_manga', title: 'Hot Manga Releases'})
+        let section2 = createHomeSection({id: 'being_read', title: 'Being Read Right Now'})
+        let section3 = createHomeSection({id: 'new_manga', title: 'New Manga Release'})
+        let section4 = createHomeSection({id: 'latest_updates', title: 'Latest Updates'})
+
+        return [createHomeSectionRequest({request: request, sections: [section1, section2, section3, section4]})]
+    }
+
+    getHomePageSections(data: any, sections: HomeSection[]): HomeSection[] {
+        let $ = this.cheerio.load(data)
+        let hotManga: MangaTile[] = []
+        let beingReadManga: MangaTile[] = []
+        let newManga: MangaTile[] = []
+        let latestManga: MangaTile[] = []
+
+        let idRegExp = new RegExp('\\/manga\\/(.*)\\/');
+
+        let firstSection = $('div.main-large').first();
+        let hotMangas = $('.manga-list-1',firstSection).first();
+        let beingReadMangas = hotMangas.next();
+        let newMangas = $('div.line-list');
+        let latestMangas = $('ul.manga-list-4-list');
+
+        for (let manga of $('li', hotMangas).toArray()) {
+            let id = $('a', manga).first().attr('href')?.match(idRegExp)![1];
+            let cover = $('img', manga).first().attr('src');
+            let title: string = $('.manga-list-1-item-title', manga).text();
+            let subtitle: string = $('.manga-list-1-item-subtitle', manga).text();
+
+            hotManga.push(createMangaTile({
+                id: id,
+                image: cover!,
+                title: createIconText({text: title}),
+                subtitleText: createIconText({text: subtitle}),
+            }));
+        }
+
+        for (let manga of $('li', beingReadMangas).toArray()) {
+            let id = $('a', manga).first().attr('href')?.match(idRegExp)![1];
+            let cover = $('img', manga).first().attr('src');
+            let title: string = $('.manga-list-1-item-title', manga).text();
+            let subtitle: string = $('.manga-list-1-item-subtitle', manga).text();
+
+            beingReadManga.push(createMangaTile({
+                id: id,
+                image: cover!,
+                title: createIconText({text: title}),
+                subtitleText: createIconText({text: subtitle}),
+            }));
+        }
+
+        for (let manga of $('li', newMangas).toArray()) {
+            let id = $('a', manga).first().attr('href')?.match(idRegExp)![1];
+            let cover = $('img', manga).first().attr('src');
+            let title: string = $('.manga-list-1-item-title', manga).text();
+            let subtitle: string = $('.manga-list-1-item-subtitle', manga).text();
+
+            newManga.push(createMangaTile({
+                id: id,
+                image: cover!,
+                title: createIconText({text: title}),
+                subtitleText: createIconText({text: subtitle}),
+            }));
+        }
+
+        for (let manga of $('li', latestMangas).toArray()) {
+            let id = $('a', manga).first().attr('href')?.match(idRegExp)![1];
+            let cover = $('img', manga).first().attr('src');
+            let title: string = $('.manga-list-4-item-title', manga).text();
+            let subtitle: string = $('.manga-list-4-item-subtitle', manga).text();
+
+            latestManga.push(createMangaTile({
+                id: id,
+                image: cover!,
+                title: createIconText({text: title}),
+                subtitleText: createIconText({text: subtitle}),
+            }));
+        }
+
+        // console.log(updateManga)
+        sections[0].items = hotManga;
+        sections[1].items = beingReadManga;
+        sections[2].items = newManga;
+        sections[3].items = latestManga;
+        return sections
     }
 
     searchRequest(query: SearchRequest, page: number): Request | null {
@@ -197,12 +287,12 @@ export class MangaFox extends Source {
         search += `artist=${encodeURI(query.artist || '')}&`;
         search += `type=${type}&genres=${genres}&nogenres=${excluded}&st=${status}`;
 
-        let metadata = { 'search': search };
+        let metadata = {'search': search};
         return createRequestObject({
             url: `${MF_DOMAIN}/search?${search}`,
             method: 'GET',
             metadata: metadata,
-            cookies: [createCookie({ name: 'isAdult', value: '1', domain: MF_DOMAIN })]
+            cookies: [createCookie({name: 'isAdult', value: '1', domain: MF_DOMAIN})]
         });
     }
 
@@ -224,10 +314,10 @@ export class MangaFox extends Source {
             mangas.push(createMangaTile({
                 id: id,
                 image: cover!,
-                title: createIconText({ text: title ?? '' }),
-                subtitleText: createIconText({ text: author ?? '' }),
-                primaryText: createIconText({ text: shortDesc ?? '' }),
-                secondaryText: createIconText({ text: lastUpdate ?? '' }),
+                title: createIconText({text: title ?? ''}),
+                subtitleText: createIconText({text: author ?? ''}),
+                primaryText: createIconText({text: shortDesc ?? ''}),
+                secondaryText: createIconText({text: lastUpdate ?? ''}),
             }));
 
         });
