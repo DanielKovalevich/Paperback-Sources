@@ -126,7 +126,7 @@ export class MangaFox extends Source {
         let chapters: Chapter[] = []
         let rawChapters = $('div#chapterlist ul li').children('a').toArray().reverse();
         let chapterNumber = 1;
-        let chapterIdRegex = new RegExp('\\/manga\\/.*\\/(.*)\\/');
+        let chapterIdRegex = new RegExp('\\/manga\\/[a-zA-Z_]*\\/(.*)\\/');
         let volumeRegex = new RegExp('Vol.(\\d+)');
 
         for (let element of rawChapters) {

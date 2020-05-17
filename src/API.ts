@@ -392,14 +392,14 @@ let application = new APIWrapper()
 // application.search(new Mangasee(cheerio), test, 1).then((data) => { console.log(data) })
 // application.getTags(new Mangasee(cheerio)).then((data) => { console.log(data) })
 
-// MangaPark
+// MangaFox
 //  application.getMangaDetails(new MangaFox(cheerio), ['yakusoku_no_neverland', 'asa_made_jugyou_chu', 'mahou_shoujo_lyrical_nanoha_dj_mahou_shoujo_no_sweet_love_panic']).then((data) => {
 //  	console.log(data)
 // 	/*data.forEach(value => value.tags?.forEach(t =>
 // 		console.log(t.tags)))*/
 //  })
-// application.getChapters(new MangaFox(cheerio), "tokyo_ghoul_re").then((data) => { console.log(data) })
-// application.getChapterDetails(new MangaFox(cheerio), 'yakusoku_no_neverland', 'c167').then((data) => console.log(data))
+// application.getChapters(new MangaFox(cheerio), "if_future").then((data) => { console.log(data) })
+// application.getChapterDetails(new MangaFox(cheerio), 'tokyo_ghoul_re', 'v09/c094').then((data) => console.log(data))
 //application.filterUpdatedManga(new MangaFox(cheerio), ["no-longer-a-heroine-gi-meng-gi", "the-wicked-queen-shin-ji-sang", "tower-of-god"], new Date("2020-04-25 02:33:30 UTC")).then((data) => { console.log(data) })
 // let test = createSearchRequest({
 //   title: 'isekai',
