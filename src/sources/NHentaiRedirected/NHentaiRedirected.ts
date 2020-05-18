@@ -17,8 +17,8 @@ export class NHentaiRedirected extends Source {
   }
 
   get version(): string { return '0.6.2' }
-  get name(): string { return 'nHentai (Country-Proof)' }
-  get description(): string { return 'nHentai source which is guaranteed to work in countries the website is normally blocked. May be a tad slower than the other source' }
+  get name(): string { return 'nHentai' }
+  get description(): string { return 'Extension that pulls manga from nHentai' }
   get author(): string { return 'Conrad Weiser' }
   get authorWebsite(): string { return 'http:github.com/conradweiser'}
   get icon(): string { return "logo.png" }
