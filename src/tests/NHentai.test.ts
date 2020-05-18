@@ -84,6 +84,20 @@ describe('N-Hentai Tests', function () {
         expect(result.title).to.exist
     });
 
+    it("Searching for Manga With A Valid five-digit query", async () => {
+        let testSearch = createSearchRequest({
+            title: '98125',
+        });
+
+        let search = await wrapper.search(source, testSearch, 1);
+        let result = search[0];
+        expect(result).to.exist
+
+        expect(result.id).to.exist
+        expect(result.image).to.exist
+        expect(result.title).to.exist
+    });
+
     it("Searching for Manga With an invalid six-digit query", async () => {
         let testSearch = createSearchRequest({
             title: '999999',

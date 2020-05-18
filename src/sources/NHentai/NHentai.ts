@@ -214,7 +214,7 @@ export class NHentai extends Source {
   searchRequest(query: SearchRequest, page: number): Request | null {
 
     // If the search query is a six digit direct link to a manga, create a request to just that URL and alert the handler via metadata
-    if (query.title?.match(/\d{6}/)) {
+    if (query.title?.match(/\d{5,6}/)) {
       return createRequestObject({
         url: `${NHENTAI_DOMAIN}/g/${query.title}`,
         metadata: { sixDigit: true },
