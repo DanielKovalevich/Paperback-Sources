@@ -7,6 +7,7 @@ import { Request } from '../../models/RequestObject/RequestObject'
 import { ChapterDetails } from '../../models/ChapterDetails/ChapterDetails'
 import { LanguageCode } from '../../models/Languages/Languages'
 import { TagSection } from "../../models/TagSection/TagSection";
+import {HomeSection, HomeSectionRequest} from "../../models/HomeSection/HomeSection";
 
 const MF_DOMAIN = 'https://fanfox.net'
 const MF_DOMAIN_MOBILE = 'https://m.fanfox.net'
