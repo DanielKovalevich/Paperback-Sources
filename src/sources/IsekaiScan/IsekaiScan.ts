@@ -8,7 +8,7 @@ export class IsekaiScan extends Madara {
         super(cheerio)
     }
 
-    get version(): string { return '0.0.1' }
+    get version(): string { return '0.0.2' }
     get name(): string { return 'IsekaiScan (Aggregator)' }
     get author(): string { return 'Abdullah Mohamed' }
     get description(): string { return 'Madara source which pulls manga from the IsekaiScan website' }
