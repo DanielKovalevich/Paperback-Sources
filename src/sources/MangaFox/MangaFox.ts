@@ -206,8 +206,8 @@ export class MangaFox extends Source {
         for (let manga of $('li', hotMangas).toArray()) {
             let id = $('a', manga).first().attr('href')?.match(idRegExp)![1];
             let cover = $('img', manga).first().attr('src');
-            let title: string = $('.manga-list-1-item-title', manga).text();
-            let subtitle: string = $('.manga-list-1-item-subtitle', manga).text();
+            let title: string = $('.manga-list-1-item-title', manga).text().trim();
+            let subtitle: string = $('.manga-list-1-item-subtitle', manga).text().trim();
 
             hotManga.push(createMangaTile({
                 id: id,
@@ -220,8 +220,8 @@ export class MangaFox extends Source {
         for (let manga of $('li', beingReadMangas).toArray()) {
             let id = $('a', manga).first().attr('href')?.match(idRegExp)![1];
             let cover = $('img', manga).first().attr('src');
-            let title: string = $('.manga-list-1-item-title', manga).text();
-            let subtitle: string = $('.manga-list-1-item-subtitle', manga).text();
+            let title: string = $('.manga-list-1-item-title', manga).text().trim();
+            let subtitle: string = $('.manga-list-1-item-subtitle', manga).text().trim();
 
             beingReadManga.push(createMangaTile({
                 id: id,
@@ -234,8 +234,8 @@ export class MangaFox extends Source {
         for (let manga of $('li', newMangas).toArray()) {
             let id = $('a', manga).first().attr('href')?.match(idRegExp)![1];
             let cover = $('img', manga).first().attr('src');
-            let title: string = $('.manga-list-1-item-title', manga).text();
-            let subtitle: string = $('.manga-list-1-item-subtitle', manga).text();
+            let title: string = $('.manga-list-1-item-title', manga).text().trim();
+            let subtitle: string = $('.manga-list-1-item-subtitle', manga).text().trim();
 
             newManga.push(createMangaTile({
                 id: id,
@@ -245,11 +245,11 @@ export class MangaFox extends Source {
             }));
         }
 
-        for (let manga of $('li', latestMangas).toArray()) {
+        for (let manga of $('.manga-list-4-list > li', latestMangas).toArray()) {
             let id = $('a', manga).first().attr('href')?.match(idRegExp)![1];
             let cover = $('img', manga).first().attr('src');
-            let title: string = $('.manga-list-4-item-title', manga).text();
-            let subtitle: string = $('.manga-list-4-item-subtitle', manga).text();
+            let title: string = $('.manga-list-4-item-title', manga).text().trim();
+            let subtitle: string = $('.manga-list-4-item-subtitle', manga).text().trim();
 
             latestManga.push(createMangaTile({
                 id: id,
