@@ -242,8 +242,10 @@ export class NHentaiRedirected extends Source {
       param += ("Artist:" + query.artist + " ")
     }
 
+    param = param.trim()
+
     return createRequestObject({
-      url: `${NHENTAI_DOMAIN}/search/?q=${param}/`,
+      url: `${NHENTAI_DOMAIN}/search/?q=${param}`,
       metadata: { sixDigit: false },
       timeout: 4000,
       method: "GET"

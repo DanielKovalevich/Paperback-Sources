@@ -243,6 +243,8 @@ export class NHentai extends Source {
       param += ("Artist:" + query.artist + " ")
     }
 
+    param = param.trim()
+
     return createRequestObject({
       url: `${NHENTAI_DOMAIN}/search/?q=${param}`,
       metadata: { sixDigit: false },
