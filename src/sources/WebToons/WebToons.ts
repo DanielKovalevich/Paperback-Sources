@@ -55,7 +55,7 @@ export class WebToons extends Source {
     let manga: Manga[] = []
     let $ = this.cheerio.load(data)
     
-    let title = $('.subj', $('.info')).text()
+    let title = $('h1.subj', $('.info')).text()
     let completedStatus = $('.txt_ico_completed2').length > 0 ? MangaStatus.COMPLETED : MangaStatus.ONGOING
     let rating = $('#_starScoreAverage').text()
     let image = $('.detail_body').attr('style')
@@ -197,42 +197,5 @@ export class WebToons extends Source {
     }
 
     return mangaTiles
-  }
-
-
-  getHomePageSectionRequest(): HomeSectionRequest[] | null {
-
-    let request = createRequestObject({ url: `${WEBTOONS_DOMAIN}`, method: 'GET', })
-    let homeSection = createHomeSection({ id: 'latest_hentai', title: 'LATEST HENTAI' })
-    return [createHomeSectionRequest({ request: request, sections: [homeSection] })]
-
-  }
-
-  getHomePageSections(data: any, section: HomeSection[]): HomeSection[] | null {
-    let updatedHentai: MangaTile[] = []
-    let $ = this.cheerio.load(data)
-
-    let containerNode = $('.index-container')
-    for (let item of $('.gallery', containerNode).toArray()) {
-      let currNode = $(item)
-      let image = $('img', currNode).attr('data-src')!
-
-      // If image is undefined, we've hit a lazyload part of the website. Adjust the scraping to target the other features
-      if (image == undefined) {
-        image = 'http:' + $('img', currNode).attr('src')!
-      }
-
-      let title = $('.caption', currNode).text()
-      let idHref = $('a', currNode).attr('href')?.match(/\/(\d*)\//)!
-
-      updatedHentai.push(createMangaTile({
-        id: idHref[1],
-        title: createIconText({text: title}),
-        image: image
-      }))
-    }
-
-    section[0].items = updatedHentai
-    return section
   }
 }
