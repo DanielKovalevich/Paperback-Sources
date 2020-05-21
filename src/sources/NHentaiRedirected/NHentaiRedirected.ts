@@ -7,22 +7,21 @@ import { Request } from '../../models/RequestObject/RequestObject'
 import { ChapterDetails } from '../../models/ChapterDetails/ChapterDetails'
 import { Tag, TagSection } from '../../models/TagSection/TagSection'
 import { HomeSection, HomeSectionRequest } from '../../models/HomeSection/HomeSection'
-import { APIWrapper } from '../../API'
 import { LanguageCode } from '../../models/Languages/Languages'
 
-const NHENTAI_DOMAIN = 'https://nhentai.net'
+const NHENTAI_DOMAIN = 'http://paperback-redirector.herokuapp.com/nh'
 
-export class NHentai extends Source {
+export class NHentaiRedirected extends Source {
   constructor(cheerio: CheerioAPI) {
     super(cheerio)
   }
 
   get version(): string { return '0.6.4' }
-  get name(): string { return 'nHentai' }
-  get description(): string { return 'Extension that pulls manga from nHentai' }
+  get name(): string { return 'nHentai (Country-Proof)' }
+  get description(): string { return 'nHentai source which is guaranteed to work in countries the website is normally blocked. May be a tad slower than the other source' }
   get author(): string { return 'Conrad Weiser' }
-  get authorWebsite(): string { return 'http://github.com/conradweiser'}
-  get icon(): string { return "logo.png" } // The website has SVG versions, I had to find one off of a different source
+  get authorWebsite(): string { return 'http:github.com/conradweiser'}
+  get icon(): string { return "logo.png" }
   get hentaiSource(): boolean { return true }
 
 
@@ -40,7 +39,7 @@ export class NHentai extends Source {
     for (let id of ids) {
       let metadata = { 'id': id }
       requests.push(createRequestObject({
-        url: `${NHENTAI_DOMAIN}/g/${id}`,
+        url: `${NHENTAI_DOMAIN}/g/${id}/`,
         metadata: metadata,
         method: 'GET'
       }))
@@ -120,7 +119,7 @@ export class NHentai extends Source {
   getChaptersRequest(mangaId: string): Request {
     let metadata = { 'id': mangaId }
     return createRequestObject({
-      url: `${NHENTAI_DOMAIN}/g/${mangaId}`,
+      url: `${NHENTAI_DOMAIN}/g/${mangaId}/`,
       method: "GET",
       metadata: metadata
     })
@@ -164,7 +163,7 @@ export class NHentai extends Source {
   getChapterDetailsRequest(mangaId: string, chapId: string): Request {
     let metadata = { 'mangaId': mangaId, 'chapterId': chapId }
     return createRequestObject({
-      url: `${NHENTAI_DOMAIN}/g/${mangaId}`,
+      url: `${NHENTAI_DOMAIN}/g/${mangaId}/`,
       metadata: metadata,
       method: 'GET',
     })
@@ -196,7 +195,7 @@ export class NHentai extends Source {
      */
 
     for (let i = 1; i <= numChapters; i++) {
-      pages.push(`https://i.nhentai.net/galleries/${galleryId}/${i}.${imageType}`)
+      pages.push(`${NHENTAI_DOMAIN}/galleries/${galleryId}/${i}.${imageType}`)
     }
 
     let chapterDetails = createChapterDetails({
@@ -216,7 +215,7 @@ export class NHentai extends Source {
     // If the search query is a six digit direct link to a manga, create a request to just that URL and alert the handler via metadata
     if (query.title?.match(/\d{5,6}/)) {
       return createRequestObject({
-        url: `${NHENTAI_DOMAIN}/g/${query.title}`,
+        url: `${NHENTAI_DOMAIN}/g/${query.title}/`,
         metadata: { sixDigit: true },
         timeout: 4000,
         method: "GET"
@@ -337,7 +336,7 @@ export class NHentai extends Source {
 
   getHomePageSectionRequest(): HomeSectionRequest[] | null {
 
-    let request = createRequestObject({ url: `${NHENTAI_DOMAIN}`, method: 'GET', })
+    let request = createRequestObject({ url: `${NHENTAI_DOMAIN}/site/`, method: 'GET', })
     let homeSection = createHomeSection({ id: 'latest_hentai', title: 'LATEST HENTAI' })
     return [createHomeSectionRequest({ request: request, sections: [homeSection] })]
 

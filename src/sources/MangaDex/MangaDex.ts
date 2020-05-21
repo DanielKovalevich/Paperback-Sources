@@ -15,7 +15,7 @@ export class MangaDex extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.0.8' }
+  get version(): string { return '1.0.13' }
   get name(): string { return 'MangaDex' }
   get icon(): string { return 'icon.png' }
   get author(): string { return 'Faizan Durrani' }
@@ -109,12 +109,12 @@ export class MangaDex extends Source {
 
     return Object.keys(chapters).map(id => {
       const chapter = chapters[id]
-
+      const volume = Number(chapter.volume)
       return createChapter({
         id: id,
-        chapNum: parseFloat(chapter.chapter),
+        chapNum: Number(chapter.chapter),
         langCode: chapter.lang_code,
-        volume: parseFloat(chapter.volume),
+        volume: Number.isNaN(volume) ? 0 : volume,
         mangaId: metadata.mangaId,
         group: chapter.group_name,
         name: chapter.title,
@@ -269,7 +269,7 @@ export class MangaDex extends Source {
 
       let caption = title.find(".car-caption p:nth-child(2)")
       let obj: any = { name: caption.find("a").text(), group: "", time: Date.parse(caption.find("span").attr("title") ?? " "), langCode: "" }
-      let updateTime: string = (Date.parse(caption.find("span").attr("title") ?? " ")).toString()
+      let updateTime: string = caption.find("span").text()
       newManga.push(createMangaTile({
         id: id[0],
         image: img.attr("data-src") ?? " ",
@@ -337,9 +337,9 @@ export class MangaDex extends Source {
     return createRequestObject({
       url: CACHE_SEARCH,
       method: "POST",
-      data: {
+      data: JSON.stringify({
         title: query.title
-      },
+      }),
       headers: {
         "content-type": "application/json"
       }
@@ -355,5 +355,9 @@ export class MangaDex extends Source {
         text: manga.titles[0] ?? "UNKNOWN"
       })
     }))
+  }
+
+  getMangaShareUrl(mangaId: string) {
+    return `${MD_DOMAIN}/manga/${mangaId}`
   }
 }
