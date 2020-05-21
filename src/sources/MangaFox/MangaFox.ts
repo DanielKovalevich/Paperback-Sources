@@ -18,7 +18,7 @@ export class MangaFox extends Source {
         super(cheerio)
     }
 
-    get version(): string { return '1.0.2' }
+    get version(): string { return '1.0.3' }
 
     get name(): string { return 'MangaFox' }
 
@@ -323,5 +323,9 @@ export class MangaFox extends Source {
         });
 
         return mangas;
+    }
+
+    getMangaShareUrl(mangaId: string) {
+        return `${MF_DOMAIN}/manga/${mangaId}`
     }
 }
