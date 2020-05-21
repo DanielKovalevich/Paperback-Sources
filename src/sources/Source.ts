@@ -152,6 +152,8 @@ export abstract class Source {
 
   // <-----------        OPTIONAL METHODS        -----------> //
 
+  getMangaShareUrl(mangaId: string): string | null { return null }
+
   /**
    * (OPTIONAL METHOD) Different sources have different tags available for searching. This method
    * should target a URL which allows you to parse apart all of the available tags which a website has.

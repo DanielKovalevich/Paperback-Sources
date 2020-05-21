@@ -15,7 +15,7 @@ export class MangaDex extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.0.12' }
+  get version(): string { return '1.0.13' }
   get name(): string { return 'MangaDex' }
   get icon(): string { return 'icon.png' }
   get author(): string { return 'Faizan Durrani' }
@@ -355,5 +355,9 @@ export class MangaDex extends Source {
         text: manga.titles[0] ?? "UNKNOWN"
       })
     }))
+  }
+
+  getMangaShareUrl(mangaId: string) {
+    return `${MD_DOMAIN}/manga/${mangaId}`
   }
 }
