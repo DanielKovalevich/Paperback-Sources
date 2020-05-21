@@ -19,7 +19,6 @@ export class WebToons extends Source {
   }
 
   get version(): string { return '0.1.2' }
-
   get name(): string { return 'WebToons (BETA)' }
   get description(): string { return 'Extension that pulls comics from WebToons' }
   get author(): string { return 'Conrad Weiser' }
