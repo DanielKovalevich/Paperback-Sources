@@ -1,12 +1,12 @@
 import { Source } from "../sources/Source"
 import cheerio from 'cheerio'
 import { APIWrapper } from "../API"
-import { WebToons } from "../sources/WebToons/WebToons";
+import { MangaFox } from "../sources/MangaFox/MangaFox";
 
-describe('WebToons Tests', function () {
+describe('MangaFox Tests', function () {
 
     var wrapper: APIWrapper = new APIWrapper();
-    var source: Source = new WebToons(cheerio);
+    var source: Source = new MangaFox(cheerio);
     var chai = require('chai'), expect = chai.expect, should = chai.should();
     var chaiAsPromised = require('chai-as-promised');
     chai.use(chaiAsPromised);
@@ -16,8 +16,7 @@ describe('WebToons Tests', function () {
      * Try to choose a manga which is updated frequently, so that the historical checking test can 
      * return proper results, as it is limited to searching 30 days back due to extremely long processing times otherwise.
      */
-    //var mangaId = "1412";   // Rebirth (Orig)
-    var mangaId = "c_408356" // Someone's Life (Challange)
+    var mangaId = "tokyo_ghoul_re";
 
     it("Retrieve Manga Details", async () => {
         let details = await wrapper.getMangaDetails(source, [mangaId]);
@@ -29,11 +28,15 @@ describe('WebToons Tests', function () {
         expect(data.id, "Missing ID").to.be.not.empty;
         expect(data.image, "Missing Image").to.be.not.empty;
         expect(data.status, "Missing Status").to.exist;
+        expect(data.author, "Missing Author").to.be.not.empty;
         expect(data.desc, "Missing Description").to.be.not.empty;
+        expect(data.titles, "Missing Titles").to.be.not.empty;
+        expect(data.rating, "Missing Rating").to.exist;
     });
 
     it("Get Chapters", async () => {
         let data = await wrapper.getChapters(source, mangaId);
+
         expect(data, "No chapters present for: [" + mangaId + "]").to.not.be.empty;
     });
 
@@ -50,10 +53,9 @@ describe('WebToons Tests', function () {
         expect(data.pages, "No pages present").to.be.not.empty;
     });
 
-    it("Searching for Manga With Valid Tags", async () => {
+    it("Testing search", async () => {
         let testSearch = createSearchRequest({
-            title: 'Radiation House',
-            includeDemographic: ['Seinen']
+            title: 'immortal'
         });
 
         let search = await wrapper.search(source, testSearch, 1);
@@ -65,18 +67,44 @@ describe('WebToons Tests', function () {
         expect(result.image, "No image found for search").to.be.not.empty;
         expect(result.title, "No title").to.be.not.null;
         expect(result.subtitleText, "No subtitle text").to.be.not.null;
-        expect(result.primaryText, "No primary text").to.be.not.null;
-        expect(result.secondaryText, "No secondary text").to.be.not.null;
-
     });
 
-    it("Searching for Manga With Invalid Tags", async () => {
+    it("Testing invalid search", async () => {
         let testSearch = createSearchRequest({
-            title: 'asebrgfluiawntfw3i4yn5834sdfjhg34t',
+            title: 'this_search_definitely_is_not_valid_asdklfhjawelorghawlehdsf'
         });
 
         let search = await wrapper.search(source, testSearch, 1);
         let result = search[0];
-        expect(result).to.not.exist;    // There should be no entries with this tag!
+
+        expect(result, "No response from server").to.not.exist;
     });
-});
+
+    it("Retrieve Home Page Sections", async () => {
+
+        let data = await wrapper.getHomePageSections(source);
+        expect(data, "No response from server").to.exist;
+        expect(data, "No response from server").to.be.not.empty;
+
+        // Do some MangaPark specific validation for this server response
+        let popularTitles = data[0];
+        expect(popularTitles.id, "Hot Manga ID does not exist").to.not.be.empty;
+        expect(popularTitles.title, "Hot Manga section does not exist").to.not.be.empty;
+        expect(popularTitles.items, "No items available for hot manga").to.not.be.empty;
+
+        let popularNewTitles = data[1];
+        expect(popularNewTitles.id, "Being read Titles ID does not exist").to.not.be.empty;
+        expect(popularNewTitles.title, "Being read manga section does not exist").to.not.be.empty;
+        expect(popularNewTitles.items, "No items available for being read titles").to.not.be.empty;
+
+        let recentlyUpdated = data[2];
+        expect(recentlyUpdated.id, "New Manga ID does not exist").to.not.be.empty;
+        expect(recentlyUpdated.title, "New Manga manga section does not exist").to.not.be.empty;
+        expect(recentlyUpdated.items, "No items available for new manga").to.not.be.empty;
+
+        expect(recentlyUpdated.id, "Latest Updates ID does not exist").to.not.be.empty;
+        expect(recentlyUpdated.title, "Latest Updates manga section does not exist").to.not.be.empty;
+        expect(recentlyUpdated.items, "No items available for latest updates").to.not.be.empty;
+    });
+
+})
