@@ -18,7 +18,7 @@ export class MangaFox extends Source {
         super(cheerio)
     }
 
-    get version(): string { return '1.0.3' }
+    get version(): string { return '1.0.4' }
 
     get name(): string { return 'MangaFox' }
 
@@ -126,7 +126,7 @@ export class MangaFox extends Source {
         let chapters: Chapter[] = []
         let rawChapters = $('div#chapterlist ul li').children('a').toArray().reverse();
         let chapterNumber = 1;
-        let chapterIdRegex = new RegExp('\\/manga\\/[a-zA-Z_]*\\/(.*)\\/');
+        let chapterIdRegex = new RegExp('\\/manga\\/[a-zA-Z0-9_]*\\/(.*)\\/');
         let volumeRegex = new RegExp('Vol.(\\d+)');
 
         for (let element of rawChapters) {
