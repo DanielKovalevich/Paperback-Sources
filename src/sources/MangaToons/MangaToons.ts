@@ -8,7 +8,6 @@ import { ChapterDetails } from '../../models/ChapterDetails/ChapterDetails'
 import { TagSection } from '../../models/TagSection/TagSection'
 import { HomeSectionRequest, HomeSection } from '../../models/HomeSection/HomeSection'
 import { LanguageCode } from '../../models/Languages/Languages'
-import { APIWrapper } from '../../API'
 
 export class MangaToons extends Source {
 	readonly MT_DOMAIN = 'https://mangatoon.mobi'
@@ -63,7 +62,7 @@ export class MangaToons extends Source {
         let numericViews
         // Are these millions?
         if(views.includes("M")) {
-            numericViews = Number(views.replace("M", "")) * 100000
+            numericViews = Math.floor(Number(views.replace("M", "")) * 100000)
         }
         else {
             numericViews = Number(views)
@@ -72,7 +71,7 @@ export class MangaToons extends Source {
         let follows = (/([\d|.|M]*) *likes/g.exec(mdata) ?? '')[1]
         let numericFollows
         if(follows.includes("M")) {
-            numericFollows = Number(follows.replace("M", "")) * 100000
+            numericFollows = Math.floor(Number(follows.replace("M", "")) * 100000)
         }
         else {
             numericFollows = Number(follows)
@@ -155,7 +154,7 @@ export class MangaToons extends Source {
 		let pages: string[] = []
 		let pageContext = $('.pictures')
 		for(let item of $('img', pageContext).toArray()) {
-			pages.push($(item).attr('src'))
+			pages.push($(item).attr('src')!)
 		}
 
 		return createChapterDetails({
@@ -263,7 +262,7 @@ export class MangaToons extends Source {
 				id: id!,
 				title: createIconText({text: title}),
 				image: image!,
-				primaryText: createIconText({text: genreData!})
+				primaryText: createIconText({text: genreData!.substr(0, genreData.indexOf("\n")).trim()})
 			}))
 		}
 
@@ -303,6 +302,5 @@ export class MangaToons extends Source {
 	}
 }
 
-let cheerio = require('cheerio')
-let application = new APIWrapper()
+
 
