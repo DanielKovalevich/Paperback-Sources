@@ -16,14 +16,14 @@ export class NHentaiRedirected extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.6.5' }
+  get version(): string { return '0.6.6' }
   get name(): string { return 'nHentai (Country-Proof)' }
   get description(): string { return 'nHentai source which is guaranteed to work in countries the website is normally blocked. May be a tad slower than the other source' }
   get author(): string { return 'Conrad Weiser' }
   get authorWebsite(): string { return 'http:github.com/conradweiser'}
   get icon(): string { return "logo.png" }
   get hentaiSource(): boolean { return true }
-
+  getMangaShareUrl(mangaId: string): string | null { return `${NHENTAI_DOMAIN}/g/${mangaId}`}
 
   convertLanguageToCode(language: string) {
     switch (language.toLowerCase()) {

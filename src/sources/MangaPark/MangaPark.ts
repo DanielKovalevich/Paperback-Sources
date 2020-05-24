@@ -16,13 +16,14 @@ export class MangaPark extends Source {
 		super(cheerio)
 	}
 
-	get version(): string { return '1.0.4' }
+	get version(): string { return '1.0.5' }
 	get name(): string { return 'MangaPark' }
 	get icon(): string { return 'icon.png' }
 	get author(): string { return 'Daniel Kovalevich' }
 	get authorWebsite(): string { return 'https://github.com/DanielKovalevich' }
 	get description(): string { return 'Extension that pulls manga from MangaPark, includes Advanced Search and Updated manga fetching' }
 	get hentaiSource(): boolean { return false }
+	getMangaShareUrl(mangaId: string): string | null { return `${this.MP_DOMAIN}/manga/${mangaId}`}
 
 	getMangaDetailsRequest(ids: string[]): Request[] {
 		let requests: Request[] = []

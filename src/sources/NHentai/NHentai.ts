@@ -17,13 +17,14 @@ export class NHentai extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.6.5' }
+  get version(): string { return '0.6.6' }
   get name(): string { return 'nHentai' }
   get description(): string { return 'Extension that pulls manga from nHentai' }
   get author(): string { return 'Conrad Weiser' }
   get authorWebsite(): string { return 'http://github.com/conradweiser'}
   get icon(): string { return "logo.png" } // The website has SVG versions, I had to find one off of a different source
   get hentaiSource(): boolean { return true }
+  getMangaShareUrl(mangaId: string): string | null { return `https://nhentai.net/g/${mangaId}`}
 
 
   convertLanguageToCode(language: string) {
