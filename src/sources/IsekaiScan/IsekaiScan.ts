@@ -20,5 +20,5 @@ export class IsekaiScan extends Madara {
     get MadaraDomain(): string { return 'https://isekaiscan.com' }
     get pageImageAttr(): string { return 'data-src' }
     get searchCoverAttr(): string { return 'data-src' }
-    getMangaShareUrl(mangaId: string): string | null { return `https://isekaiscan.com/manga${mangaId}`}
+    getMangaShareUrl(mangaId: string): string | null { return `https://isekaiscan.com/manga/${mangaId}`}
 }
