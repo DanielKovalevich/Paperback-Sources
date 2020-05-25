@@ -59,12 +59,7 @@ export class NHentai extends Source {
     // Comma seperate all of the tags and store them in our tag section 
     let tagSections: TagSection[] = [createTagSection({ id: '0', label: 'tag', tags: [] })]
     let tags = $('meta[name="twitter:description"]').attr('content')?.split(",") ?? []
-    for (let i = 0; i < tags.length; i++) {
-      tagSections[0].tags.push(createTag({
-        id: i.toString().trim(),
-        label: tags[i]
-      }))
-    }
+    tagSections[0].tags = tags.map((elem: string) => createTag({id: elem, label: elem}))
 
     // Grab the alternative titles
     let titles = [title]
