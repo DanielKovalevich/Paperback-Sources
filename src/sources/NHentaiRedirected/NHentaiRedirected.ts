@@ -16,7 +16,7 @@ export class NHentaiRedirected extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.6.6' }
+  get version(): string { return '0.6.7' }
   get name(): string { return 'nHentai (Country-Proof)' }
   get description(): string { return 'nHentai source which is guaranteed to work in countries the website is normally blocked. May be a tad slower than the other source' }
   get author(): string { return 'Conrad Weiser' }
@@ -215,7 +215,7 @@ export class NHentaiRedirected extends Source {
     // If the search query is a six digit direct link to a manga, create a request to just that URL and alert the handler via metadata
     if (query.title?.match(/\d{5,6}/)) {
       return createRequestObject({
-        url: `${NHENTAI_DOMAIN}/g/${query.title}/`,
+        url: `${NHENTAI_DOMAIN}/g/${query.title}`,
         metadata: { sixDigit: true },
         timeout: 4000,
         method: "GET"
@@ -225,21 +225,21 @@ export class NHentaiRedirected extends Source {
     // Concat all of the available options together into a search keyword which can be supplied as a GET request param
     let param = ''
     if (query.title) {
-      param += query.title + ' '
+      param += query.title.replace(" ", "+") + '+'
     }
     if (query.includeContent) {
       for (let content in query.includeContent) {
-        param += ('tag:"' + query.includeContent[content] + '" ')
+        param += ('tag:"' + query.includeContent[content].replace(" ", "+") + '"+')
       }
     }
     if (query.excludeContent) {
       for (let content in query.excludeContent) {
-        param += ('-tag:"' + query.excludeContent[content] + '" ')
+        param += ('-tag:"' + query.excludeContent[content].replace(" ", "+") + '"+')
       }
     }
 
     if (query.artist) {
-      param += ("Artist:" + query.artist + " ")
+      param += ("Artist:" + query.artist.replace(" ", "+") + "+")
     }
 
     param = param.trim()
