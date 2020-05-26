@@ -88,8 +88,6 @@ export class EHentai extends Source {
         namespace: 1
       }
 
-      console.log(JSON.stringify(data))
-
       let metadata = { 'id': mangaId }
       return createRequestObject({
         url: `${E_API}`,
