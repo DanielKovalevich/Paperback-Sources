@@ -6,9 +6,7 @@ import { SearchRequest } from '../../models/SearchRequest/SearchRequest'
 import { Request } from '../../models/RequestObject/RequestObject'
 import { ChapterDetails } from '../../models/ChapterDetails/ChapterDetails'
 import { Tag, TagSection } from '../../models/TagSection/TagSection'
-import { HomeSection, HomeSectionRequest } from '../../models/HomeSection/HomeSection'
 import { LanguageCode } from '../../models/Languages/Languages'
-import { APIWrapper } from '../../API'
 
 const E_API = 'https://api.e-hentai.org/api.php'
 const E_DOMAIN = 'https://e-hentai.org'
@@ -19,7 +17,7 @@ export class EHentai extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.1.2' }
+  get version(): string { return '0.1.3' }
   get name(): string { return '(BETA) E-Hentai' }
   get icon(): string { return 'logo.png' }
   get author(): string { return 'Conrad Weiser' }
@@ -79,21 +77,13 @@ export class EHentai extends Source {
     return manga
   }
 
-  //TODO: Can we remove this entirely? Or substitute it out to a empty method?
   getChaptersRequest(mangaId: string): Request {
-      // Generate a proper json structure for this request
-      let data = {
-        method: "gdata",
-        gidlist: [[Number(mangaId.substr(0, mangaId.indexOf("/"))), mangaId.substr(mangaId.indexOf("/") + 1, mangaId.length)]],
-        namespace: 1
-      }
 
       let metadata = { 'id': mangaId }
       return createRequestObject({
-        url: `${E_API}`,
+        url: `https://blank.org`,     // Go to a blank page to keep network traffic low
         metadata: metadata,
-        method: 'POST',
-        data: JSON.stringify(data)
+        method: 'GET'
       })
   }
 
@@ -103,8 +93,7 @@ export class EHentai extends Source {
       mangaId: metadata.id,
       id: "1",
       chapNum: 1,
-      langCode: LanguageCode.UNKNOWN,
-      time: new Date(data.gmetadata[0].posted)
+      langCode: LanguageCode.UNKNOWN
     })]
 
   }
