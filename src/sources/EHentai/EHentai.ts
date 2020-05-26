@@ -19,7 +19,7 @@ export class EHentai extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.1.1' }
+  get version(): string { return '0.1.2' }
   get name(): string { return '(BETA) E-Hentai' }
   get icon(): string { return 'logo.png' }
   get author(): string { return 'Conrad Weiser' }
@@ -159,9 +159,9 @@ export class EHentai extends Source {
       }
 
       let title = $('.glink', $(item)).text()
-      let image = $('img', $('.glthumb', $(item))).attr('src')
+      let image = $('img', $('.glthumb', $(item))).attr('src') ?? ''
       if(image?.includes("base64")) {
-        image = $('img', $('.glthumb', $(item))).attr('data-src')
+        image = $('img', $('.glthumb', $(item))).attr('data-src') ?? ''
       }
 
       let idContext = $('.glname', $(item))
@@ -170,7 +170,7 @@ export class EHentai extends Source {
 
       mangaTiles.push(createMangaTile({
         title: createIconText({text: title}),
-        image: image!,
+        image: image,
         id: id
       }))
     }
