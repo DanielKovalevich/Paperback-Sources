@@ -17,7 +17,7 @@ export class EHentai extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.1.3' }
+  get version(): string { return '0.1.4' }
   get name(): string { return '(BETA) E-Hentai' }
   get icon(): string { return 'logo.png' }
   get author(): string { return 'Conrad Weiser' }
@@ -42,6 +42,10 @@ export class EHentai extends Source {
         url: `${E_API}`,
         metadata: metadata,
         method: 'POST',
+        headers: {
+          "content-type": "application/json",
+          "Accept": "application/json"
+        },
         data: JSON.stringify(data)
       }))
     }
