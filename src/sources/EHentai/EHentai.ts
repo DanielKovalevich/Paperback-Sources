@@ -164,10 +164,14 @@ export class EHentai extends Source {
         image = $('img', $('.glthumb', $(item))).attr('data-src')
       }
 
+      let idContext = $('.glname', $(item))
+      let href = $('a', idContext).attr('href') 
+      let id = /g\/(\d*\/[\d|\w]*)/.exec(href!)![1] ?? ''
+
       mangaTiles.push(createMangaTile({
         title: createIconText({text: title}),
         image: image!,
-        id: '1'
+        id: id
       }))
     }
     
