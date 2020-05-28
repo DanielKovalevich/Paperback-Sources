@@ -362,7 +362,7 @@ export class MangaFox extends Source {
             dateObj = new Date(date)
         }
 
-        // Was this a good date parse? If the date is null, continue to the next object.
+        // Was this a good date parse? If the date is not valid, continue to the next object.
         if(dateObj.toString().includes("Invalid")) {
             continue
         }
