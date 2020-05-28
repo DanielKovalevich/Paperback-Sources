@@ -243,7 +243,7 @@ export class NHentai extends Source {
     param = encodeURI(param)
 
     return createRequestObject({
-      url: `${NHENTAI_DOMAIN}/search/?q=${param}`,
+      url: `${NHENTAI_DOMAIN}/search/?q=${param}&page=${page}`,
       metadata: { sixDigit: false },
       timeout: 4000,
       method: "GET"
