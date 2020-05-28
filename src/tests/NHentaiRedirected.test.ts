@@ -158,6 +158,12 @@ describe('N-Hentai Redirector Tests', function () {
         let data = await wrapper.getTags(source)
         expect(data, "No response from server").to.exist
         expect(data[0].tags).to.not.be.empty
-        
+    })
+
+    
+    it("Show More Homepage data", async() => {
+        let data = await wrapper.getViewMoreItems(source, "none", 3)
+        expect(data, "No response from server").to.exist;
+        expect(data, "No response from server").to.be.not.empty;
     })
 });

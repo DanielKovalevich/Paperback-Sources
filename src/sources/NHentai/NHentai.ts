@@ -368,5 +368,17 @@ export class NHentai extends Source {
     return section
   }
 
+  getViewMoreRequest(key: string, page: number): Request | null {
+    return createRequestObject({
+      url: `${NHENTAI_DOMAIN}/?page=${page}`,
+      method: 'GET'
+    })
+  }
+
+  getViewMoreItems(data: any, key: string): MangaTile[] | null {
+    let tiles = this.getHomePageSections(data, [createHomeSection({ id: 'latest_hentai', title: 'LATEST HENTAI' })])
+    return tiles![0].items ?? null;
+  }
+
 
 }
