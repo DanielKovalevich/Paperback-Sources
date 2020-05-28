@@ -212,6 +212,11 @@ export class NHentaiRedirected extends Source {
 
   searchRequest(query: SearchRequest, page: number): Request | null {
 
+    // If h-sources are disabled for the search request, always return null
+    if(query.hStatus === false) {
+      return null
+    }
+
     // If the search query is a six digit direct link to a manga, create a request to just that URL and alert the handler via metadata
     if (query.title?.match(/\d{5,6}/)) {
       return createRequestObject({

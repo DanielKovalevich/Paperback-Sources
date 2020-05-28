@@ -53,7 +53,7 @@ describe('N-Hentai Tests', function () {
         let testSearch = createSearchRequest({
             title: 'female',
             includeContent: ['bikini'],
-            excludeContent: ['sole female']
+            excludeContent: ['sole female'],
         });
 
         let search = await wrapper.search(source, testSearch, 1);
@@ -158,6 +158,16 @@ describe('N-Hentai Tests', function () {
         let result = search[0]
 
         expect(result).to.not.exist
+    })
+
+    it("Searching with Hentai settings disabled", async() => {
+        let testSearch = createSearchRequest({
+            title: "Women",
+            hStatus: false
+        })
+
+        let search = await wrapper.search(source, testSearch, 1)
+        expect(search).to.be.empty
     })
 
 

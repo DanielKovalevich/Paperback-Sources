@@ -141,6 +141,16 @@ describe('N-Hentai Redirector Tests', function () {
         expect(result).to.not.exist
     })
 
+    it("Searching with Hentai settings disabled", async() => {
+        let testSearch = createSearchRequest({
+            title: "Women",
+            hStatus: false
+        })
+
+        let search = await wrapper.search(source, testSearch, 1)
+        expect(search).to.be.empty
+    })
+
 
     it("Retrieve Home Page Sections", async () => {
 
