@@ -107,4 +107,9 @@ describe('MangaFox Tests', function () {
         expect(recentlyUpdated.items, "No items available for latest updates").to.not.be.empty;
     });
 
+    it("Filter Updated Manga", async () => {
+        let data = await wrapper.filterUpdatedManga(source, ["weak_hero"], new Date('May 26, 2020'))
+        expect(data, "No response from server").to.exist
+    })
+
 })
