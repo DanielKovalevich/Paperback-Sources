@@ -17,7 +17,7 @@ export class ManhwaEighteen extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.5.0' }
+  get version(): string { return '0.5.1' }
   get name(): string { return 'Manhwa18' }
   get description(): string { return 'Extension that pulls manga from Manhwa18' }
   get author(): string { return 'Conrad Weiser' }
@@ -248,7 +248,7 @@ getHomePageSections(data: any, sections: HomeSection[]): HomeSection[] {
 
     let context = $('#contentstory').toArray()[0]
     for(let item of $('.itemupdate', $(context)).toArray()) {
-        let id = $('a', $(item)).attr('href')
+        let id = $('a', $(item)).attr('href')?.replace(".html", "")
         let title = createIconText({text: $('.title-h3', $(item)).text()})
         let image = `${ME_DOMAIN}${$('.lazy', $(item)).attr('src')}`
         let views = $('.view', $(item)).text()
