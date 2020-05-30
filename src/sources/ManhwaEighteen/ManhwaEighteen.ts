@@ -17,7 +17,7 @@ export class ManhwaEighteen extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.5.3' }
+  get version(): string { return '0.5.4' }
   get name(): string { return 'Manhwa18' }
   get description(): string { return 'Extension that pulls manga from Manhwa18' }
   get author(): string { return 'Conrad Weiser' }
@@ -172,7 +172,7 @@ export class ManhwaEighteen extends Source {
   }
 
   getChapterDetailsRequest(mangaId: string, chapId: string): Request {
-      chapId = chapId.replace(".html" , "")
+
     let metadata = { 'mangaId': mangaId, 'chapterId': chapId }
     return createRequestObject({
       url: `${ME_DOMAIN}/${chapId}.html`,
@@ -188,6 +188,10 @@ export class ManhwaEighteen extends Source {
     for(let obj of $('img', $('.chapter-content')).toArray()) {
         pages.push($(obj).attr('src')!.trim())
     } 
+
+    metadata.chapterId = metadata.chapterId.replace(".html" , "")
+    metadata.chapterId = metadata.chapterId.replace(/-chapter-\d/g, "")
+    metadata.chapterId = metadata.chapterId.replace("read", "manga")
 
     return createChapterDetails({
         id: metadata.chapterId,
