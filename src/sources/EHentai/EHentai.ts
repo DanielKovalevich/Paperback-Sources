@@ -17,7 +17,7 @@ export class EHentai extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.1.4' }
+  get version(): string { return '0.1.5' }
   get name(): string { return '(BETA) E-Hentai' }
   get icon(): string { return 'logo.png' }
   get author(): string { return 'Conrad Weiser' }
@@ -103,7 +103,7 @@ export class EHentai extends Source {
   }
 
   getChapterDetailsRequest(mangaId: string, chapId: string): Request {
-    let metadata = { 'mangaId': mangaId}
+    let metadata = { 'mangaId': mangaId, 'chapId': chapId}
     return createRequestObject({
       url: `${E_HEROKU}/chapteroverview/${mangaId}`,
       metadata: metadata,
@@ -119,8 +119,8 @@ export class EHentai extends Source {
     }
 
     return createChapterDetails({
-      id: "1",
-      mangaId: "1",
+      id: metadata.chapId,
+      mangaId: metadata.mangaId,
       pages: pages,
       longStrip: false
     })

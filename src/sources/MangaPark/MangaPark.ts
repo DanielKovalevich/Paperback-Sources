@@ -16,7 +16,7 @@ export class MangaPark extends Source {
 		super(cheerio)
 	}
 
-	get version(): string { return '1.0.5' }
+	get version(): string { return '1.0.6' }
 	get name(): string { return 'MangaPark' }
 	get icon(): string { return 'icon.png' }
 	get author(): string { return 'Daniel Kovalevich' }
@@ -257,9 +257,9 @@ export class MangaPark extends Source {
 
 	getHomePageSectionRequest(): HomeSectionRequest[] {
 		let request = createRequestObject({ url: `${this.MP_DOMAIN}`, method: 'GET' })
-		let section1 = createHomeSection({ id: 'popular_titles', title: 'POPULAR MANGA' })
-		let section2 = createHomeSection({ id: 'popular_new_titles', title: 'POPULAR MANGA UPDATES' })
-		let section3 = createHomeSection({ id: 'recently_updated', title: 'RECENTLY UPDATED TITLES' })
+		let section1 = createHomeSection({ id: 'popular_titles', title: 'POPULAR MANGA', view_more: true })
+		let section2 = createHomeSection({ id: 'popular_new_titles', title: 'POPULAR MANGA UPDATES', view_more: true })
+		let section3 = createHomeSection({ id: 'recently_updated', title: 'RECENTLY UPDATED TITLES', view_more: true })
 
 		return [createHomeSectionRequest({ request: request, sections: [section1, section2, section3] })]
 	}

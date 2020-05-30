@@ -16,7 +16,7 @@ export class NHentaiRedirected extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.7.0' }
+  get version(): string { return '0.7.1' }
   get name(): string { return 'nHentai (Country-Proof)' }
   get description(): string { return 'nHentai source which is guaranteed to work in countries the website is normally blocked. May be a tad slower than the other source' }
   get author(): string { return 'Conrad Weiser' }
@@ -343,7 +343,7 @@ export class NHentaiRedirected extends Source {
   getHomePageSectionRequest(): HomeSectionRequest[] | null {
 
     let request = createRequestObject({ url: `${NHENTAI_DOMAIN}/site/`, method: 'GET', })
-    let homeSection = createHomeSection({ id: 'latest_hentai', title: 'LATEST HENTAI' })
+    let homeSection = createHomeSection({ id: 'latest_hentai', title: 'LATEST HENTAI', view_more: true })
     return [createHomeSectionRequest({ request: request, sections: [homeSection] })]
 
   }

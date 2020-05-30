@@ -17,7 +17,7 @@ export class NHentai extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.7.0' }
+  get version(): string { return '0.7.1' }
   get name(): string { return 'nHentai' }
   get description(): string { return 'Extension that pulls manga from nHentai' }
   get author(): string { return 'Conrad Weiser' }
@@ -340,7 +340,7 @@ export class NHentai extends Source {
   getHomePageSectionRequest(): HomeSectionRequest[] | null {
 
     let request = createRequestObject({ url: `${NHENTAI_DOMAIN}`, method: 'GET', })
-    let homeSection = createHomeSection({ id: 'latest_hentai', title: 'LATEST HENTAI' })
+    let homeSection = createHomeSection({ id: 'latest_hentai', title: 'LATEST HENTAI', view_more: true })
     return [createHomeSectionRequest({ request: request, sections: [homeSection] })]
 
   }
