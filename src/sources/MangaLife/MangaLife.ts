@@ -16,13 +16,14 @@ export class MangaLife extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.5.4' }
+  get version(): string { return '0.5.5' }
   get name(): string { return 'Manga4Life' }
   get icon(): string { return 'icon.png' }
   get author(): string { return 'Daniel Kovalevich' }
   get authorWebsite(): string { return 'https://github.com/DanielKovalevich' }
   get description(): string { return 'Extension that pulls manga from MangaLife, includes Advanced Search and Updated manga fetching' }
   get hentaiSource(): boolean { return false }
+  getMangaShareUrl(mangaId: string): string | null { return `${ML_DOMAIN}/manga/${mangaId}`}
 
   getMangaDetailsRequest(ids: string[]): Request[] {
     let requests: Request[] = []

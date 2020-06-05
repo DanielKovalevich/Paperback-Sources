@@ -133,7 +133,6 @@ export class MangaFox extends Source {
             let title = $('p.title3', element).html() ?? '';
             let date = new Date(Date.parse($('p.title2', element).html() ?? ''));
             let chapterId = element.attribs['href'].match(chapterIdRegex)![1];
-            console.log(chapterId.match(chapterNumberRegex)![1])
             let chapterNumber = Number("0"+chapterId.match(chapterNumberRegex)![0]);
             let volMatch = title.match(volumeRegex)
             let volume = volMatch != null && volMatch.length > 0 ? Number(volMatch[1]) : undefined;
@@ -331,61 +330,61 @@ export class MangaFox extends Source {
     }
 
 
-    filterUpdatedMangaRequest(ids: any, time: Date, page: number): Request | null {
-        let metadata = {ids: ids, targetDate: time}
-        return createRequestObject({
-            url: `${MF_DOMAIN}/releases/${page}.html`,
-            method: 'GET',
-            metadata: metadata,
-            cookies: [createCookie({name: 'isAdult', value: '1', domain: MF_DOMAIN})]
-        })
-    }
+  filterUpdatedMangaRequest(ids: any, time: Date, page: number): Request | null {
+      let metadata = {ids: ids, targetDate: time}
+      return createRequestObject({
+          url: `${MF_DOMAIN}/releases/${page}.html`,
+          method: 'GET',
+          metadata: metadata,
+          cookies: [createCookie({name: 'isAdult', value: '1', domain: MF_DOMAIN})]
+      })
+   }
 
 
-    filterUpdatedManga(data: any, metadata: any): { 'updatedMangaIds': string[], 'nextPage': boolean } | null {
-        let $ = this.cheerio.load(data)
-        let nextPage = true
-        let updatedManga: string[] = []
+  filterUpdatedManga(data: any, metadata: any): { 'updatedMangaIds': string[], 'nextPage': boolean } | null {
+    let $ = this.cheerio.load(data)
+    let nextPage = true
+    let updatedManga: string[] = []
 
-        for(let obj of $('li', $('.manga-list-4-list')).toArray()) {
-            // If the time for this object is later than our target date, do not navigate to the next page
-            let dateContext = $('.manga-list-4-item-subtitle', $(obj))
-            let date = $('span', dateContext).text()
-            let dateObj: Date
-            if(date.includes("Today")) {
-                dateObj = new Date()        // Create a comparison date for the current day
-            }
-            else if(date.includes("Yesterday")) {
-                dateObj = new Date()        // Create a comparison date for yesterday
-                dateObj.setDate(dateObj.getDate() - 1)
-            }
-            else {
-                dateObj = new Date(date)
-            }
-
-            // Was this a good date parse? If the date is not valid, continue to the next object.
-            if(dateObj.toString().includes("Invalid")) {
-                continue
-            }
-
-            if(metadata.targetDate < dateObj) {
-                // We've gone past our target date, we're safe to stop here
-                nextPage = false
-                break
-            }
-
-            else {
-                // This is a valid date, check if this is a title which we are looking for
-                let mangaIdContext = $('.manga-list-4-item-title', $(obj))
-                let mangaId = $('a', mangaIdContext).attr('href')!.replace('/manga/', '').replace('/', '')
-
-                if(metadata.ids.includes(mangaId)) {    // If we have a matching ID, add it to our return list!
-                    updatedManga.push(mangaId)
-                }
-            }
+    for(let obj of $('li', $('.manga-list-4-list')).toArray()) {
+        // If the time for this object is later than our target date, do not navigate to the next page
+        let dateContext = $('.manga-list-4-item-subtitle', $(obj))
+        let date = $('span', dateContext).text()
+        let dateObj: Date
+        if(date.includes("Today")) {
+            dateObj = new Date()        // Create a comparison date for the current day
+        }
+        else if(date.includes("Yesterday")) {
+            dateObj = new Date()        // Create a comparison date for yesterday
+            dateObj.setDate(dateObj.getDate() - 1)
+        }
+        else {
+            dateObj = new Date(date)
         }
 
-        return {updatedMangaIds: updatedManga, nextPage: nextPage}
+        // Was this a good date parse? If the date is not valid, continue to the next object.
+        if(dateObj.toString().includes("Invalid")) {
+            continue
+        }
 
+        if(metadata.targetDate < dateObj) {
+            // We've gone past our target date, we're safe to stop here
+            nextPage = false
+            break
+        }
+
+        else {
+            // This is a valid date, check if this is a title which we are looking for
+            let mangaIdContext = $('.manga-list-4-item-title', $(obj))
+            let mangaId = $('a', mangaIdContext).attr('href')!.replace('/manga/', '').replace('/', '')
+
+            if(metadata.ids.includes(mangaId)) {    // If we have a matching ID, add it to our return list!
+                updatedManga.push(mangaId)
+            }
+        }
     }
+
+    return {updatedMangaIds: updatedManga, nextPage: nextPage}
+
+   }
 }

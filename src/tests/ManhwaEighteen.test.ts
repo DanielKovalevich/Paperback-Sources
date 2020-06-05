@@ -2,11 +2,12 @@ import { Source } from "../sources/Source"
 import cheerio from 'cheerio'
 import { APIWrapper } from "../API"
 import { MangaFox } from "../sources/MangaFox/MangaFox";
+import { ManhwaEighteen } from "../sources/ManhwaEighteen/ManhwaEighteen";
 
-describe('MangaFox Tests', function () {
+describe('ManhwaEighteen Tests', function () {
 
     var wrapper: APIWrapper = new APIWrapper();
-    var source: Source = new MangaFox(cheerio);
+    var source: Source = new ManhwaEighteen(cheerio);
     var chai = require('chai'), expect = chai.expect, should = chai.should();
     var chaiAsPromised = require('chai-as-promised');
     chai.use(chaiAsPromised);
@@ -16,7 +17,7 @@ describe('MangaFox Tests', function () {
      * Try to choose a manga which is updated frequently, so that the historical checking test can 
      * return proper results, as it is limited to searching 30 days back due to extremely long processing times otherwise.
      */
-    var mangaId = "tokyo_ghoul_re";
+    var mangaId = "manga-young-boss-raw";
 
     it("Retrieve Manga Details", async () => {
         let details = await wrapper.getMangaDetails(source, [mangaId]);
@@ -55,7 +56,7 @@ describe('MangaFox Tests', function () {
 
     it("Testing search", async () => {
         let testSearch = createSearchRequest({
-            title: 'immortal'
+            title: 'Silent War'
         });
 
         let search = await wrapper.search(source, testSearch, 1);
@@ -87,29 +88,12 @@ describe('MangaFox Tests', function () {
         expect(data, "No response from server").to.be.not.empty;
 
         // Do some MangaPark specific validation for this server response
-        let popularTitles = data[0];
-        expect(popularTitles.id, "Hot Manga ID does not exist").to.not.be.empty;
-        expect(popularTitles.title, "Hot Manga section does not exist").to.not.be.empty;
-        expect(popularTitles.items, "No items available for hot manga").to.not.be.empty;
+        let latest = data[0];
+        expect(latest.id, "Latest Manhwa ID does not exist").to.not.be.empty;
+        expect(latest.title, "Latest Manhwa section does not exist").to.not.be.empty;
+        expect(latest.items, "No items available for Latest Manhwa").to.not.be.empty;
 
-        let popularNewTitles = data[1];
-        expect(popularNewTitles.id, "Being read Titles ID does not exist").to.not.be.empty;
-        expect(popularNewTitles.title, "Being read manga section does not exist").to.not.be.empty;
-        expect(popularNewTitles.items, "No items available for being read titles").to.not.be.empty;
 
-        let recentlyUpdated = data[2];
-        expect(recentlyUpdated.id, "New Manga ID does not exist").to.not.be.empty;
-        expect(recentlyUpdated.title, "New Manga manga section does not exist").to.not.be.empty;
-        expect(recentlyUpdated.items, "No items available for new manga").to.not.be.empty;
-
-        expect(recentlyUpdated.id, "Latest Updates ID does not exist").to.not.be.empty;
-        expect(recentlyUpdated.title, "Latest Updates manga section does not exist").to.not.be.empty;
-        expect(recentlyUpdated.items, "No items available for latest updates").to.not.be.empty;
     });
-
-    it("Filter Updated Manga", async () => {
-        let data = await wrapper.filterUpdatedManga(source, ["weak_hero"], new Date('May 26, 2020'))
-        expect(data, "No response from server").to.exist
-    })
 
 })

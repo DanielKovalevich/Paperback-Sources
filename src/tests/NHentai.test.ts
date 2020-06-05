@@ -53,7 +53,7 @@ describe('N-Hentai Tests', function () {
         let testSearch = createSearchRequest({
             title: 'female',
             includeContent: ['bikini'],
-            excludeContent: ['sole female']
+            excludeContent: ['sole female'],
         });
 
         let search = await wrapper.search(source, testSearch, 1);
@@ -160,6 +160,16 @@ describe('N-Hentai Tests', function () {
         expect(result).to.not.exist
     })
 
+    it("Searching with Hentai settings disabled", async() => {
+        let testSearch = createSearchRequest({
+            title: "Women",
+            hStatus: false
+        })
+
+        let search = await wrapper.search(source, testSearch, 1)
+        expect(search).to.be.empty
+    })
+
 
     it("Retrieve Home Page Sections", async () => {
 
@@ -176,7 +186,13 @@ describe('N-Hentai Tests', function () {
     it("Retrieve Tags", async() => {
         let data = await wrapper.getTags(source)
         expect(data, "No response from server").to.exist
-        expect(data[0].tags).to.not.be.empty
-        
+        expect(data[0].tags).to.not.be.empty  
     })
+
+    it("Show More Homepage data", async() => {
+        let data = await wrapper.getViewMoreItems(source, "none", 2)
+        expect(data, "No response from server").to.exist;
+        expect(data, "No response from server").to.be.not.empty;
+    })
+
 });

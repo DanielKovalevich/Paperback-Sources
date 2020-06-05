@@ -18,17 +18,20 @@ export interface MangaTile {
 
   /**
    * Any available text which can be displayed as a subtitle to the tile
+   * This is what is displayed directly below the title
    */
   subtitleText?: IconText
 
   //TODO: The next few documentations are weak, needs refining
   /**
    * IconText which can be shown as primary text to the thumbnail
+   * This is rendered in the bottom left of the manga object on the view.
    */
   primaryText?: IconText
 
   /**
    * IconText which can be shown as secondary text to the thumbnail
+   * This is rendered on the bottom right of the manga object on the view
    */
   secondaryText?: IconText
 
