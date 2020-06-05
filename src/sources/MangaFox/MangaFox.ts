@@ -133,6 +133,7 @@ export class MangaFox extends Source {
             let title = $('p.title3', element).html() ?? '';
             let date = new Date(Date.parse($('p.title2', element).html() ?? ''));
             let chapterId = element.attribs['href'].match(chapterIdRegex)![1];
+            console.log(chapterId.match(chapterNumberRegex)![1])
             let chapterNumber = Number("0"+chapterId.match(chapterNumberRegex)![0]);
             let volMatch = title.match(volumeRegex)
             let volume = volMatch != null && volMatch.length > 0 ? Number(volMatch[1]) : undefined;
