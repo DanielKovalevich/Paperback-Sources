@@ -17,7 +17,7 @@ export class ComicExtra extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.6.0' }
+  get version(): string { return '0.6.5' }
   get name(): string { return 'ComicExtra' }
   get description(): string { return 'Extension that pulls western comics from ComicExtra' }
   get author(): string { return 'Conrad Weiser' }
@@ -201,6 +201,8 @@ export class ComicExtra extends Source {
         let id = $('a', $(obj)).attr('href')?.replace(`${COMICEXTRA_DOMAIN}/comic/`, '')
         let titleText = $('h3', $(obj)).text()
         let image = $('img', $(obj)).attr('src')
+
+        if(titleText == "Not found") continue // If a search result has no data, the only cartoon-box object has "Not Found" as title. Ignore.
 
         mangaTiles.push(createMangaTile({
             id: id!,
