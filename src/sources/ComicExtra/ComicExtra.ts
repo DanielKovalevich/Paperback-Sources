@@ -17,7 +17,7 @@ export class ComicExtra extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.5.0' }
+  get version(): string { return '0.6.0' }
   get name(): string { return 'ComicExtra' }
   get description(): string { return 'Extension that pulls western comics from ComicExtra' }
   get author(): string { return 'Conrad Weiser' }
@@ -237,6 +237,7 @@ export class ComicExtra extends Source {
         }))
     }
 
+    section[0].items = popularComics
     return section
   }
 

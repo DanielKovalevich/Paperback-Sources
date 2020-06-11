@@ -74,6 +74,4 @@ describe('ComicExtra Tests', function () {
         expect(homePages, "No response from server").to.exist
     })
 
-
-
 })
