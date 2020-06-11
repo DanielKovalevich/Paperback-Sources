@@ -17,7 +17,7 @@ export class NHentai extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.7.2' }
+  get version(): string { return '0.7.3' }
   get name(): string { return 'nHentai' }
   get description(): string { return 'Extension that pulls manga from nHentai' }
   get author(): string { return 'Conrad Weiser' }
@@ -176,7 +176,7 @@ export class NHentai extends Source {
     let gallerySrc = $('img', thumbContainer).attr('data-src')
 
     // We can regular expression match out the gallery ID from this string
-    let galleryId = parseInt(gallerySrc?.match(/.*\/(\d*)\//)![1])
+    let galleryId = parseInt(gallerySrc?.match(/.*\/(\d*)\//)![1]!)
 
     // Grab the image thumbnail, so we can determine whether this gallery uses PNG or JPG images
     let imageType = $('[itemprop=image]').attr('content')?.match(/cover.([png|jpg]*)/)![1]
@@ -264,7 +264,7 @@ export class NHentai extends Source {
       let contextNode = $('#bigcontainer')
       let href = $('a', contextNode).attr('href')
 
-      let mangaId = parseInt(href?.match(/g\/(\d*)\/\d/)![1])
+      let mangaId = parseInt(href?.match(/g\/(\d*)\/\d/)![1]!)
 
       mangaTiles.push(createMangaTile({
         id: mangaId.toString(),
