@@ -17,7 +17,7 @@ export class NHentai extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.7.1' }
+  get version(): string { return '0.7.2' }
   get name(): string { return 'nHentai' }
   get description(): string { return 'Extension that pulls manga from nHentai' }
   get author(): string { return 'Conrad Weiser' }
@@ -59,7 +59,7 @@ export class NHentai extends Source {
     // Comma seperate all of the tags and store them in our tag section 
     let tagSections: TagSection[] = [createTagSection({ id: '0', label: 'tag', tags: [] })]
     let tags = $('meta[name="twitter:description"]').attr('content')?.split(",") ?? []
-    tagSections[0].tags = tags.map((elem: string) => createTag({id: elem, label: elem}))
+    tagSections[0].tags = tags.map((elem: string) => createTag({id: elem.trim(), label: elem.trim()}))
 
     // Grab the alternative titles
     let titles = [title]
@@ -67,10 +67,10 @@ export class NHentai extends Source {
     let altNameTop = $('h1', altTitleBlock).text() ?? ''
     let altNameBottom = $('h2', altTitleBlock).text() ?? ''
     if (altNameTop) {
-      titles.push(altNameTop)
+      titles.push(altNameTop.trim())
     }
     if (altNameBottom) {
-      titles.push(altNameBottom)
+      titles.push(altNameBottom.trim())
     }
 
     // Get the artist and language information
@@ -80,7 +80,7 @@ export class NHentai extends Source {
     for (let item of $('.tag-container', context).toArray()) {
       if ($(item).text().indexOf("Artists") > -1) {
         let temp = $("a", item).text()
-        artist = temp.substring(0, temp.indexOf(" ("))
+        artist = temp.substring(0, temp.search(/\d/))
       }
       else if ($(item).text().indexOf("Languages") > -1) {
         let temp = $("a", item)
@@ -96,7 +96,6 @@ export class NHentai extends Source {
     }
 
     let status = 1
-    let summary = ''
     let hentai = true                 // I'm assuming that's why you're here!
 
     manga.push(createManga({
@@ -107,7 +106,6 @@ export class NHentai extends Source {
       status: status,
       artist: artist,
       tags: tagSections,
-      desc: summary,
       hentai: hentai
     }))
     return manga
