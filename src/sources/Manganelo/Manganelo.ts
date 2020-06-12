@@ -17,7 +17,7 @@ export class Manganelo extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.1.0' }
+  get version(): string { return '1.1.1' }
   get name(): string { return 'Manganelo' }
   get icon(): string { return 'icon.png' }
   get author(): string { return 'Daniel Kovalevich' }
@@ -433,6 +433,7 @@ export class Manganelo extends Source {
       url: request.url,
       method: request.method,
       headers: headers,
+      metadata: request.metadata,
       data: request.data,
       timeout: request.timeout,
       param: request.param,
