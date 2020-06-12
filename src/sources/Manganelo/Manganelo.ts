@@ -17,7 +17,7 @@ export class Manganelo extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.0.8' }
+  get version(): string { return '1.1.0' }
   get name(): string { return 'Manganelo' }
   get icon(): string { return 'icon.png' }
   get author(): string { return 'Daniel Kovalevich' }
@@ -418,5 +418,26 @@ export class Manganelo extends Source {
     }
     else return null
     return manga
+  }
+
+  /**
+   * Manganelo image requests for older chapters and pages are required to have a referer to it's host
+   * @param request
+   */
+  requestModifier(request: Request): Request { 
+    
+    let headers: any = request.headers == undefined ? {} : request.headers
+    headers['Referer'] = `${MN_DOMAIN}`
+
+    return createRequestObject({
+      url: request.url,
+      method: request.method,
+      headers: headers,
+      data: request.data,
+      timeout: request.timeout,
+      param: request.param,
+      cookies: request.cookies,
+      incognito: request.incognito
+    })
   }
 }
