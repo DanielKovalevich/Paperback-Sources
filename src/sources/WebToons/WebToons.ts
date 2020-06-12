@@ -18,7 +18,7 @@ export class WebToons extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.2.2' }
+  get version(): string { return '0.2.3' }
   get name(): string { return 'WebToons (BETA)' }
   get description(): string { return 'Extension that pulls comics from WebToons' }
   get author(): string { return 'Conrad Weiser' }
@@ -221,12 +221,21 @@ export class WebToons extends Source {
   }
 
   requestModifier(request: Request): Request { 
-    if(request.headers == undefined) {
-      request.headers = {}
-    }
+    
+    let headers: any = request.headers == undefined ? {} : request.headers
+    headers['Referer'] = `${WEBTOONS_SEARCH_DOMAIN}`
 
-    request.headers["Referer"] = `${WEBTOONS_SEARCH_DOMAIN}`
-    return request
+    return createRequestObject({
+      url: request.url,
+      method: request.method,
+      headers: headers,
+      data: request.data,
+      metadata: request.metadata,
+      timeout: request.timeout,
+      param: request.param,
+      cookies: request.cookies,
+      incognito: request.incognito
+    })
   }
 }
 

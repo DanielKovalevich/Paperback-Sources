@@ -17,7 +17,7 @@ export class Manganelo extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.1.3' }
+  get version(): string { return '1.1.4' }
 
   get name(): string { return 'Manganelo' }
   get icon(): string { return 'icon.png' }
@@ -426,11 +426,20 @@ export class Manganelo extends Source {
    * @param request
    */
   requestModifier(request: Request): Request { 
-    if(request.headers == undefined) {
-      request.headers = {}
-    }
+    
+    let headers: any = request.headers == undefined ? {} : request.headers
+    headers['Referer'] = `${MN_DOMAIN}`
 
-    request.headers["Referer"] = `${MN_DOMAIN}`
-    return request
+    return createRequestObject({
+      url: request.url,
+      method: request.method,
+      headers: headers,
+      data: request.data,
+      metadata: request.metadata,
+      timeout: request.timeout,
+      param: request.param,
+      cookies: request.cookies,
+      incognito: request.incognito
+    })
   }
 }
