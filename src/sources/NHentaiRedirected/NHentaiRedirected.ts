@@ -16,7 +16,7 @@ export class NHentaiRedirected extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.7.1' }
+  get version(): string { return '0.7.3' }
   get name(): string { return 'nHentai (Country-Proof)' }
   get description(): string { return 'nHentai source which is guaranteed to work in countries the website is normally blocked. May be a tad slower than the other source' }
   get author(): string { return 'Conrad Weiser' }
@@ -70,10 +70,10 @@ export class NHentaiRedirected extends Source {
     let altNameTop = $('h1', altTitleBlock).text() ?? ''
     let altNameBottom = $('h2', altTitleBlock).text() ?? ''
     if (altNameTop) {
-      titles.push(altNameTop)
+      titles.push(altNameTop.trim())
     }
     if (altNameBottom) {
-      titles.push(altNameBottom)
+      titles.push(altNameBottom.trim())
     }
 
     // Get the artist and language information
@@ -83,7 +83,7 @@ export class NHentaiRedirected extends Source {
     for (let item of $('.tag-container', context).toArray()) {
       if ($(item).text().indexOf("Artists") > -1) {
         let temp = $("a", item).text()
-        artist = temp.substring(0, temp.indexOf(" ("))
+        artist = temp.substring(0, temp.search(/\d/))
       }
       else if ($(item).text().indexOf("Languages") > -1) {
         let temp = $("a", item)
@@ -99,7 +99,6 @@ export class NHentaiRedirected extends Source {
     }
 
     let status = 1
-    let summary = ''
     let hentai = true                 // I'm assuming that's why you're here!
 
     manga.push(createManga({
@@ -110,7 +109,6 @@ export class NHentaiRedirected extends Source {
       status: status,
       artist: artist,
       tags: tagSections,
-      desc: summary,
       hentai: hentai
     }))
     return manga
@@ -181,7 +179,7 @@ export class NHentaiRedirected extends Source {
     let gallerySrc = $('img', thumbContainer).attr('data-src')
 
     // We can regular expression match out the gallery ID from this string
-    let galleryId = parseInt(gallerySrc?.match(/.*\/(\d*)\//)![1])
+    let galleryId = parseInt(gallerySrc?.match(/.*\/(\d*)\//)![1]!)
 
     // Grab the image thumbnail, so we can determine whether this gallery uses PNG or JPG images
     let imageType = $('[itemprop=image]').attr('content')?.match(/cover.([png|jpg]*)/)![1]
@@ -269,7 +267,7 @@ export class NHentaiRedirected extends Source {
       let contextNode = $('#bigcontainer')
       let href = $('a', contextNode).attr('href')
 
-      let mangaId = parseInt(href?.match(/g\/(\d*)\/\d/)![1])
+      let mangaId = parseInt(href?.match(/g\/(\d*)\/\d/)![1]!)
 
       mangaTiles.push(createMangaTile({
         id: mangaId.toString(),

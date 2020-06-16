@@ -19,6 +19,8 @@ export abstract class Source {
   }
 
   // <-----------        REQUIRED METHODS        -----------> //
+
+
   // Returns the version of the source
   // Ensures that the app is using the most up to date version
   /**
@@ -152,6 +154,15 @@ export abstract class Source {
 
   // <-----------        OPTIONAL METHODS        -----------> //
 
+  /**
+   * Returns the number of calls that can be done per second from the application
+   * This is to avoid IP bans from many of the sources
+   * Can be adjusted per source since different sites have different limits
+   */
+  get rateLimit(): Number { return 2 }
+
+  requestModifier(request: Request): Request { return request }
+
   getMangaShareUrl(mangaId: string): string | null { return null }
 
   /**
@@ -236,12 +247,6 @@ export abstract class Source {
    */
   getViewMoreItems(data: any, key: string): MangaTile[] | null { return null }
 
-  /**
-   * Returns the number of calls that can be done per second from the application
-   * This is to avoid IP bans from many of the sources
-   * Can be adjusted per source since different sites have different limits
-   */
-  getRateLimit(): Number { return 2 }
 
 
   // <-----------        PROTECTED METHODS        -----------> //

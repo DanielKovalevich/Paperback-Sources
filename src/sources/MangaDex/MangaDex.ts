@@ -15,13 +15,19 @@ export class MangaDex extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.0.13' }
+  get version(): string { return '1.0.16' }
   get name(): string { return 'MangaDex' }
   get icon(): string { return 'icon.png' }
   get author(): string { return 'Faizan Durrani' }
   get authorWebsite(): string { return 'https://github.com/FaizanDurrani' }
   get description(): string { return 'Extension that pulls manga from MangaDex, includes Advanced Search and Updated manga fetching' }
   get hentaiSource(): boolean { return false }
+
+  get rateLimit() { return 1 }
+
+  requestModifier(request: Request) {
+    return request
+  }
 
   getMangaDetailsRequest(ids: string[]): Request[] {
     return [createRequestObject({
