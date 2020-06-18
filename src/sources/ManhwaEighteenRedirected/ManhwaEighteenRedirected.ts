@@ -252,7 +252,7 @@ export class ManhwaEighteenRedirected extends Source {
         let primaryText = createIconText({text: $('span', textContext).text()})
 
         // The redirector does something weird with the image link, make it right here
-        img = img.replace("/me/me", "/me")
+        img = img.replace("/me/me/site", "/me")
 
         id = id.replace(".html" , "")
         
@@ -286,7 +286,7 @@ getHomePageSections(data: any, sections: HomeSection[]): HomeSection[] {
         let views = $('.view', $(item)).text()
 
         // The redirector does something weird with the image link, make it right here
-        image = image.replace("/me/me", "/me")
+        image = image.replace("/me/me/site", "/me")
 
         if(!id) {
             continue
