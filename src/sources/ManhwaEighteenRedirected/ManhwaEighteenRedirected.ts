@@ -17,7 +17,7 @@ export class ManhwaEighteenRedirected extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.6.0' }
+  get version(): string { return '0.6.1' }
   get name(): string { return 'Manhwa18 (Country-Proof) (18+)' }
   get description(): string { return 'Manhwa18 source which is guarinteed to work in countries the website is normally blocked. May be a tad slower than the original source' }
   get author(): string { return 'Conrad Weiser' }
@@ -251,6 +251,9 @@ export class ManhwaEighteenRedirected extends Source {
         let textContext = $('.media-body', $(obj))
         let primaryText = createIconText({text: $('span', textContext).text()})
 
+        // The redirector does something weird with the image link, make it right here
+        img = img.replace("/me/me", "/me")
+
         id = id.replace(".html" , "")
         
         mangaTiles.push(createMangaTile({
@@ -281,6 +284,9 @@ getHomePageSections(data: any, sections: HomeSection[]): HomeSection[] {
         let title = createIconText({text: $('.title-h3', $(item)).text()})
         let image = `${ME_DOMAIN}${$('.lazy', $(item)).attr('src')}`
         let views = $('.view', $(item)).text()
+
+        // The redirector does something weird with the image link, make it right here
+        image = image.replace("/me/me", "/me")
 
         if(!id) {
             continue
