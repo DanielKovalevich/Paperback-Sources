@@ -17,7 +17,7 @@ export class ManhwaEighteenRedirected extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.6.1' }
+  get version(): string { return '0.6.2' }
   get name(): string { return 'Manhwa18 (Country-Proof) (18+)' }
   get description(): string { return 'Manhwa18 source which is guarinteed to work in countries the website is normally blocked. May be a tad slower than the original source' }
   get author(): string { return 'Conrad Weiser' }
