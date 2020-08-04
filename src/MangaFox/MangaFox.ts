@@ -23,7 +23,7 @@ export class MangaFox extends Source {
         super(cheerio)
     }
 
-    get version(): string { return '1.1.3' }
+    get version(): string { return '1.1.4' }
 
     get name(): string { return 'MangaFox' }
 
@@ -362,7 +362,7 @@ export class MangaFox extends Source {
                 continue
             }
 
-            if (metadata.targetDate < dateObj) {
+            if (metadata.targetDate > dateObj) {
                 // We've gone past our target date, we're safe to stop here
                 nextPage = false
                 break
