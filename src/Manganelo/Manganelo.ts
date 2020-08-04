@@ -7,7 +7,7 @@ export class Manganelo extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.1.5' }
+  get version(): string { return '1.1.6' }
 
   get name(): string { return 'Manganelo' }
   get icon(): string { return 'icon.png' }
@@ -193,10 +193,10 @@ export class Manganelo extends Source {
   filterUpdatedManga(data: any, metadata: any): MangaUpdates | null {
     let $ = this.cheerio.load(data)
 
-    let returnObject: MangaUpdates = createMangaUpdates({
+    let returnObject: MangaUpdates = {
       'ids': [],
       'moreResults': true
-    })
+    }
 
     let panel = $('.panel-content-genres')
     for (let item of $('.content-genres-item', panel).toArray()) {
@@ -219,7 +219,7 @@ export class Manganelo extends Source {
       }
     }
 
-    return returnObject
+    return createMangaUpdates(returnObject)
   }
 
   getHomePageSectionRequest(): HomeSectionRequest[] | null {

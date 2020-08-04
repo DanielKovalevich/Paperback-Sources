@@ -7,7 +7,7 @@ export class Mangasee extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '1.1.1' }
+  get version(): string { return '1.1.2' }
   get name(): string { return 'Mangasee' }
   get icon(): string { return 'icon.png' }
   get author(): string { return 'Daniel Kovalevich' }
@@ -192,7 +192,7 @@ export class Mangasee extends Source {
       if (metadata.ids.includes(elem.IndexName) && metadata.referenceTime < new Date(elem.Date)) returnObject.ids.push(elem.IndexName)
     })
 
-    return returnObject
+    return createMangaUpdates(returnObject)
   }
 
   searchRequest(query: SearchRequest, page: number): Request | null {

@@ -8,7 +8,7 @@ export class MangaLife extends Source {
     super(cheerio)
   }
 
-  get version(): string { return '0.6.9' }
+  get version(): string { return '0.6.10' }
   get name(): string { return 'Manga4Life' }
   get icon(): string { return 'icon.png' }
   get author(): string { return 'Daniel Kovalevich' }
@@ -187,16 +187,16 @@ export class MangaLife extends Source {
 
   filterUpdatedManga(data: any, metadata: any): MangaUpdates {
     let $ = this.cheerio.load(data)
-    let returnObject: MangaUpdates = createMangaUpdates({
+    let returnObject: MangaUpdates = {
       'ids': [],
       'moreResults': false
-    })
+    }
     let updateManga = JSON.parse((data.match(/vm.LatestJSON = (.*);/) ?? [])[1])
     updateManga.forEach((elem: any) => {
       if (metadata.ids.includes(elem.IndexName) && metadata.referenceTime < new Date(elem.Date)) returnObject.ids.push(elem.IndexName)
     })
 
-    return returnObject
+    return createMangaUpdates(returnObject)
   }
 
   searchRequest(query: SearchRequest, page: number): Request | null {
