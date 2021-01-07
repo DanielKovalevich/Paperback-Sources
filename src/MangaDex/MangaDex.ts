@@ -126,8 +126,8 @@ export class MangaDex extends Source {
   }
 
   async searchRequest(query: SearchRequest, metadata: any): Promise<PagedResults> {
-    const page = metadata.page ?? 1
-    const items = metadata.items ?? 50
+    const page = metadata?.page ?? 1
+    const items = metadata?.items ?? 50
 
     const request = this.constructSearchRequest(query, page, items)
 
