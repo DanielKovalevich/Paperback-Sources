@@ -42,7 +42,7 @@ export const MangaDexInfo: SourceInfo = {
   description: 'Overwrites SafeDex,unlocks all mangas MangaDex has to offer and loads slightly faster. supports notifications',
   icon: 'icon.png',
   name: 'MangaDex Unlocked',
-  version: '2.0.1',
+  version: '2.0.2',
   authorWebsite: 'https://github.com/Pogogo007/extensions-main-promises',
   websiteBaseURL: MANGADEX_DOMAIN,
   hentaiSource: false,
@@ -83,21 +83,34 @@ export class MangaDex extends Source {
   }
 
   async getBatchMangaDetails(mangaIds: string[]): Promise<Manga[]> {
-    const request = createRequestObject({
-      url: MANGA_ENDPOINT,
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-      },
-      data: JSON.stringify({
-        id: mangaIds.map(x => parseInt(x)),
-      }),
-    })
+    let batchedIds: string[]
 
-    const response = await this.requestManager.schedule(request, 1)
-    const json = JSON.parse(response.data) as any
+    const fetchedDetails: Manga[] = []
 
-    return this.parser.parseMangaDetails(json)
+    // Get manga in 50 manga batches
+    const chunk = 50
+    for (let i = 0; i < mangaIds.length; i += chunk) {
+      batchedIds = mangaIds.slice(i, i + chunk)
+
+      const request = createRequestObject({
+        url: MANGA_ENDPOINT,
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        data: JSON.stringify({
+          id: batchedIds.map(x => parseInt(x)),
+        }),
+      })
+
+      // eslint-disable-next-line no-await-in-loop
+      const response = await this.requestManager.schedule(request, 1)
+      const json = JSON.parse(response.data) as any
+
+      fetchedDetails.concat(this.parser.parseMangaDetails(json))
+    }
+
+    return fetchedDetails
   }
 
   async getChapters(mangaId: string): Promise<Chapter[]> {
