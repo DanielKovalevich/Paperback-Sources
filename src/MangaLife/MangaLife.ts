@@ -19,7 +19,7 @@ const ML_DOMAIN = 'https://manga4life.com'
 let ML_IMAGE_DOMAIN = 'https://cover.mangabeast01.com/cover'
 
 export const MangaLifeInfo: SourceInfo = {
-  version: '1.1.2',
+  version: '1.1.4',
   name: 'Manga4Life',
   icon: 'icon.png',
   author: 'Daniel Kovalevich',
@@ -363,6 +363,8 @@ export class MangaLife extends Source {
         secondaryText: createIconText({ text: time, icon: 'clock.fill' })
       }))
     })
+    hotSection.items = hotManga
+    sectionCallback(hotSection)
 
     let latestManga: MangaTile[] = []
     latest.forEach((elem: any) => {
@@ -380,6 +382,8 @@ export class MangaLife extends Source {
         secondaryText: createIconText({ text: time, icon: 'clock.fill' })
       }))
     })
+    latestSection.items = latestManga
+    sectionCallback(latestSection)
 
     let newManga: MangaTile[] = []
     newTitles.forEach((elem: any) => {
@@ -393,6 +397,8 @@ export class MangaLife extends Source {
         title: createIconText({ text: title })
       }))
     })
+    newTitlesSection.items = newManga
+    sectionCallback(newTitlesSection)
 
     let recManga: MangaTile[] = []
     recommended.forEach((elem: any) => {
@@ -408,14 +414,7 @@ export class MangaLife extends Source {
       }))
     })
 
-    hotSection.items = hotManga
-    latestSection.items = latestManga
-    newTitlesSection.items = newManga
     recommendedSection.items = recManga
-
-    sectionCallback(hotSection)
-    sectionCallback(latestSection)
-    sectionCallback(newTitlesSection)
     sectionCallback(recommendedSection)
   }
 
@@ -426,9 +425,10 @@ export class MangaLife extends Source {
     })
 
     const data = await this.requestManager.schedule(request, 1)
-    let manga: MangaTile[] = []
+    //let manga: MangaTile[] = []
+    let manga: Set<MangaTile> = new Set<MangaTile>()
     if (homepageSectionId == 'hot_update') {
-      let hot = JSON.parse((data.data.match(/vm.HotUpdateJSON = (.*);/) ?? [])[1])
+      let hot = JSON.parse((data.data.match(/vm.HotUpdateJSON = (.*);/) ?? [])[1]).slice(15)
       hot.forEach((elem: any) => {
         let id = elem.IndexName
         let title = elem.SeriesName
@@ -437,7 +437,7 @@ export class MangaLife extends Source {
         time = time.slice(0, time.length - 5)
         time = time.slice(4, time.length)
 
-        manga.push(createMangaTile({
+        manga.add(createMangaTile({
           id: id,
           image: image,
           title: createIconText({ text: title }),
@@ -446,7 +446,7 @@ export class MangaLife extends Source {
       })
     }
     else if (homepageSectionId == 'latest') {
-      let latest = JSON.parse((data.data.match(/vm.LatestJSON = (.*);/) ?? [])[1])
+      let latest = JSON.parse((data.data.match(/vm.LatestJSON = (.*);/) ?? [])[1]).slice(15)
       latest.forEach((elem: any) => {
         let id = elem.IndexName
         let title = elem.SeriesName
@@ -455,7 +455,7 @@ export class MangaLife extends Source {
         time = time.slice(0, time.length - 5)
         time = time.slice(4, time.length)
 
-        manga.push(createMangaTile({
+        manga.add(createMangaTile({
           id: id,
           image: image,
           title: createIconText({ text: title }),
@@ -473,7 +473,7 @@ export class MangaLife extends Source {
         time = time.slice(0, time.length - 5)
         time = time.slice(4, time.length)
 
-        manga.push(createMangaTile({
+        manga.add(createMangaTile({
           id: id,
           image: image,
           title: createIconText({ text: title }),
@@ -482,7 +482,7 @@ export class MangaLife extends Source {
       })
     }
     else if (homepageSectionId == 'new_titles') {
-      let newTitles = JSON.parse((data.data.match(/vm.NewSeriesJSON = (.*);/) ?? [])[1])
+      let newTitles = JSON.parse((data.data.match(/vm.NewSeriesJSON = (.*);/) ?? [])[1]).slice(15)
       newTitles.forEach((elem: any) => {
         let id = elem.IndexName
         let title = elem.SeriesName
@@ -491,7 +491,7 @@ export class MangaLife extends Source {
         time = time.slice(0, time.length - 5)
         time = time.slice(4, time.length)
 
-        manga.push(createMangaTile({
+        manga.add(createMangaTile({
           id: id,
           image: image,
           title: createIconText({ text: title })
@@ -502,7 +502,7 @@ export class MangaLife extends Source {
 
     // This source parses JSON and never requires additional pages
     return createPagedResults({
-      results: manga
+      results: Array.from(manga)
     })
   }
 }

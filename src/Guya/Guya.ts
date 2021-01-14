@@ -19,7 +19,7 @@ const GUYA_LANG = "en"
 const SPLIT_VAR = "|"
 
 export const GuyaInfo: SourceInfo = {
-  version: "1.1.0",
+  version: "1.1.1",
   name: "Guya",
   icon: "icon.png",
   author: "funkyhippo",
@@ -168,7 +168,7 @@ export class Guya extends Source {
 
     const data = await this.requestManager.schedule(request, 1)
 
-    let result = typeof data === "string" ? JSON.parse(data) : data
+    let result = typeof data.data === "string" ? JSON.parse(data.data) : data.data
 
     let mangas = []
     for (let series in result) {
