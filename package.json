@@ -16,8 +16,8 @@
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "cheerio": "^1.0.0-rc.5",
-    "paperback-cli": "^1.2.5",
-    "paperback-extensions-common": "^2.1.9",
+    "paperback-cli": "^1.3.3",
+    "paperback-extensions-common": "^2.1.125",
     "ts-mocha": "^7.0.0",
     "tsify": "^4.0.2",
     "typescript": "^3.9.6"
