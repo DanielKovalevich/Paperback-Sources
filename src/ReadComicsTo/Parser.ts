@@ -16,7 +16,7 @@ export class Parser {
 
     let tagArray0 : Tag[] = []
     let i = 0
-    for (let item of $('p', $('.barContent').first()).toArray()) {
+    for (let item of $('p', $('.barContent > div').first()).toArray()) {
       switch (i) {
         case 0: {
           // Genre
