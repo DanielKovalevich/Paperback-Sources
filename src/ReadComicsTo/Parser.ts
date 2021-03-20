@@ -3,12 +3,12 @@ import {Chapter, LanguageCode, Manga, MangaStatus, MangaTile, Tag, TagSection} f
 const READCOMICTO_DOMAIN = 'https://readcomiconline.to'
 
 export class Parser {
-  
+
     parseMangaDetails($: CheerioSelector, mangaId: string): Manga {
     
 
     let titles =  [$('.bigChar', $('.bigBarContainer').first()).text().trim()]
-    let image = `${READCOMICTO_DOMAIN}/${$('img', $('rightBox')).attr('src')}`
+    let image = `${READCOMICTO_DOMAIN}${$('img', $('.rightBox')).attr('src')}`
 
 
     let status = MangaStatus.ONGOING, author, released, rating: number = 0,artist, views,summary
@@ -49,7 +49,7 @@ export class Parser {
         case 4: {
           // Released/Publication Date
 
-          released = $(item).text().trim()
+          released = $(item).text().trim().replace('Publication date: ', '')
   
           i++
           continue
@@ -58,7 +58,7 @@ export class Parser {
         case 5: {
           //Manga Status and Views 
           let arr = $(item).text().trim().toLowerCase().split('\n')
-          if (arr[0]?.trim()=="ongoing"){
+          if (arr[0]?.trim().includes("ongoing")){
             status = MangaStatus.ONGOING
           }
 
