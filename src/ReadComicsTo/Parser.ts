@@ -1,6 +1,6 @@
 import {Chapter, LanguageCode, Manga, MangaStatus, MangaTile, Tag, TagSection} from 'paperback-extensions-common'
 
-const COMICEXTRA_DOMAIN = 'https://www.comicextra.com'
+const READCOMICTO_DOMAIN = 'https://readcomiconline.to/'
 
 export class Parser {
 
@@ -8,57 +8,20 @@ export class Parser {
     parseMangaDetails($: CheerioSelector, mangaId: string): Manga {
     
 
-    let titles = [$('.title-1', $('.mobile-hide')).text().trimLeft()]
-    let image = $('img', $('.movie-l-img')).attr('src')
+    let titles =  [$('.bigChar', $('.bigBarContainer').first()).text().trim()]
+    let image = `${READCOMICTO_DOMAIN}/${$('img', $('rightBox')).attr('src')}`
 
-    let summary = $('#film-content', $('#film-content-wrapper')).text().trim()
-    let relatedIds: string[] = []
-    for(let obj of $('.list-top-item').toArray()) {
-        relatedIds.push($('a', $(obj)).attr('href')?.replace(`${COMICEXTRA_DOMAIN}/comic/`, '').trim() || '')
-    }
 
-    let status = MangaStatus.ONGOING, author, released, rating: number = 0
+    let status = MangaStatus.ONGOING, author, released, rating: number = 0,artist, views,summary
+
     let tagArray0 : Tag[] = []
     let i = 0
-    for (let item of $('.movie-dd', $('.movie-dl')).toArray()) {
+    for (let item of $('p', $('.barContent').first()).toArray()) {
       switch (i) {
         case 0: {
-          // Comic Status
-          if ($('a', $(item)).text().toLowerCase().includes("ongoing")) {
-            status = MangaStatus.ONGOING
-          }
-          else {
-            status = MangaStatus.COMPLETED
-          }
-          i++
-          continue
-        }
-        case 1: {
-          // Alt Titles
-           if($(item).text().toLowerCase().trim() == "-") {
-            i++
-            continue
-           }
-           titles.push($(item).text().trim())
-          i++
-          continue
-        }
-        case 2: {
-          // Date of release
-          released = ($(item).text().trim()) ?? undefined
-          i++
-          continue
-        }
-        case 3: {
-          // Author
-          author = ($(item).text().trim()) ?? undefined
-          i++
-          continue
-          }
-        case 4: {
-          // Genres
+          // Genre
           for(let obj of $('a',$(item)).toArray()){
-            let id = $(obj).attr('href')?.replace(`${COMICEXTRA_DOMAIN}/`, '').trim()
+            let id = $(obj).attr('href')
             let label = $(obj).text().trim()
             if (typeof id === 'undefined' || typeof label === 'undefined') continue
             tagArray0 = [...tagArray0, createTag({id: id, label: label})]
@@ -66,6 +29,69 @@ export class Parser {
           i++
           continue
         }
+        case 1: {
+          // Skipped Publisher
+
+          i++
+          continue
+        }
+        case 2: {
+          // Author/Writer
+          author = ($('a', $(item)).text().trim()) ?? undefined
+          i++
+          continue
+        }
+        case 3: {
+ 
+          artist = ($('a', $(item)).text().trim()) ?? undefined
+          i++
+          continue
+          }
+        case 4: {
+          // Released/Publication Date
+
+          released = $(item).text().trim()
+  
+          i++
+          continue
+        }
+
+        case 5: {
+          //Manga Status and Views 
+          let arr = $(item).text().trim().toLowerCase().split('\n')
+          if (arr[0]?.trim()=="ongoing"){
+            status = MangaStatus.ONGOING
+          }
+
+          else {
+            status = MangaStatus.COMPLETED
+          }
+
+          views = Number(arr[1]?.replace(/\D/g, ''))
+
+
+
+
+          i++
+          continue
+        }
+
+        case 6: {
+
+          
+          i++
+          continue
+        }
+
+        case 7:{
+
+          //Summary
+
+          summary = $(item).text().trim()
+
+
+        }
+
       }
       i = 0
     }
@@ -77,10 +103,11 @@ export class Parser {
         image: image ?? '',
         status: status,
         author: this.decodeHTMLEntity(author ?? ''),
+        artist: artist,
+        views: views,
         tags: tagSections,
         desc: this.decodeHTMLEntity(summary ?? ''),
-        lastUpdate: released,
-        relatedIds: relatedIds
+        lastUpdate: released
       })
     }
 
@@ -90,7 +117,7 @@ export class Parser {
     let chapters: Chapter[] = []
 
       for(let obj of $('tr', $('#list')).toArray()) {
-        let chapterId = $('a', $(obj)).attr('href')?.replace(`${COMICEXTRA_DOMAIN}/${mangaId}/`, '')
+        let chapterId = $('a', $(obj)).attr('href')?.replace(`${READCOMICTO_DOMAIN}/${mangaId}/`, '')
         let chapNum = chapterId?.replace(`chapter-`, '').trim()
         if(isNaN(Number(chapNum))){
           chapNum = `0.${chapNum?.replace( /^\D+/g, '')}`
@@ -142,7 +169,7 @@ export class Parser {
     let foundIds: string[] = []
     let passedReferenceTime = false
     for (let item of $('.hlb-t').toArray()) {
-      let id = ($('a', item).first().attr('href') ?? '')?.replace(`${COMICEXTRA_DOMAIN}/comic/`, '')!.trim() ?? ''
+      let id = ($('a', item).first().attr('href') ?? '')?.replace(`${READCOMICTO_DOMAIN}/comic/`, '')!.trim() ?? ''
       let mangaTime = new Date(time)
       if($('.date', item).first().text().trim().toLowerCase() === "yesterday") {
         mangaTime = new Date(Date.now())
@@ -173,7 +200,7 @@ export class Parser {
         let mangaTiles: MangaTile[] = []
         let collectedIds: string[] = []
         for(let obj of $('.cartoon-box').toArray()) {
-            let id = $('a', $(obj)).attr('href')?.replace(`${COMICEXTRA_DOMAIN}/comic/`, '')
+            let id = $('a', $(obj)).attr('href')?.replace(`${READCOMICTO_DOMAIN}/comic/`, '')
             let titleText = this.decodeHTMLEntity($('h3', $(obj)).text())
             let image = $('img', $(obj)).attr('src')
       
@@ -197,7 +224,7 @@ export class Parser {
         createTagSection({ id: '1', label: 'format', tags: [] })]
     
         for(let obj of $('a', $('.home-list')).toArray()) {
-          let id = $(obj).attr('href')?.replace(`${COMICEXTRA_DOMAIN}/`, '').trim() ?? $(obj).text().trim()
+          let id = $(obj).attr('href')?.replace(`${READCOMICTO_DOMAIN}/`, '').trim() ?? $(obj).text().trim()
           let genre = $(obj).text().trim()
           tagSections[0].tags.push(createTag({id: id, label: genre}))
         }
@@ -210,7 +237,7 @@ export class Parser {
         let tiles: MangaTile[] = []
         let collectedIds: string[] = []
         for(let obj of $('.cartoon-box').toArray()) {
-            let id = $('a', $(obj)).attr('href')?.replace(`${COMICEXTRA_DOMAIN}/comic/`, '')
+            let id = $('a', $(obj)).attr('href')?.replace(`${READCOMICTO_DOMAIN}/comic/`, '')
             let titleText = this.decodeHTMLEntity($('h3', $(obj)).text().trim())
             let image = $('img', $(obj)).attr('src')
 

@@ -17,7 +17,7 @@ import {Parser,} from './Parser'
 const READCOMICSTO_DOMAIN = 'https://readcomiconline.to/'
 
 export const ReadComicsToInfo: SourceInfo = {
-    version: '1.5.4',
+    version: '1.0.0',
     name: 'ReadComicsOnlineTo',
     description: 'Extension that pulls western comics from readcomiconline.to',
     author: 'Aurora',
@@ -33,7 +33,7 @@ export const ReadComicsToInfo: SourceInfo = {
     ]
 }
 
-export class ComicExtra extends Source {
+export class ReadComicsTo extends Source {
     parser = new Parser()
 
     getMangaShareUrl(mangaId: string): string | null {
