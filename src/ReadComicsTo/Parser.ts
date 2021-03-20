@@ -109,13 +109,13 @@ export class Parser {
         lastUpdate: released
       })
     }
-
+   
 
     parseChapterList($: CheerioSelector, mangaId: string) : Chapter[] { 
     
     let chapters: Chapter[] = []
 
-      for(let obj of $('tr', $('#list')).toArray()) {
+      for(let obj of $('tr', $('.barContent.episodeList').first()).toArray()) {
         let chapterId = $('a', $(obj)).attr('href')?.replace(`${READCOMICTO_DOMAIN}/${mangaId}/`, '')
         let chapNum = chapterId?.replace(`chapter-`, '').trim()
         if(isNaN(Number(chapNum))){
@@ -198,8 +198,8 @@ export class Parser {
     parseSearchResults($: CheerioSelector): MangaTile[] { 
         let mangaTiles: MangaTile[] = []
         let collectedIds: string[] = []
-        for(let obj of $('.cartoon-box').toArray()) {
-            let id = $('a', $(obj)).attr('href')?.replace(`${READCOMICTO_DOMAIN}/comic/`, '')
+        for(let obj of $('td', $('.barContent').first()).toArray()) {
+            let id = $('a', $(obj)).attr('href')?.replace('/Comic/', '')
             let titleText = this.decodeHTMLEntity($('h3', $(obj)).text())
             let image = $('img', $(obj)).attr('src')
       
