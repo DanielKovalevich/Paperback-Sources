@@ -6,6 +6,7 @@ import {
     MangaUpdates,
     PagedResults,
     SearchRequest,
+    RequestHeaders,
     Source,
     SourceInfo,
     TagSection,
@@ -34,7 +35,12 @@ export const ReadComicsToInfo: SourceInfo = {
 }
 
 export class ReadComicsTo extends Source {
+
+
+    baseUrl: string = READCOMICSTO_DOMAIN
+    userAgentRandomizer: string = `Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:77.0) Gecko/20100101 Firefox/78.0${Math.floor(Math.random() * 100000)}`
     parser = new Parser()
+
 
     getMangaShareUrl(mangaId: string): string | null {
         return `${READCOMICSTO_DOMAIN}/Comic/${mangaId}`
@@ -44,11 +50,13 @@ export class ReadComicsTo extends Source {
 
         let request = createRequestObject({
             url: `${READCOMICSTO_DOMAIN}/Comic/${mangaId}`,
-            method: 'GET'
+            method: 'GET',
+            headers: this.constructHeaders({})
         })
         const data = await this.requestManager.schedule(request, 1)
 
         let $ = this.cheerio.load(data.data)
+        
 
         return this.parser.parseMangaDetails($, mangaId)
     }
@@ -269,6 +277,37 @@ export class ReadComicsTo extends Source {
             results: manga,
             metadata: mData
         })
+    }
+    
+
+    constructHeaders(headers: any, refererPath?: string): any {
+        if(this.userAgentRandomizer !== '') {
+            headers["user-agent"] = this.userAgentRandomizer
+        }
+        headers["referer"] = `${this.baseUrl}${refererPath ?? ''}`
+        return headers
+    }
+
+    globalRequestHeaders(): RequestHeaders {
+        if(this.userAgentRandomizer !== '') {
+            return {
+                "referer": `${this.baseUrl}/`,
+                "user-agent": this.userAgentRandomizer,
+                "accept": "image/jpeg,image/png,image/*;q=0.8"
+            }
+        }
+        else {
+            return {
+                "referer": `${this.baseUrl}/`,
+                "accept": "image/jpeg,image/png,image/*;q=0.8"
+            }
+        }
+    }
+
+    CloudFlareError(status: any) {
+        if(status == 503) {
+            throw new Error('CLOUDFLARE BYPASS ERROR:\nPlease go to Settings > Sources > \<\The name of this source\> and press Cloudflare Bypass')
+        }
     }
 
 }

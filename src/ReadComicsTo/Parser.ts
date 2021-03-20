@@ -3,8 +3,7 @@ import {Chapter, LanguageCode, Manga, MangaStatus, MangaTile, Tag, TagSection} f
 const READCOMICTO_DOMAIN = 'https://readcomiconline.to'
 
 export class Parser {
-
-    
+  
     parseMangaDetails($: CheerioSelector, mangaId: string): Manga {
     
 
