@@ -195,13 +195,14 @@ export class Parser {
     
 }
 
-    parseSearchResults($: CheerioSelector): MangaTile[] { 
+    parseSearchResults($: CheerioSelector, cheerio: any): MangaTile[] { 
         let mangaTiles: MangaTile[] = []
         let collectedIds: string[] = []
-        for(let obj of $('td', $('.barContent').first()).toArray()) {
-            let id = $('a', $(obj)).attr('href')?.replace('/Comic/', '')
-            let titleText = this.decodeHTMLEntity($('h3', $(obj)).text())
-            let image = $('img', $(obj)).attr('src')
+        for(let obj of $('td', $('.listing')).toArray()) {
+            let id = $(obj).attr('href')?.replace('/Comic/', '')
+            let titleText = $(obj).text()
+            let imageCheerio = cheerio.load($(obj).attr('title'))
+            let image = `${READCOMICTO_DOMAIN}${imageCheerio('img').attr('src')}`
       
             if(titleText == "Not found") continue // If a search result has no data, the only cartoon-box object has "Not Found" as title. Ignore.
             if (typeof id === 'undefined' || typeof image === 'undefined') continue
