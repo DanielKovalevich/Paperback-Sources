@@ -310,4 +310,21 @@ export class ReadComicsTo extends Source {
         }
     }
 
+
+    constructSearchRequest(searchQuery: string): any {
+        let isSearch = searchQuery != ''
+        let data: any = {
+            "comicName": searchQuery,
+        }
+
+        return createRequestObject({
+            url: `${READCOMICSTO_DOMAIN}/AdvanceSearch`,
+            method: 'POST',
+            headers: this.constructHeaders({
+                "content-type": "application/x-www-form-urlencoded"
+            }),
+            data: this.urlEncodeObject(data),
+        })
+    }
+
 }
