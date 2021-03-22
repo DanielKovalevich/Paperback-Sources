@@ -83,7 +83,8 @@ export const parseManganeloMangaDetails = ($: CheerioStatic, mangaId: string): M
     follows,
     lastUpdate,
     desc: summary,
-    hentai
+    //hentai
+    hentai: false
   })
 }
 

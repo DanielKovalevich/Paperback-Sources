@@ -17,7 +17,7 @@ const MP_DOMAIN = 'https://mangapark.net'
 const method = 'GET'
 
 export const MangaParkInfo: SourceInfo = {
-	version: '2.0.0',
+	version: '2.0.1',
 	name: 'MangaPark',
 	icon: 'icon.png',
 	author: 'Daniel Kovalevich',

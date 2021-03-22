@@ -19,7 +19,7 @@ const headers = { "content-type": "application/x-www-form-urlencoded" }
 const method = 'GET'
 
 export const MangaseeInfo: SourceInfo = {
-  version: '2.1.6',
+  version: '2.1.7',
   name: 'Mangasee',
   icon: 'Logo.png',
   author: 'Daniel Kovalevich',
