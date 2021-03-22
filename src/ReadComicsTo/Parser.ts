@@ -198,14 +198,19 @@ export class Parser {
     parseSearchResults($: CheerioSelector, cheerio: any): MangaTile[] { 
         let mangaTiles: MangaTile[] = []
         let collectedIds: string[] = []
-        for(let obj of $('td', $('.listing')).toArray()) {
-            let id = $(obj).attr('href')?.replace('/Comic/', '')
-            let titleText = $(obj).text()
-            let imageCheerio = cheerio.load($(obj).attr('title'))
+        for(let obj of $('tr', $('.listing')).toArray()) {
+            
+            let titleText = $('a',$(obj)).text().replace('\n','').trim()
+            let id = $('a',$(obj)).attr('href')?.replace('/Comic/', '')
+            if(!titleText) { 
+              continue
+            
+            }
+            //Tooltip Selecting 
+            let imageCheerio = cheerio.load($('td', $(obj)).first().attr('title') ?? '')
             let image = `${READCOMICTO_DOMAIN}${imageCheerio('img').attr('src')}`
-      
-            if(titleText == "Not found") continue // If a search result has no data, the only cartoon-box object has "Not Found" as title. Ignore.
-            if (typeof id === 'undefined' || typeof image === 'undefined') continue
+
+            if (typeof id === 'undefined' || typeof image === 'undefined' ) continue
             if(!collectedIds.includes(id)) {
             mangaTiles.push(createMangaTile({
                 id: id,
@@ -217,7 +222,6 @@ export class Parser {
     }
     return mangaTiles
     }
-
     parseTags($: CheerioSelector): TagSection[] {
         
         let tagSections: TagSection[] = [createTagSection({ id: '0', label: 'genres', tags: [] }),
