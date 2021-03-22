@@ -154,18 +154,16 @@ export class ReadComicsTo extends Source {
         }
     }
 
-    async searchRequest(query: SearchRequest, metadata: any): Promise<PagedResults> {
+    async searchRequest(query: SearchRequest, metadata: any, ): Promise<PagedResults> {
         let page: number = metadata?.page ?? 1
 
-        let request = createRequestObject({
-            url: `${READCOMICSTO_DOMAIN}/comic-search`,
-            method: "GET",
-            param: `?key=${encodeURIComponent(query.title ?? '')}&page=${page}`
-        })
+        let request = this.constructSearchRequest(query.title??'')
+
+
 
         let data = await this.requestManager.schedule(request, 1)
         let $ = this.cheerio.load(data.data)
-        let manga = this.parser.parseSearchResults($)
+        let manga = this.parser.parseSearchResults($,this.cheerio)
         let mData = undefined
         if (!this.parser.isLastPage($)) {
             mData = {page: (page + 1)}
@@ -318,11 +316,9 @@ export class ReadComicsTo extends Source {
         }
 
         return createRequestObject({
-            url: `${READCOMICSTO_DOMAIN}/AdvanceSearch`,
+            url: `${READCOMICSTO_DOMAIN}/Search/Comic`,
             method: 'POST',
-            headers: this.constructHeaders({
-                "content-type": "application/x-www-form-urlencoded"
-            }),
+            headers: this.constructHeaders({}),
             data: this.urlEncodeObject(data),
         })
     }
