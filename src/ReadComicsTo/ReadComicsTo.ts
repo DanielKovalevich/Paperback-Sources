@@ -283,6 +283,7 @@ export class ReadComicsTo extends Source {
             headers["user-agent"] = this.userAgentRandomizer
         }
         headers["referer"] = `${this.baseUrl}${refererPath ?? ''}`
+        headers["content-type"] = "application/x-www-form-urlencoded"
         return headers
     }
 
@@ -312,7 +313,7 @@ export class ReadComicsTo extends Source {
     constructSearchRequest(searchQuery: string): any {
         let isSearch = searchQuery != ''
         let data: any = {
-            "comicName": searchQuery,
+            "keyword": searchQuery,
         }
 
         return createRequestObject({
