@@ -64,7 +64,7 @@ export class ReadComicsTo extends Source {
 
     async getChapters(mangaId: string): Promise<Chapter[]> {
         let request = createRequestObject({
-            url: `${READCOMICSTO_DOMAIN}/comic/${mangaId}`,
+            url: `${READCOMICSTO_DOMAIN}/Comic/${mangaId}`,
             method: "GET"
         })
 
@@ -73,15 +73,16 @@ export class ReadComicsTo extends Source {
 
         let chapters = this.parser.parseChapterList($, mangaId)
 
-        return this.parser.sortChapters(chapters)
+        return chapters
     }
 
 
     async getChapterDetails(mangaId: string, chapterId: string): Promise<ChapterDetails> {
 
         let request = createRequestObject({
-            url: `${READCOMICSTO_DOMAIN}/${mangaId}/${chapterId}/&readType=1`,
+            url: `${READCOMICSTO_DOMAIN}/${mangaId}/${chapterId}`,
             method: 'GET',
+            param: '?readType=1&quality=hq'
         })
 
         let data = await this.requestManager.schedule(request, 1)
@@ -124,35 +125,7 @@ export class ReadComicsTo extends Source {
         })
     }
 
-    async filterUpdatedManga(mangaUpdatesFoundCallback: (updates: MangaUpdates) => void, time: Date, ids: string[]): Promise<void> {
 
-        let loadNextPage: boolean = true
-        let currPageNum: number = 1
-        
-
-        while (loadNextPage) {
-
-            let request = createRequestObject({
-                url: `${READCOMICSTO_DOMAIN}/ComicList/LatestUpdate`,
-                method: 'GET',
-                param: `?page=${currPageNum}`
-            })
-
-            let data = await this.requestManager.schedule(request, 1)
-            let $ = this.cheerio.load(data.data)
-
-            let updatedComics = this.parser.filterUpdatedManga($, time, ids)
-            loadNextPage = updatedComics.loadNextPage
-            if (loadNextPage) {
-                currPageNum++
-            }
-            if (updatedComics.updates.length > 0) {
-                mangaUpdatesFoundCallback(createMangaUpdates({
-                    ids: updatedComics.updates
-                }))
-            }
-        }
-    }
 
     async searchRequest(query: SearchRequest, metadata: any, ): Promise<PagedResults> {
         let page: number = metadata?.page ?? 1
@@ -257,15 +230,15 @@ export class ReadComicsTo extends Source {
         let page: number = metadata?.page ?? 1
         switch (homepageSectionId) {
             case '0': {
-                webPage = `/new-comic/${page}`
+                webPage = `/ComicList/Newest?page=${page}`
                 break
             }
             case '1': {
-                webPage = `/recent-comic/${page}`
+                webPage = `/ComicList/LatestUpdate?page=${page}`
                 break
             }
             case '2': {
-                webPage = `/popular-comic/${page}`
+                webPage = `/ComicList/MostPopular?page=${page}`
                 break
             }
             default:
@@ -274,7 +247,8 @@ export class ReadComicsTo extends Source {
 
         let request = createRequestObject({
             url: `${READCOMICSTO_DOMAIN}${webPage}`,
-            method: 'GET'
+            method: 'GET',
+            headers: this.constructHeaders({})
         })
 
         let data = await this.requestManager.schedule(request, 1)

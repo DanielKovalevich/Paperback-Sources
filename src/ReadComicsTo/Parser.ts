@@ -53,41 +53,29 @@ export class Parser {
     
     let chapters: Chapter[] = []
 
-      for(let obj of $('tr', $('.barContent.episodeList').first()).toArray()) {
-        let chapterId = $('a', $(obj)).attr('href')?.replace(`${READCOMICTO_DOMAIN}/${mangaId}/`, '')
-        let chapNum = chapterId?.replace(`chapter-`, '').trim()
-        if(isNaN(Number(chapNum))){
-          chapNum = `0.${chapNum?.replace( /^\D+/g, '')}`
-            if(isNaN(Number(chapNum))){
-                chapNum = '0'
-            }
-        }
-        let chapName = $('a', $(obj)).text()
-        let time = $($('td', $(obj)).toArray()[1]).text()
-        if (typeof chapterId === 'undefined') continue
-        chapters.push(createChapter({
-            id: chapterId,
-            mangaId: mangaId,
-            chapNum: Number(chapNum),
-            langCode: LanguageCode.ENGLISH,
-            name: this.decodeHTMLEntity(chapName),
-            time: new Date(time)
-        }))
-    }
-    return chapters
+    let chapArray = $('tr', $('.listing').first()).toArray().reverse()
+    for(let i = 0; i < chapArray.length; i++) {
+           let obj = chapArray[i]
+           let chapterId = $('a', obj)?.first().attr('href')?.replace(`/Comic/${mangaId}/`, '')
+           let chapter = $('td', obj).first()
+           let chapNum = i + 1
+           let chapName = chapter.text().trim()
+           let time = $('td', $(obj)).last().text().trim()
+           if (typeof chapterId === 'undefined') continue
+           chapters.push(createChapter({
+               id: chapterId,
+               mangaId: mangaId,
+               chapNum: Number(chapNum),
+               langCode: LanguageCode.ENGLISH,
+               name: this.decodeHTMLEntity(chapName),
+               time: new Date(time)
+           }))
+       }
+       return chapters
 }
 
 
-    sortChapters(chapters: Chapter[]) : Chapter[] {
-        let sortedChapters: Chapter[] = []
-        chapters.forEach((c) => {
-            if (sortedChapters[sortedChapters.indexOf(c)]?.id !== c?.id) {
-              sortedChapters.push(c)
-            }
-          })
-          sortedChapters.sort((a, b) => (a.id > b.id) ? 1 : -1)
-          return sortedChapters
-    }
+
 
 
     parseChapterDetails($: CheerioSelector) : string[] {
@@ -101,37 +89,6 @@ export class Parser {
         return pages
     }
 
-    filterUpdatedManga($: CheerioSelector, time: Date, ids: string[] ) : {updates: string[], loadNextPage : boolean} {
-    
-    let foundIds: string[] = []
-    let passedReferenceTime = false
-    for (let item of $('.hlb-t').toArray()) {
-      let id = ($('a', item).first().attr('href') ?? '')?.replace(`${READCOMICTO_DOMAIN}/comic/`, '')!.trim() ?? ''
-      let mangaTime = new Date(time)
-      if($('.date', item).first().text().trim().toLowerCase() === "yesterday") {
-        mangaTime = new Date(Date.now())
-        mangaTime.setDate(new Date(Date.now()).getDate() - 1)
-      }
-      else {
-        mangaTime = new Date($('.date', item).first().text()) 
-      }
-      passedReferenceTime = mangaTime <= time
-      if (!passedReferenceTime) {
-        if (ids.includes(id)) {
-          foundIds.push(id)
-        }
-      }
-      else break
-    }
-    if(!passedReferenceTime) {
-        return {updates: foundIds, loadNextPage: true}
-    }
-    else {
-        return {updates: foundIds, loadNextPage: false}
-    }
-
-    
-}
 
     parseSearchResults($: CheerioSelector, cheerio: any): MangaTile[] { 
         let mangaTiles: MangaTile[] = []
@@ -203,13 +160,9 @@ export class Parser {
   return tiles
     }
     isLastPage($: CheerioSelector): boolean {
-      for(let obj of $('a', $('.general-nav')).toArray()) {
-        if($(obj).text().trim().toLowerCase() == 'next') {
-          return false
-        }
-      }
-      return true
+      return !$('.pager').text().includes('Next')
     }
+
     
     decodeHTMLEntity(str: string): string {
         return str.replace(/&#(\d+);/g, function (match, dec) {
