@@ -18,12 +18,12 @@ import {Parser,} from './Parser'
 const READCOMICSTO_DOMAIN = 'https://readcomiconline.to'
 
 export const ReadComicsToInfo: SourceInfo = {
-    version: '1.0.0',
+    version: '1.0.1',
     name: 'ReadComicsOnlineTo',
     description: 'Extension that pulls western comics from readcomiconline.to',
     author: 'Aurora',
     authorWebsite: 'https://github.com/Aur0raN',
-    icon: "icon.png",
+    icon: "logo.png",
     hentaiSource: false,
     websiteBaseURL: READCOMICSTO_DOMAIN,
     sourceTags: [

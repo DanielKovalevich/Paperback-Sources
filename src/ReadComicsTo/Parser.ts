@@ -15,84 +15,22 @@ export class Parser {
 
     let tagArray0 : Tag[] = []
     let i = 0
-    for (let item of $('p', $('.barContent > div').first()).toArray()) {
-      switch (i) {
-        case 0: {
-          // Genre
-          for(let obj of $('a',$(item)).toArray()){
-            let id = $(obj).attr('href')
-            let label = $(obj).text().trim()
-            if (typeof id === 'undefined' || typeof label === 'undefined') continue
-            tagArray0 = [...tagArray0, createTag({id: id, label: label})]
-          }    
-          i++
-          continue
-        }
-        case 1: {
-          // Skipped Publisher
+    let infoElement = $("div.barContent").first()
+    artist =this.decodeHTMLEntity($('p:has(span:contains(Artist:)) > a', infoElement).first().text())
+    author = ($('p:has(span:contains(Writer:)) > a', infoElement).first().text())
+    summary = ($('p:has(span:contains(Summary:)) ~ p', infoElement).text())
+    released = this.decodeHTMLEntity($('p:has(span:contains(Publication date:))', infoElement).first().text()).replace('Publication date:', '').trim()
+    
+    let statusViewsParagraph = $('p:has(span:contains(Status:))', infoElement).first().text().toLowerCase()
+    status = statusViewsParagraph.includes('ongoing') ? MangaStatus.ONGOING : MangaStatus.COMPLETED
+    views = Number(statusViewsParagraph.replace('\n', '').split('\n')[1]?.trim()?.replace(/\D/g, ''))
 
-          i++
-          continue
-        }
-        case 2: {
-          // Author/Writer
-          author = ($('a', $(item)).text().trim()) ?? undefined
-          i++
-          continue
-        }
-        case 3: {
- 
-          artist = ($('a', $(item)).text().trim()) ?? undefined
-          i++
-          continue
-          }
-        case 4: {
-          // Released/Publication Date
-
-          released = $(item).text().trim().replace('Publication date: ', '')
-  
-          i++
-          continue
-        }
-
-        case 5: {
-          //Manga Status and Views 
-          let arr = $(item).text().trim().toLowerCase().split('\n')
-          if (arr[0]?.trim().includes("ongoing")){
-            status = MangaStatus.ONGOING
-          }
-
-          else {
-            status = MangaStatus.COMPLETED
-          }
-
-          views = Number(arr[1]?.replace(/\D/g, ''))
-
-
-
-
-          i++
-          continue
-        }
-
-        case 6: {
-
-          
-          i++
-          continue
-        }
-
-        case 7:{
-
-          //Summary
-
-          summary = $(item).text().trim()
-
-
-        }
-
-      }
-      i = 0
+    let genres = $('p:has(span:contains(Genres:)) > a', infoElement).toArray()
+    for (let obj of genres) {
+        let id = $(obj).attr('href')
+        let label = this.decodeHTMLEntity($(obj).text().trim())
+        if (typeof id === 'undefined' || typeof label === 'undefined') continue
+        tagArray0 = [...tagArray0, createTag({id: id, label: label})]
     }
     let tagSections: TagSection[] = [createTagSection({ id: '0', label: 'genres', tags: tagArray0 })]
       return createManga({
@@ -200,7 +138,7 @@ export class Parser {
         let collectedIds: string[] = []
         for(let obj of $('tr', $('.listing')).toArray()) {
             
-            let titleText = $('a',$(obj)).text().replace('\n','').trim()
+            let titleText = this.decodeHTMLEntity($('a',$(obj)).text().replace('\n','').trim())
             let id = $('a',$(obj)).attr('href')?.replace('/Comic/', '')
             if(!titleText) { 
               continue
