@@ -90,7 +90,7 @@ export class ReadComicsTo extends Source {
         let data = await this.requestManager.schedule(request, 1)
 
         let $ = this.cheerio.load(data.data)
-        let unFilteredPages = this.parser.parseChapterDetails($)
+        let unFilteredPages = this.parser.parseChapterDetails(data.data)
         let pages: string[] = []
 
 
