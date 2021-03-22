@@ -18,7 +18,7 @@ import {Parser,} from './Parser'
 const READCOMICSTO_DOMAIN = 'https://readcomiconline.to'
 
 export const ReadComicsToInfo: SourceInfo = {
-    version: '1.0.1',
+    version: '1.0.0',
     name: 'ReadComicsOnlineTo',
     description: 'Extension that pulls western comics from readcomiconline.to',
     author: 'Aurora',
@@ -192,47 +192,63 @@ export class ReadComicsTo extends Source {
 
     async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
 
-        // Let the app know what the homesections are without filling in the data
-        let popularSection = createHomeSection({id: '2', title: 'POPULAR COMICS', view_more: true})
-        let recentSection = createHomeSection({id: '1', title: 'RECENTLY ADDED COMICS', view_more: true})
-        let newTitlesSection = createHomeSection({id: '0', title: 'LATEST COMICS', view_more: true})
-        sectionCallback(popularSection)
-        sectionCallback(recentSection)
-        sectionCallback(newTitlesSection)
+        const sections = [
+            {
+                request: createRequestObject({
+                    url: `${READCOMICSTO_DOMAIN}/ComicList/Newest`,
+                    method: 'GET',
+                    headers: this.constructHeaders({})
+                }),
+                section: createHomeSection({
+                    id: '0',
+                    title: 'NEWEST COMICS',
+                    view_more: true
+                }),
+            },
+            {
+                request: createRequestObject({
+                    url: `${READCOMICSTO_DOMAIN}/ComicList/LatestUpdate`,
+                    method: 'GET',
+                    headers: this.constructHeaders({})
+                }),
+                section: createHomeSection({
+                    id: '1',
+                    title: 'RECENTLY UPDATED',
+                    view_more: true,
+                }),
+            },
+            {
+                request: createRequestObject({
+                    url: `${READCOMICSTO_DOMAIN}/ComicList/MostPopular`,
+                    method: 'GET',
+                    headers: this.constructHeaders({})
+                }),
+                section: createHomeSection({
+                    id: '2',
+                    title: 'MOST POPULAR',
+                    view_more: true,
+                }),
+            },
+        ]
 
-        // Make the request and fill out available titles
-        let request = createRequestObject({
-            url: `${READCOMICSTO_DOMAIN}/popular-comic`,
-            method: 'GET'
-        })
+        const promises: Promise<void>[] = []
 
-        const popularData = await this.requestManager.schedule(request, 1)
-        let $ = this.cheerio.load(popularData.data)
+        for (const section of sections) {
+            // Let the app load empty sections
+            sectionCallback(section.section)
 
-        popularSection.items = this.parser.parseHomePageSection($)
-        sectionCallback(popularSection)
+            // Get the section data
+            promises.push(
+                this.requestManager.schedule(section.request, 1).then(response => {
+                    const $ = this.cheerio.load(response.data)
+                    section.section.items = this.parser.parseSearchResults($, this.cheerio)
+                    sectionCallback(section.section)
+                }),
+            )
+        }
 
-        request = createRequestObject({
-            url: `${READCOMICSTO_DOMAIN}/recent-comic`,
-            method: 'GET'
-        })
-
-        const recentData = await this.requestManager.schedule(request, 1)
-        $ = this.cheerio.load(recentData.data)
-
-        recentSection.items = this.parser.parseHomePageSection($)
-        sectionCallback(recentSection)
-
-        request = createRequestObject({
-            url: `${READCOMICSTO_DOMAIN}/new-comic`,
-            method: 'GET'
-        })
-
-        const newData = await this.requestManager.schedule(request, 1)
-        $ = this.cheerio.load(newData.data)
-
-        newTitlesSection.items = this.parser.parseHomePageSection($)
-        sectionCallback(newTitlesSection)
+        // Make sure the function completes
+        await Promise.all(promises)
     }
 
 
@@ -263,7 +279,7 @@ export class ReadComicsTo extends Source {
 
         let data = await this.requestManager.schedule(request, 1)
         let $ = this.cheerio.load(data.data)
-        let manga = this.parser.parseHomePageSection($)
+        let manga = this.parser.parseHomePageSection($,this.cheerio)
         let mData
         if (!this.parser.isLastPage($)) {
             mData = {page: (page + 1)}

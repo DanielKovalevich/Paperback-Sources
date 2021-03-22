@@ -174,26 +174,33 @@ export class Parser {
         return tagSections
     }
 
-    parseHomePageSection($ : CheerioSelector): MangaTile[]{
+    parseHomePageSection($ : CheerioSelector, cheerio:any): MangaTile[]{
         
-        let tiles: MangaTile[] = []
-        let collectedIds: string[] = []
-        for(let obj of $('.cartoon-box').toArray()) {
-            let id = $('a', $(obj)).attr('href')?.replace(`${READCOMICTO_DOMAIN}/comic/`, '')
-            let titleText = this.decodeHTMLEntity($('h3', $(obj)).text().trim())
-            let image = $('img', $(obj)).attr('src')
+      let tiles: MangaTile[] = []
+      let collectedIds: string[] = []
+      for(let obj of $('tr', $('.listing')).toArray()) {
+          
+          let titleText = this.decodeHTMLEntity($('a',$(obj)).text().replace('\n','').trim())
+          let id = $('a',$(obj)).attr('href')?.replace('/Comic/', '')
+          if(!titleText) { 
+            continue
+          
+          }
+          //Tooltip Selecting 
+          let imageCheerio = cheerio.load($('td', $(obj)).first().attr('title') ?? '')
+          let image = `${READCOMICTO_DOMAIN}${imageCheerio('img').attr('src')}`
 
-            if (typeof id === 'undefined' || typeof image === 'undefined') continue
-            if(!collectedIds.includes(id)) {
-            tiles.push(createMangaTile({
-                id: id,
-                title: createIconText({text: titleText}),
-                image: image
-            }))
-            collectedIds.push(id)
+          if (typeof id === 'undefined' || typeof image === 'undefined' ) continue
+          if(!collectedIds.includes(id)) {
+          tiles.push(createMangaTile({
+              id: id,
+              title: createIconText({text: titleText}),
+              image: image
+          }))
+          collectedIds.push(id)
         }
-      }
-        return tiles
+  }
+  return tiles
     }
     isLastPage($: CheerioSelector): boolean {
       for(let obj of $('a', $('.general-nav')).toArray()) {
