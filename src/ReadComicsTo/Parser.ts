@@ -80,10 +80,8 @@ export class Parser {
 
     parseChapterDetails(data: string) : string[] {
         
-      let pages = data.match(/lstImages.push("(http.*)")/g)
-      if(!pages) return ['']
-      if (typeof pages === 'string') pages = ['', pages]
-      return pages.slice(1)
+      let pages = [...data.matchAll(/lstImages\.push\("(http.*)"\)/g)]
+      return pages.map(match => match[1])
     }
 
 
