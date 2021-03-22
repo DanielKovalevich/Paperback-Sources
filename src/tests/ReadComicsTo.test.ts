@@ -15,7 +15,7 @@ describe('ReadComicsTo Tests', function () {
      * Try to choose a manga which is updated frequently, so that the historical checking test can 
      * return proper results, as it is limited to searching 30 days back due to extremely long processing times otherwise.
      */
-    var mangaId = "100-Girls";
+    var mangaId = "The-Amazing-Spider-Man-1963";
 
     it("Retrieve Manga Details", async () => {
         let details = await wrapper.getMangaDetails(source, mangaId);
