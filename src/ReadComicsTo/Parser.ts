@@ -81,7 +81,7 @@ export class Parser {
     parseChapterDetails($: CheerioSelector) : string[] {
         let pages: string[] = []
         // Get all of the pages
-        for(let obj of $('img',$('.chapter-container')).toArray()) {
+        for(let obj of $('img', $('div#divImage')).toArray()) {
           let page = $(obj).attr('src')
           if(typeof page === 'undefined') continue  
           pages.push(page)

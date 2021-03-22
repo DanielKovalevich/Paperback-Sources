@@ -65,7 +65,8 @@ export class ReadComicsTo extends Source {
     async getChapters(mangaId: string): Promise<Chapter[]> {
         let request = createRequestObject({
             url: `${READCOMICSTO_DOMAIN}/Comic/${mangaId}`,
-            method: "GET"
+            method: "GET",
+            headers: this.constructHeaders({})
         })
 
         const data = await this.requestManager.schedule(request, 1)
@@ -80,9 +81,10 @@ export class ReadComicsTo extends Source {
     async getChapterDetails(mangaId: string, chapterId: string): Promise<ChapterDetails> {
 
         let request = createRequestObject({
-            url: `${READCOMICSTO_DOMAIN}/${mangaId}/${chapterId}`,
+            url: `${READCOMICSTO_DOMAIN}/Comic/${mangaId}/${chapterId}`,
             method: 'GET',
-            param: '?readType=1&quality=hq'
+            param: '?readType=1&quality=hq',
+            headers: this.constructHeaders({})
         })
 
         let data = await this.requestManager.schedule(request, 1)
@@ -91,31 +93,7 @@ export class ReadComicsTo extends Source {
         let unFilteredPages = this.parser.parseChapterDetails($)
         let pages: string[] = []
 
-        const fallback = 'https://cdn.discordapp.com/attachments/549267639881695289/801836271407726632/fallback.png'
-        // Fallback if empty
-        if (unFilteredPages.length < 1) {
-            pages.push(fallback)
-        } else {
-            // Filter out 404 status codes
-            request = createRequestObject({
-                url: `${unFilteredPages[0]}`,
-                method: 'HEAD',
-            })
-            // Try/catch is because the testing framework throws an error on 404
-            try {
-                data = await this.requestManager.schedule(request, 1)
-                if (data.status == 404) {
-                    pages.push(fallback)
-                } else {
-                    for (let page of unFilteredPages) {
-                        pages.push(page)
-                    }
-                }
-            } catch {
-                pages.push(fallback)
-            }
 
-        }
 
         return createChapterDetails({
             id: chapterId,
