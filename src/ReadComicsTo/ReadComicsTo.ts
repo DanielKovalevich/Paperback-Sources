@@ -26,12 +26,7 @@ export const ReadComicsToInfo: SourceInfo = {
     icon: "logo.png",
     hentaiSource: false,
     websiteBaseURL: READCOMICSTO_DOMAIN,
-    sourceTags: [
-        {
-            text: "Experimental",
-            type: TagType.RED
-        }
-    ]
+    sourceTags: []
 }
 
 export class ReadComicsTo extends Source {
