@@ -94,7 +94,7 @@ export class Parser {
             
             let titleText = this.decodeHTMLEntity($('a',$(obj)).text().replace('\n','').trim())
             let id = $('a',$(obj)).attr('href')?.replace('/Comic/', '')
-            if(!titleText) { 
+            if(!titleText || !id) { 
               continue
             
             }
