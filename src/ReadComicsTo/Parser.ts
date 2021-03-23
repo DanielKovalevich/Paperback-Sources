@@ -63,7 +63,7 @@ export class Parser {
            let chapNum = i + 1
            let chapName = chapter.text().trim()
            let time = $('td', $(obj)).last().text().trim()
-           if (typeof chapterId === 'undefined') continue
+           if (typeof chapterId === 'undefined' || !time || isNaN(chapNum)) continue
            chapters.push(createChapter({
                id: chapterId,
                mangaId: mangaId,
