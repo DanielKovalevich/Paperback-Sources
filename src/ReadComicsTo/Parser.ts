@@ -142,7 +142,8 @@ export class Parser {
           }
           //Tooltip Selecting 
           let imageCheerio = cheerio.load($('td', $(obj)).first().attr('title') ?? '')
-          let image = this.decodeHTMLEntity(`${READCOMICTO_DOMAIN}${imageCheerio('img').attr('src')}`)
+          let url = this.decodeHTMLEntity(imageCheerio('img').attr('src'))
+          let image = url.includes('http') ? url : `${READCOMICTO_DOMAIN}${url}`
 
           if (typeof id === 'undefined' || typeof image === 'undefined' ) continue
           if(!collectedIds.includes(id)) {

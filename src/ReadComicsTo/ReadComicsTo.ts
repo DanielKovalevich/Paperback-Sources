@@ -128,17 +128,17 @@ export class ReadComicsTo extends Source {
     }
 
 
-    async getTags(): Promise<TagSection[] | null> {
-        const request = createRequestObject({
-            url: `${READCOMICSTO_DOMAIN}/comic-genres/`,
-            method: 'GET'
-        })
+    // async getTags(): Promise<TagSection[] | null> {
+    //     const request = createRequestObject({
+    //         url: `${READCOMICSTO_DOMAIN}/comic-genres/`,
+    //         method: 'GET'
+    //     })
 
-        const data = await this.requestManager.schedule(request, 1)
-        let $ = this.cheerio.load(data.data)
+    //     const data = await this.requestManager.schedule(request, 1)
+    //     let $ = this.cheerio.load(data.data)
 
-        return this.parser.parseTags($)
-    }
+    //     return this.parser.parseTags($)
+    // }
 
 
     async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
