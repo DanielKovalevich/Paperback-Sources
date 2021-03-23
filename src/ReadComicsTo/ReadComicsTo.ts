@@ -36,6 +36,11 @@ export const ReadComicsToInfo: SourceInfo = {
 
 export class ReadComicsTo extends Source {
 
+    requestManager = createRequestManager({
+        requestsPerSecond: 2.5,
+        requestTimeout: 15000,
+      })
+
 
     baseUrl: string = READCOMICSTO_DOMAIN
     userAgentRandomizer: string = `Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:77.0) Gecko/20100101 Firefox/78.0${Math.floor(Math.random() * 100000)}`
