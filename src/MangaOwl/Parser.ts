@@ -90,7 +90,7 @@ export class Parser {
     }
 
 
-    parseSearchResults($: CheerioSelector, cheerio: any): MangaTile[] { 
+    parseSearchResults($: CheerioSelector): MangaTile[] { 
       let searchResults = $('.flexslider .comicView').toArray()
       let mangaIdRegex = /(?:single\/)(\w+)/gi 
       let mangas = []

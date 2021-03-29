@@ -23,7 +23,7 @@ export const MangaOwlInfo: SourceInfo = {
     description: 'Extension that pulls manga from MangaOwl, includes Advanced Search and Updated manga fetching',
     author: 'Grimes',
     authorWebsite: 'https://github.com/Synstress',
-    icon: "logo.png",
+    icon: "icon.png",
     hentaiSource: false,
     websiteBaseURL: MANGAOWL_DOMAIN,
     sourceTags: []
@@ -78,9 +78,9 @@ export class MangaOwl extends Source {
     async getChapterDetails(mangaId: string, chapterId: string): Promise<ChapterDetails> {
 
         let request = createRequestObject({
-            url: `${MANGAOWL_DOMAIN}/single/${mangaId}`,
+            url: `${MANGAOWL_DOMAIN}/reader/${mangaId}/${chapterId}`,
             method: 'GET',
-            param: '?readType=1&quality=hq',
+        
             
         })
 
@@ -107,11 +107,13 @@ export class MangaOwl extends Source {
 
         let request = this.constructSearchRequest(query.title??'')
 
+        
+
 
 
         let data = await this.requestManager.schedule(request, 1)
         let $ = this.cheerio.load(data.data)
-        let manga = this.parser.parseSearchResults($,this.cheerio)
+        let manga = this.parser.parseSearchResults($)
         let mData = undefined
         if (!this.parser.isLastPage($)) {
             mData = {page: (page + 1)}
@@ -138,109 +140,109 @@ export class MangaOwl extends Source {
     // }
 
 
-    async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
+    // async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
 
-        const sections = [
-            {
-                request: createRequestObject({
-                    url: `${MANGAOWL_DOMAIN}/ComicList/Newest`,
-                    method: 'GET',
+    //     const sections = [
+    //         {
+    //             request: createRequestObject({
+    //                 url: `${MANGAOWL_DOMAIN}/ComicList/Newest`,
+    //                 method: 'GET',
                    
-                }),
-                section: createHomeSection({
-                    id: '0',
-                    title: 'NEWEST COMICS',
-                    view_more: true
-                }),
-            },
-            {
-                request: createRequestObject({
-                    url: `${MANGAOWL_DOMAIN}/ComicList/LatestUpdate`,
-                    method: 'GET',
+    //             }),
+    //             section: createHomeSection({
+    //                 id: '0',
+    //                 title: 'NEWEST COMICS',
+    //                 view_more: true
+    //             }),
+    //         },
+    //         {
+    //             request: createRequestObject({
+    //                 url: `${MANGAOWL_DOMAIN}/ComicList/LatestUpdate`,
+    //                 method: 'GET',
                     
-                }),
-                section: createHomeSection({
-                    id: '1',
-                    title: 'RECENTLY UPDATED',
-                    view_more: true,
-                }),
-            },
-            {
-                request: createRequestObject({
-                    url: `${MANGAOWL_DOMAIN}/ComicList/MostPopular`,
-                    method: 'GET',
+    //             }),
+    //             section: createHomeSection({
+    //                 id: '1',
+    //                 title: 'RECENTLY UPDATED',
+    //                 view_more: true,
+    //             }),
+    //         },
+    //         {
+    //             request: createRequestObject({
+    //                 url: `${MANGAOWL_DOMAIN}/ComicList/MostPopular`,
+    //                 method: 'GET',
                     
-                }),
-                section: createHomeSection({
-                    id: '2',
-                    title: 'MOST POPULAR',
-                    view_more: true,
-                }),
-            },
-        ]
+    //             }),
+    //             section: createHomeSection({
+    //                 id: '2',
+    //                 title: 'MOST POPULAR',
+    //                 view_more: true,
+    //             }),
+    //         },
+    //     ]
 
-        const promises: Promise<void>[] = []
+    //     const promises: Promise<void>[] = []
 
-        for (const section of sections) {
-            // Let the app load empty sections
-            sectionCallback(section.section)
+    //     for (const section of sections) {
+    //         // Let the app load empty sections
+    //         sectionCallback(section.section)
 
-            // Get the section data
-            promises.push(
-                this.requestManager.schedule(section.request, 1).then(response => {
-                    const $ = this.cheerio.load(response.data)
-                    section.section.items = this.parser.parseSearchResults($, this.cheerio)
-                    sectionCallback(section.section)
-                }),
-            )
-        }
+    //         // Get the section data
+    //         promises.push(
+    //             this.requestManager.schedule(section.request, 1).then(response => {
+    //                 const $ = this.cheerio.load(response.data)
+    //                 section.section.items = this.parser.parseSearchResults($, this.cheerio)
+    //                 sectionCallback(section.section)
+    //             }),
+    //         )
+    //     }
 
-        // Make sure the function completes
-        await Promise.all(promises)
-    }
+    //     // Make sure the function completes
+    //     await Promise.all(promises)
+    // }
 
 
-    async getViewMoreItems(homepageSectionId: string, metadata: any): Promise<PagedResults | null> {
-        let webPage = ''
-        let page: number = metadata?.page ?? 1
-        switch (homepageSectionId) {
-            case '0': {
-                webPage = `/ComicList/Newest?page=${page}`
-                break
-            }
-            case '1': {
-                webPage = `/ComicList/LatestUpdate?page=${page}`
-                break
-            }
-            case '2': {
-                webPage = `/ComicList/MostPopular?page=${page}`
-                break
-            }
-            default:
-                return Promise.resolve(null)
-        }
+    // async getViewMoreItems(homepageSectionId: string, metadata: any): Promise<PagedResults | null> {
+    //     let webPage = ''
+    //     let page: number = metadata?.page ?? 1
+    //     switch (homepageSectionId) {
+    //         case '0': {
+    //             webPage = `/ComicList/Newest?page=${page}`
+    //             break
+    //         }
+    //         case '1': {
+    //             webPage = `/ComicList/LatestUpdate?page=${page}`
+    //             break
+    //         }
+    //         case '2': {
+    //             webPage = `/ComicList/MostPopular?page=${page}`
+    //             break
+    //         }
+    //         default:
+    //             return Promise.resolve(null)
+    //     }
 
-        let request = createRequestObject({
-            url: `${MANGAOWL_DOMAIN}${webPage}`,
-            method: 'GET',
+    //     let request = createRequestObject({
+    //         url: `${MANGAOWL_DOMAIN}${webPage}`,
+    //         method: 'GET',
             
-        })
+    //     })
 
-        let data = await this.requestManager.schedule(request, 1)
-        let $ = this.cheerio.load(data.data)
-        let manga = this.parser.parseHomePageSection($,this.cheerio)
-        let mData
-        if (!this.parser.isLastPage($)) {
-            mData = {page: (page + 1)}
-        } else {
-            mData = undefined  // There are no more pages to continue on to, do not provide page metadata
-        }
+    //     let data = await this.requestManager.schedule(request, 1)
+    //     let $ = this.cheerio.load(data.data)
+    //     let manga = this.parser.parseHomePageSection($,this.cheerio)
+    //     let mData
+    //     if (!this.parser.isLastPage($)) {
+    //         mData = {page: (page + 1)}
+    //     } else {
+    //         mData = undefined  // There are no more pages to continue on to, do not provide page metadata
+    //     }
 
-        return createPagedResults({
-            results: manga,
-            metadata: mData
-        })
-    }
+    //     return createPagedResults({
+    //         results: manga,
+    //         metadata: mData
+    //     })
+    // }
     
 
 
@@ -255,13 +257,22 @@ export class MangaOwl extends Source {
     constructSearchRequest(searchQuery: string): any {
         let isSearch = searchQuery != ''
         let data: any = {
-            "keyword": searchQuery,
+            "search": searchQuery,
         }
 
         return createRequestObject({
-            url: `${MANGAOWL_DOMAIN}/Search/Comic`,
-            method: 'POST',
+            url: `${MANGAOWL_DOMAIN}/search/1?search=`,
+            method: 'GET',
             data: this.urlEncodeObject(data),
         })
+    }
+
+
+    getCloudflareBypassRequest(){
+        return createRequestObject({
+          url: `https://mangaowl.net/single/816/uragiri-wa-boku-no-namae-wo-shitteiru`,
+          method: 'GET',
+        })
+
     }
 }
