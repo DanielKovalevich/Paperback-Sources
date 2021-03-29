@@ -94,23 +94,28 @@ export class Parser {
         let directManga = $('.barTitle',$('.rightBox')).first().text().trim()
 
 
-        if (directManga == 'Cover'){
+        if (directManga === 'Cover'){
           let titleText = $('.bigChar', $('.bigBarContainer').first()).text().trim()
           let id = ($('a'), $('.bigChar').attr('href')?.replace('/Comic/', '')) ?? ''
           let url = $('img', $('.rightBox')).attr('src')
           let image = url?.includes('http') ? url : `${READCOMICTO_DOMAIN}${url}`
+          if(id === undefined) {
 
-          
-          if(!collectedIds.includes(id)) {
-            mangaTiles.push(createMangaTile({
-                id: id,
-                title: createIconText({text: titleText}),
-                image: image
-            }))
-            collectedIds.push(id)
+            console.log("Something went wrong, Manga ID Undefined")
+            return []
+            
+          }else{
+            
+            if(!collectedIds.includes(id)) {
+              mangaTiles.push(createMangaTile({
+                  id: id,
+                  title: createIconText({text: titleText}),
+                  image: image
+              }))
+              collectedIds.push(id)
+            }
+            
           }
-          
-
 
         }else{
           for(let obj of $('tr', $('.listing')).toArray()) {
