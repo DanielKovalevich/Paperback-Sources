@@ -99,7 +99,8 @@ export class Parser {
             tags: tagSections,
             desc: this.decodeHTMLEntity(summary),
             lastUpdate: released,
-            hentai: isHentai,
+            //hentai: isHentai,
+            hentai: false,
             views: views
         })
     }

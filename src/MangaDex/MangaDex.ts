@@ -43,7 +43,7 @@ export const MangaDexInfo: SourceInfo = {
   description: 'Overwrites SafeDex,unlocks all mangas MangaDex has to offer and loads slightly faster. supports notifications',
   icon: 'icon.png',
   name: 'MangaDex Unlocked',
-  version: '2.0.7',
+  version: '2.0.9',
   authorWebsite: 'https://github.com/Pogogo007/extensions-main-promises',
   websiteBaseURL: MANGADEX_DOMAIN,
   hentaiSource: false,

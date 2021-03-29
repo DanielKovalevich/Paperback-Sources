@@ -21,7 +21,7 @@ const headers = {
 }
 
 export const ManganeloInfo: SourceInfo = {
-  version: '2.1.0',
+  version: '2.1.1',
   name: 'Manganelo',
   icon: 'icon.png',
   author: 'Daniel Kovalevich',
