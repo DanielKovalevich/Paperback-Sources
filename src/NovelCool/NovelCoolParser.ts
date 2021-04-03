@@ -215,7 +215,7 @@ export class NovelCoolParser {
 
     parsePages($: CheerioStatic){
         if ($("div.chapter-reading-section").length !== 0){
-            throw new Error("Novel chapter incompatible with Paperback.");
+            return ["https://cdn.discordapp.com/attachments/480523985151459329/827922569234612264/Error-1.png"];
         } else {
             const pages: string[] = [];
             $("img.manga_pic").map((index, element) => {
