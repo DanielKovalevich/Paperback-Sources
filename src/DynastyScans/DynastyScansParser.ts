@@ -1,4 +1,12 @@
-import {Chapter, LanguageCode, Manga, MangaStatus, MangaTile, Tag} from "paperback-extensions-common";
+import {
+    Chapter,
+    LanguageCode,
+    Manga,
+    MangaStatus,
+    MangaTile,
+    Tag,
+    TagSection
+} from "paperback-extensions-common";
 
 export class DynastyScansParser {
 
@@ -165,5 +173,52 @@ export class DynastyScansParser {
             }
         }
         return createManga(mangaObj);
+    }
+
+    parseTags($: CheerioStatic){
+        const sectionList: TagSection[] = [];
+        let sectionName: string | null = null;
+        let sectionTags: Tag[] = [];
+        $("dl.tag-list dd").children().map((index, element) => {
+            if (element.tagName === "dt"){
+                if (sectionName){
+                    sectionList.push(createTagSection({
+                        id: sectionName,
+                        label: sectionName,
+                        tags: sectionTags
+                    }));
+                }
+                sectionName = $(element).text().trim()
+            } else if (element.tagName === "dd"){
+                const link = $("a", element);
+                const linkId = link.attr("href");
+                if (linkId){
+                    const tagId = linkId.replace("/tags/", "")
+                    sectionTags.push(createTag({
+                        id: tagId,
+                        label: link.text()
+                    }));
+                }
+            }
+        })
+        return sectionList
+    }
+
+    parseFeatured($: CheerioStatic){
+        const featuredLink = $("div.span4 a.thumbnail.media.chapter").first();
+        const featuredLinkId = featuredLink.attr("href")
+        if (featuredLinkId){
+            return createHomeSection({
+                id: "featured",
+                title: "Featured Manga",
+                items: [createMangaTile({
+                    id: featuredLinkId.replace("/", ""),
+                    image: $("img", featuredLink).attr("src") || "",
+                    title: createIconText({
+                        text: $("div.title", featuredLink).text()
+                    })
+                })]
+            })
+        }
     }
 }
