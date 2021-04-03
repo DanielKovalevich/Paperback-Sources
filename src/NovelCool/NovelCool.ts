@@ -3,6 +3,7 @@ import {
     ChapterDetails,
     HomeSection,
     Manga,
+    MangaUpdates,
     PagedResults,
     Request,
     SearchRequest,
@@ -16,7 +17,7 @@ const BASE = "https://www.novelcool.com"
 
 export const NovelCoolInfo: SourceInfo = {
     icon: "icon.png",
-    version: "1.0.0",
+    version: "1.0.1",
     name: "NovelCool",
     author: "PythonCoderAS",
     authorWebsite: "https://github.com/PythonCoderAS",
@@ -185,5 +186,11 @@ export class NovelCool extends Source {
         return createPagedResults({
             results: results
         });
+    }
+
+    async filterUpdatedManga(mangaUpdatesFoundCallback: (updates: MangaUpdates) => void, time: Date, ids: string[]): Promise<void> {
+        mangaUpdatesFoundCallback(createMangaUpdates({
+            ids: ids
+        }));
     }
 }
