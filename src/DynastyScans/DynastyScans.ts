@@ -3,7 +3,7 @@ import {
     ChapterDetails,
     HomeSection,
     Manga,
-    MangaTile,
+    MangaTile, MangaUpdates,
     PagedResults,
     Request,
     SearchRequest,
@@ -164,5 +164,12 @@ export class DynastyScans extends Source {
         let response = await this.requestManager.schedule(options, 1);
         let $: CheerioStatic = this.cheerio.load(response.data, {xmlMode: false});
         return this.parser.parseTags($)
+    }
+
+
+    async filterUpdatedManga(mangaUpdatesFoundCallback: (updates: MangaUpdates) => void, time: Date, ids: string[]): Promise<void> {
+        mangaUpdatesFoundCallback(createMangaUpdates({
+            ids: ids
+        }));
     }
 }
