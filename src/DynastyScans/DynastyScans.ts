@@ -5,7 +5,7 @@ import {
     Manga,
     MangaTile, MangaUpdates,
     PagedResults,
-    Request,
+    Request, RequestManager,
     SearchRequest,
     Source,
     SourceInfo, TagSection,
@@ -16,7 +16,7 @@ const BASE = "https://dynasty-scans.com"
 
 export const DynastyScansInfo: SourceInfo = {
     icon: "icon.png",
-    version: "1.2.1",
+    version: "1.2.2",
     name: "DynastyScans",
     author: "PythonCoderAS",
     authorWebsite: "https://github.com/PythonCoderAS",
@@ -29,6 +29,11 @@ export const DynastyScansInfo: SourceInfo = {
 export class DynastyScans extends Source {
 
     private readonly parser: DynastyScansParser = new DynastyScansParser();
+
+    readonly requestManager: RequestManager = createRequestManager({
+        requestsPerSecond: 3,
+        requestTimeout: 30000 // Dynasty is slow. Very slow.
+    });
 
     getMangaShareUrl(mangaId: string): string | null {
         return `${BASE}/${mangaId}`;
