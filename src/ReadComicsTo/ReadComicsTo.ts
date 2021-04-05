@@ -292,4 +292,14 @@ export class ReadComicsTo extends Source {
         })
     }
 
+    getCloudflareBypassRequest() {
+        return createRequestObject({
+            url: `${READCOMICSTO_DOMAIN}`,
+            method: 'GET',
+        })
+    }
+    
+
+    
+
 }
