@@ -19,7 +19,7 @@ const BASE = "https://www.mangaowl.com"
 
 export const MangaOwlInfo: SourceInfo = {
     icon: "icon.png",
-    version: "1.2.3",
+    version: "1.2.4",
     name: "MangaOwl",
     author: "PythonCoderAS",
     authorWebsite: "https://github.com/PythonCoderAS",
@@ -188,7 +188,7 @@ export class MangaOwl extends Source {
     }
 
     async searchRequest(query: SearchRequest, metadata: any): Promise<PagedResults> {
-        let url = `${BASE}/search/1?&search_field=123&sort=4&completed=2&genres=`
+        let url = `${BASE}/search/1?&search_field=12&sort=4&completed=2&genres=`
         if (query.title) {
             url += `&search=${query.title}`
         }
@@ -199,7 +199,7 @@ export class MangaOwl extends Source {
         let response = await this.requestManager.schedule(options, 1);
         let $ = this.cheerio.load(response.data);
         return createPagedResults({
-            results: this.parser.parseTileSection($, "browse-inner")
+            results: this.parser.parseTileSection($, "flexslider")
         });
     }
 

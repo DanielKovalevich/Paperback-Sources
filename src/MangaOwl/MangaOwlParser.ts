@@ -94,17 +94,9 @@ export class MangaOwlParser {
 
     parseManga($: CheerioStatic, mangaId: string) {
         const items = $("div.row.owl-tags");
-        const tagList: Tag[] = [];
         const genreList: Tag[] = [];
         const summary: string = $("div.description div").first().children().remove().end().text().replace(/\s{2,}/, " ").trim();
-        $("a.label-owl-tag", items).map(((index, element) => {
-            if ("attribs" in element) {
-                tagList.push(createTag({
-                    id: element.attribs["href"].replace("/view_tag/", ""),
-                    label: $(element).text()
-                }))
-            }
-        }))
+        console.log(summary)
         $("p > a.label", items).map(((index, element) => {
             if ("attribs" in element) {
                 genreList.push(createTag({
@@ -122,17 +114,10 @@ export class MangaOwlParser {
             "ongoing" // statusPart
         ];
         const tagSections = [createTagSection({
-            id: "view_tag",
-            label: "Tags",
-            tags: tagList
+            id: "genres",
+            label: "Genres",
+            tags: genreList
         })]
-        if (genreList){
-            tagSections.splice(0, 0, createTagSection({
-                id: "genres",
-                label: "Genres",
-                tags: genreList
-            }))
-        }
         const rating = Number($("font.rating_scored").text().trim() || "0");
         $("p.fexi_header_para").map((index, element) => {
             const label = $("span", element).first().children().remove().end().text().replace(/\s{2,}/, " ").trim().toLowerCase();
@@ -156,7 +141,6 @@ export class MangaOwlParser {
             titles = titles.concat(parts[0].split("; "))
         }
         const mangaObj: Manga = {
-            desc: summary || undefined,
             id: mangaId,
             image: $("div.single_detail img[data-src]").first().attr("data-src") || "",
             rating: rating,
@@ -179,6 +163,9 @@ export class MangaOwlParser {
             if (chapterObj.time) {
                 mangaObj.lastUpdate = chapterObj.time.toString();
             }
+        }
+        if (summary){
+            mangaObj.desc = summary;
         }
         return createManga(mangaObj);
     }
