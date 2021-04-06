@@ -48,7 +48,8 @@ export const parseMangaDetails = ($: CheerioStatic, mangaId: string): Manga => {
     artist: artist,
     tags: tagSections,
     desc: description,
-    hentai: hentai,
+    // hentai: hentai,
+    hentai: false
   });
 }
 
