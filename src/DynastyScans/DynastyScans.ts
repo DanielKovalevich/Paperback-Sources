@@ -3,12 +3,16 @@ import {
     ChapterDetails,
     HomeSection,
     Manga,
-    MangaTile, MangaUpdates,
+    MangaTile,
+    MangaUpdates,
     PagedResults,
-    Request, RequestManager,
+    Request,
+    RequestManager,
     SearchRequest,
     Source,
-    SourceInfo, TagSection,
+    SourceInfo,
+    TagSection,
+    TagType,
 } from "paperback-extensions-common"
 import {DynastyScansParser} from "./DynastyScansParser";
 
@@ -16,14 +20,24 @@ const BASE = "https://dynasty-scans.com"
 
 export const DynastyScansInfo: SourceInfo = {
     icon: "icon.png",
-    version: "1.2.2",
+    version: "1.2.3",
     name: "DynastyScans",
     author: "PythonCoderAS",
     authorWebsite: "https://github.com/PythonCoderAS",
     description: "Extension that pulls manga from DynastyScans",
     language: "en",
     hentaiSource: false,
-    websiteBaseURL: BASE
+    websiteBaseURL: BASE,
+    sourceTags: [
+        {
+            text: "18+",
+            type: TagType.YELLOW
+        },
+        {
+            text: "Slow",
+            type: TagType.YELLOW
+        }
+    ]
 }
 
 export class DynastyScans extends Source {
