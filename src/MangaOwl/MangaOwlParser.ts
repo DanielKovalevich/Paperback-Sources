@@ -93,11 +93,9 @@ export class MangaOwlParser {
     }
 
     parseManga($: CheerioStatic, mangaId: string) {
-        const items = $("div.row.owl-tags");
         const genreList: Tag[] = [];
-        const summary: string = $("div.description div").first().children().remove().end().text().replace(/\s{2,}/, " ").trim();
-        console.log(summary)
-        $("p > a.label", items).map(((index, element) => {
+        const summary: string = $("div.description").first().children().remove().end().text().replace(/\s{2,}/, " ").trim();
+        $("p > a.label",).map(((index, element) => {
             if ("attribs" in element) {
                 genreList.push(createTag({
                     id: element.attribs["href"].replace("/genres/", ""),
@@ -164,7 +162,7 @@ export class MangaOwlParser {
                 mangaObj.lastUpdate = chapterObj.time.toString();
             }
         }
-        if (summary){
+        if (summary.length > 0){
             mangaObj.desc = summary;
         }
         return createManga(mangaObj);

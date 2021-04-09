@@ -19,7 +19,7 @@ const BASE = "https://www.mangaowl.com"
 
 export const MangaOwlInfo: SourceInfo = {
     icon: "icon.png",
-    version: "1.2.5",
+    version: "1.2.6",
     name: "MangaOwl",
     author: "PythonCoderAS",
     authorWebsite: "https://github.com/PythonCoderAS",

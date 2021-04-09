@@ -58,7 +58,7 @@ describe('MangaOwl Tests', function () {
 
      it("Testing search", async () => {
          let testSearch = createSearchRequest({
-             title: 'smut'
+             title: 'Keep a High'
          });
 
          let search = await wrapper.searchRequest(source, testSearch, 1);
