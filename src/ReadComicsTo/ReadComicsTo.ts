@@ -15,7 +15,7 @@ import {
 
 import {Parser,} from './Parser'
 
-const READCOMICSTO_DOMAIN = 'https://readcomiconline.to'
+const READCOMICSTO_DOMAIN = 'https://readcomiconline.li'
 
 export const ReadComicsToInfo: SourceInfo = {
     version: '1.0.3',
