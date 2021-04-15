@@ -18,7 +18,7 @@ import {Parser,} from './Parser'
 const READCOMICSTO_DOMAIN = 'https://readcomiconline.li'
 
 export const ReadComicsToInfo: SourceInfo = {
-    version: '1.0.4',
+    version: '1.0.5',
     name: 'ReadComicsOnlineTo',
     description: 'Extension that pulls western comics from readcomiconline.to',
     author: 'Aurora',
@@ -32,7 +32,7 @@ export const ReadComicsToInfo: SourceInfo = {
 export class ReadComicsTo extends Source {
 
     requestManager = createRequestManager({
-        requestsPerSecond: 2.5,
+        requestsPerSecond: 1.5,
         requestTimeout: 15000,
       })
 

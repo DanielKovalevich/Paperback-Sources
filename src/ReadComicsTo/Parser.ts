@@ -1,6 +1,6 @@
 import {Chapter, LanguageCode, Manga, MangaStatus, MangaTile, Tag, TagSection} from 'paperback-extensions-common'
 
-const READCOMICTO_DOMAIN = 'https://readcomiconline.to'
+const READCOMICTO_DOMAIN = 'https://readcomiconline.li'
 
 export class Parser {
 
