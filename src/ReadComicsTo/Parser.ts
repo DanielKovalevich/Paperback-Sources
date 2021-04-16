@@ -165,7 +165,7 @@ export class Parser {
       let collectedIds: string[] = []
       for(let obj of $('tr', $('.listing')).toArray()) {
           
-          let titleText = this.decodeHTMLEntity($('a',$(obj)).text().replace('\n','').trim())
+          let titleText = this.decodeHTMLEntity($('a',$(obj)).first().text().replace('\n','').trim())
           let id = $('a',$(obj)).attr('href')?.replace('/Comic/', '')
           if(!titleText || !id) { 
             continue
