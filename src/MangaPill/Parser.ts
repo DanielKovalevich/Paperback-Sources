@@ -12,7 +12,7 @@ export class Parser {
         if (altTitle != 'Title') {
             titles.push(altTitle)
         }
-        let image = $('.lazy').attr('src')
+        let image = $('.lazy').attr('data-src')
         let summary = $('p', $('.my-3', descBox)).text().trim()
 
         let status = MangaStatus.ONGOING, released, rating: number = 0
@@ -136,7 +136,7 @@ export class Parser {
         for (let item of $('.font-medium.text-color-text-primary').toArray()) {
             let href = ($(item).attr('href') ?? '')
             let id = href.split('-')[0].split('/').pop() + '/' + href.split('/').pop()?.split('-chapter')[0].trim()
-            let mangaTime = new Date(time)
+            let mangaTime = new Date(Date.parse($(item).parent().next().text() ?? 0));
             passedReferenceTime = mangaTime <= time
             if (!passedReferenceTime) {
                 if (ids.includes(id)) {

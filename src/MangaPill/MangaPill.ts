@@ -113,7 +113,10 @@ export class MangaPill extends Source {
 
     async searchRequest(query: SearchRequest, metadata: any): Promise<PagedResults> {
         let page: number = metadata?.page ?? 1
-        let genres = '&genre=' + (query.includeGenre ?? []).join('&genre=')
+        let genres: string = (query.includeGenre ?? []).join('&genre=')
+        if (genres != '') {
+            genres = '&genre=' + genres
+        }
         let format = '&type=' + (query.includeFormat ?? '')
         let status: string
         switch (query.status) {
@@ -129,7 +132,7 @@ export class MangaPill extends Source {
         let request = createRequestObject({
             url: `${MANGAPILL_DOMAIN}/search`,
             method: "GET",
-            param: `?page=${page}&title=${encodeURIComponent(query.title ?? '')}${format}${status}${genres}`
+            param: `?q=${encodeURIComponent(query.title ?? '')}${format}${status}${genres}&page=${page}`
         })
 
         let data = await this.requestManager.schedule(request, 1)
@@ -181,7 +184,7 @@ export class MangaPill extends Source {
             },
             {
                 request: createRequestObject({
-                    url: `${MANGAPILL_DOMAIN}/search?title=&type=&status=1`,
+                    url: `${MANGAPILL_DOMAIN}/search?q=&type=&status=`,
                     method: 'GET'
                 }),
                 section: createHomeSection({
@@ -232,7 +235,7 @@ export class MangaPill extends Source {
             }
             case '2': {
                 let request = createRequestObject({
-                    url: `${MANGAPILL_DOMAIN}/search?title=&type=&status=1&page=${page}`,
+                    url: `${MANGAPILL_DOMAIN}/search?q=&type=&status=&page=${page}`,
                     method: 'GET'
                 })
 
