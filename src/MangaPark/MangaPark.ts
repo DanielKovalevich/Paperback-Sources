@@ -17,7 +17,7 @@ const MP_DOMAIN = 'https://mangapark.net'
 const method = 'GET'
 
 export const MangaParkInfo: SourceInfo = {
-	version: '2.0.1',
+	version: '2.0.2',
 	name: 'MangaPark',
 	icon: 'icon.png',
 	author: 'Daniel Kovalevich',
@@ -25,12 +25,12 @@ export const MangaParkInfo: SourceInfo = {
 	description: 'Extension that pulls manga from MangaPark, includes Advanced Search and Updated manga fetching',
 	hentaiSource: false,
 	websiteBaseURL: MP_DOMAIN,
-	sourceTags: [
-		{
-			text: "Notifications",
-			type: TagType.GREEN
-		}
-	]
+	// sourceTags: [
+	// 	{
+	// 		text: "Notifications",
+	// 		type: TagType.GREEN
+	// 	}
+	// ]
 }
 
 export class MangaPark extends Source {
@@ -77,32 +77,32 @@ export class MangaPark extends Source {
 	}
 
 
-	async filterUpdatedManga(mangaUpdatesFoundCallback: (updates: MangaUpdates) => void, time: Date, ids: string[]): Promise<void>{
-		let page = 1
-		let updatedManga: UpdatedManga = {
-			ids: [],
-			loadMore: true
-		}
+	// async filterUpdatedManga(mangaUpdatesFoundCallback: (updates: MangaUpdates) => void, time: Date, ids: string[]): Promise<void>{
+	// 	let page = 1
+	// 	let updatedManga: UpdatedManga = {
+	// 		ids: [],
+	// 		loadMore: true
+	// 	}
 
-		while (updatedManga.loadMore) {
-			const request = createRequestObject({
-				url: `${MP_DOMAIN}/latest/${page++}`,
-				method,
-				cookies: this.cookies
-			})
+	// 	while (updatedManga.loadMore) {
+	// 		const request = createRequestObject({
+	// 			url: `${MP_DOMAIN}/latest/${page++}`,
+	// 			method,
+	// 			cookies: this.cookies
+	// 		})
 
-			const response = await this.requestManager.schedule(request, 1)
-			const $ = this.cheerio.load(response.data)
+	// 		const response = await this.requestManager.schedule(request, 1)
+	// 		const $ = this.cheerio.load(response.data)
 
-			updatedManga = parseUpdatedManga($, time, ids)
-			if (updatedManga.ids.length > 0) {
-				mangaUpdatesFoundCallback({
-					ids: updatedManga.ids
-				})
-			}
-		}
+	// 		updatedManga = parseUpdatedManga($, time, ids)
+	// 		if (updatedManga.ids.length > 0) {
+	// 			mangaUpdatesFoundCallback({
+	// 				ids: updatedManga.ids
+	// 			})
+	// 		}
+	// 	}
 
-	}
+	// }
 
 	async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
 		const section1 = createHomeSection({ id: 'popular_titles', title: 'POPULAR MANGA'})
