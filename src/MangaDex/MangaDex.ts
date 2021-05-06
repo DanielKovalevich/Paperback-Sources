@@ -575,6 +575,5 @@ export class MangaDex extends Source {
          .replace(/&lt;/g, '<')
          .replace(/&gt;/g, '>')
          .replace(/&quot;/g, '\"')
-         .replace(/&#039;/g, '\'');
     }
 }
