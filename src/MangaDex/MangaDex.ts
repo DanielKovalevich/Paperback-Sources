@@ -238,7 +238,6 @@ export class MangaDex extends Source {
         // Doc: https://jikan.docs.apiary.io/#reference/0/manga
         // Available sizes: small, large
 
-        console.log(`mal ${links.mal}`)
 
         const request = createRequestObject({
           url: `https://api.jikan.moe/v3/manga/${links.mal}/pictures`,
