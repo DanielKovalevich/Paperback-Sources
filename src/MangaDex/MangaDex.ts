@@ -217,7 +217,8 @@ export class MangaDex extends Source {
 
     const mangaDetails = json.data.attributes
     const titles = [mangaDetails.title[Object.keys(mangaDetails.title)[0]]].concat(mangaDetails.altTitles.map((x: any)  => this.decodeHTMLEntity(x[Object.keys(x)[0]])))
-    const desc = this.decodeHTMLEntity(mangaDetails.description.en)
+    const desc = this.decodeHTMLEntity(mangaDetails.description.en).replace(/\[\/{0,1}[bus]\]/g, '')  // Get rid of BBcode tags
+    
 
     let status = MangaStatus.COMPLETED
     if (mangaDetails.status == 'ongoing') {
@@ -526,12 +527,20 @@ export class MangaDex extends Source {
     let loadNextPage = true
     let updatedManga: string[] = []
     while (loadNextPage) {
+
+      const updatedAt = time.toISOString().substr(0, time.toISOString().length - 5) // They support a weirdly truncated version of an ISO timestamp. A magic number of '5' seems to be always valid
+
       const request = createRequestObject({
-        url: `${MANGADEX_API}/manga?limit=100&offset=${offset}`,
+        url: `${MANGADEX_API}/manga?limit=100&offset=${offset}&updatedAtSince=${updatedAt}`,
         method: 'GET',
       })
 
       const response = await this.requestManager.schedule(request, 1)
+
+      // If we have no content, there are no updates available
+      if(response.status == 204) {
+        return
+      }
 
       const json = typeof response.data === "string" ? JSON.parse(response.data) : response.data
 
