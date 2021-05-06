@@ -197,6 +197,134 @@ export class MangaDex extends Source {
     return json.baseUrl
   }
 
+  async getImageLink(links: { [identifier: string]: number }, extraResults = false): Promise<string>{    
+    /*
+        Return a cover url determined using one of the providers passed in links
+        extraResults: boolean, if the function should use extra requests to get a cover url
+        
+        Existing providers
+          'mu' => MangaUpdates 
+          'mal' => MyAnimeList
+          'nu' => NovelUpdates
+          'raw' => Raw
+          'engtl' => Official Eng
+          'cdj' => CDJapan
+          'amz' => Amazon.co.jp
+          'ebj' => eBookJapan
+          'bw' => Bookwalker
+          'al' => AniList
+          'kt' => Kitsu
+          'ap' => Anime-Planet 
+          'dj' => Doujinshi.org
+        
+        Implemented providers: Kitsu, MyAnimeList, AniList, MangaUpdates, Anime-Planet
+     */
+
+    if (links === null) {
+      // Default cover
+      return 'https://i.imgur.com/6TrIues.jpg'
+    }
+    
+    // Kitsu
+    if (links.kt !== undefined) {
+      // Available sizes: tiny, small, medium, large
+      return `https://media.kitsu.io/manga/poster_images/${links.kt}/small.jpg`
+    }
+    
+    if (extraResults) {
+      // MyAnimeList
+      if (links.mal !== undefined) {
+        // We use Jikan API to get the image link
+        // Doc: https://jikan.docs.apiary.io/#reference/0/manga
+        // Available sizes: small, large
+
+        console.log(`mal ${links.mal}`)
+
+        const request = createRequestObject({
+          url: `https://api.jikan.moe/v3/manga/${links.mal}/pictures`,
+          method: 'GET',
+        })
+        const response = await this.requestManager.schedule(request, 1)
+        const data = typeof response.data === "string" ? JSON.parse(response.data) : response.data
+
+        if (data.pictures !== undefined) {
+          if (data.pictures.length > 0) {
+            return data.pictures[0].small
+          }
+        }
+      }
+
+      // AniList
+      if (links.al !== undefined) {
+        // Available sizes: medium, large, extraLarge
+        // Doc: https://anilist.gitbook.io/anilist-apiv2-docs/overview/graphql/getting-started
+
+        const query = "query ($id: Int) { Media (id: $id, type: MANGA) {coverImage {large}}}"
+
+        var variables = {
+          id: links.al
+        };
+          
+        const request = createRequestObject({
+          url: 'https://graphql.anilist.co',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+          data: JSON.stringify({
+              query: query,
+              variables: variables
+          })
+        })
+        
+        const response = await this.requestManager.schedule(request, 1)
+        const data = typeof response.data === "string" ? JSON.parse(response.data) : response.data
+        
+        // data has the format {"data": {"Media": {"coverImage": {"large": "URL"}}}}
+        return data.data.Media.coverImage.large
+      }
+
+      // MangaUpdates
+      if (links.mu !== undefined) {
+        // MangaUpdates does not have an API
+        const request = createRequestObject({
+          url: `https://www.mangaupdates.com/series.html?id=${links.mu}`,
+          method: 'GET',
+        })
+        const response = await this.requestManager.schedule(request, 1)
+        const $ = this.cheerio.load(response.data)
+
+        const url = $('.sContent .img-fluid').attr('src')
+
+        if (url !== undefined){
+          return url
+        }
+      }
+
+      // Anime-Planet
+      if (links.ap !== undefined) {
+        // Anime-Planet does not have an API
+        const request = createRequestObject({
+          url: `https://www.anime-planet.com/manga/${links.ap}`,
+          method: 'GET',
+        })
+        const response = await this.requestManager.schedule(request, 1)
+        const $ = this.cheerio.load(response.data)
+
+        const path = $('.screenshots').attr('src')
+
+        if (path !== undefined){
+          return `https://www.anime-planet.com${path}`
+        }
+      }
+    }
+
+    // Default cover
+    return 'https://i.imgur.com/6TrIues.jpg'
+  }
+
+
   async getMangaDetails(mangaId: string): Promise<Manga> {
     let newMangaId: string
     if (!mangaId.includes('-')) {
@@ -246,7 +374,7 @@ export class MangaDex extends Source {
     return createManga({
       id: mangaId,
       titles,
-      image: 'https://i.imgur.com/6TrIues.jpg',
+      image: await this.getImageLink(mangaDetails.links, true),
       author,
       artist,
       desc,
@@ -384,7 +512,7 @@ export class MangaDex extends Source {
       results.push(createMangaTile({
         id: mangaId,
         title: createIconText({text: title}),
-        image: 'https://i.imgur.com/6TrIues.jpg'
+        image: await this.getImageLink(mangaDetails.links)
       }))
     }
 
@@ -438,7 +566,7 @@ export class MangaDex extends Source {
 
       // Get the section data
       promises.push(
-        this.requestManager.schedule(section.request, 1).then(response => {
+        this.requestManager.schedule(section.request, 1).then(async response => {
           const json = typeof response.data === "string" ? JSON.parse(response.data) : response.data
           let results = []
           for (const manga of json.results) {
@@ -449,7 +577,7 @@ export class MangaDex extends Source {
             results.push(createMangaTile({
               id: mangaId,
               title: createIconText({text: title}),
-              image: 'https://i.imgur.com/6TrIues.jpg'
+              image: await this.getImageLink(mangaDetails.links, true)
             }))
           }
 
@@ -501,7 +629,7 @@ export class MangaDex extends Source {
         results.push(createMangaTile({
           id: mangaId,
           title: createIconText({text: title}),
-          image: 'https://i.imgur.com/6TrIues.jpg'
+          image: await this.getImageLink(mangaDetails.links, true)
         }))
         collectedIds.push(mangaId)
       }
