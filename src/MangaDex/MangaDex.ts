@@ -21,7 +21,7 @@ const MANGADEX_API = 'https://api.mangadex.org'
 
 export const MangaDexInfo: SourceInfo = {
   author: 'nar1n',
-  description: 'Extension that pulls manga from MangaDex"',
+  description: 'Extension that pulls manga from MangaDex',
   icon: 'icon.png',
   name: 'MangaDex',
   version: '1.0.1',
