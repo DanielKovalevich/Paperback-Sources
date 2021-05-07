@@ -24,7 +24,7 @@ export const MangaDexInfo: SourceInfo = {
   description: 'Extension that pulls manga from MangaDex"',
   icon: 'icon.png',
   name: 'MangaDex',
-  version: '1.0.0',
+  version: '1.0.1',
   authorWebsite: 'https://github.com/nar1n',
   websiteBaseURL: MANGADEX_DOMAIN,
   hentaiSource: false,
@@ -598,15 +598,15 @@ export class MangaDex extends Source {
 
     switch(homepageSectionId) {
       case 'recently_updated': {
-        url = `${MANGADEX_API}/manga?limit=100&offset=${offset}`
+        url = `${MANGADEX_API}/manga?limit=25&offset=${offset}`
         break
       }
       case 'shounen': {
-        url = `${MANGADEX_API}/manga?limit=100&publicationDemographic[0]=shounen&offset=${offset}`
+        url = `${MANGADEX_API}/manga?limit=25&publicationDemographic[0]=shounen&offset=${offset}`
         break
       }
       case 'action': {
-        url = `${MANGADEX_API}/manga?limit=100&includedTags[0]=391b0423-d847-456f-aff0-8b0cfc03066b&offset=${offset}`
+        url = `${MANGADEX_API}/manga?limit=25&includedTags[0]=391b0423-d847-456f-aff0-8b0cfc03066b&offset=${offset}`
         break
       }
     }
@@ -636,7 +636,7 @@ export class MangaDex extends Source {
 
     return createPagedResults({
       results,
-      metadata: {offset: offset + 100, collectedIds}
+      metadata: {offset: offset + 25, collectedIds}
   })
   }
 
@@ -702,5 +702,17 @@ export class MangaDex extends Source {
          .replace(/&lt;/g, '<')
          .replace(/&gt;/g, '>')
          .replace(/&quot;/g, '\"')
+         .replace(/&mdash;/g, '—')
+         .replace(/&ndash;/g, '–')
+         .replace(/&rsquo;/g, '’')
+         .replace(/&grave;/g, '`')
+         .replace(/&apos;/g, '\'')
+         .replace(/&quest;/g, '?')
+         .replace(/&iquest;/g, '¿')
+         .replace(/&excl;/g, '!')
+         .replace(/&num;/g, '#')
+         .replace(/&dollar;/g, '$')
+         .replace(/&percnt;/g, '%')
+         .replace(/&commat;/g, '@')
     }
 }
