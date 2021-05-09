@@ -638,6 +638,8 @@ export class MangaDex extends Source {
       }
     }
 
+    Promise.all(promises)
+
     return createPagedResults({
       results,
       metadata: {offset: offset + 100, collectedIds}
