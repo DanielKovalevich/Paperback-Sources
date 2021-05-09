@@ -284,22 +284,23 @@ export class MangaDex extends Source {
         return data.data.Media.coverImage.large
       }
 
-      // MangaUpdates
-      if (links.mu !== undefined) {
-        // MangaUpdates does not have an API
-        const request = createRequestObject({
-          url: `https://www.mangaupdates.com/series.html?id=${links.mu}`,
-          method: 'GET',
-        })
-        const response = await this.requestManager.schedule(request, 1)
-        const $ = this.cheerio.load(response.data)
+      // Currently broken
+      // // MangaUpdates
+      // if (links.mu !== undefined) {
+      //   // MangaUpdates does not have an API
+      //   const request = createRequestObject({
+      //     url: `https://www.mangaupdates.com/series.html?id=${links.mu}`,
+      //     method: 'GET',
+      //   })
+      //   const response = await this.requestManager.schedule(request, 1)
+      //   const $ = this.cheerio.load(response.data)
 
-        const url = $('.sContent .img-fluid').attr('src')
+      //   const url = $('.sContent .img-fluid').attr('src')
 
-        if (url !== undefined){
-          return url
-        }
-      }
+      //   if (url !== undefined){
+      //     return url
+      //   }
+      // }
 
       // Anime-Planet
       if (links.ap !== undefined) {
