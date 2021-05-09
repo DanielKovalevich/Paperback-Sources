@@ -726,6 +726,6 @@ export class MangaDex extends Source {
          .replace(/&ldquo;/g, '“')
          .replace(/&rdquo;/g, '”')
          .replace(/&hellip;/g, '…')
-         .replace(/&hearts/g, '♥')
+         .replace(/&hearts;/g, '♥')
     }
 }
