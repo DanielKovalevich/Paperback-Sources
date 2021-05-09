@@ -324,7 +324,6 @@ export class MangaDex extends Source {
     return 'https://i.imgur.com/6TrIues.jpg'
   }
 
-
   async getMangaDetails(mangaId: string): Promise<Manga> {
     let newMangaId: string
     if (!mangaId.includes('-')) {
@@ -345,7 +344,7 @@ export class MangaDex extends Source {
 
     const mangaDetails = json.data.attributes
     const titles = [mangaDetails.title[Object.keys(mangaDetails.title)[0]]].concat(mangaDetails.altTitles.map((x: any)  => this.decodeHTMLEntity(x[Object.keys(x)[0]])))
-    const desc = this.decodeHTMLEntity(mangaDetails.description.en).replace(/\[\/{0,1}[bus]\]/g, '')  // Get rid of BBcode tags
+    const desc = this.decodeHTMLEntity(mangaDetails.description.en.split('[')[0]) // Get rid of BBcode tags
     
 
     let status = MangaStatus.COMPLETED
@@ -715,5 +714,8 @@ export class MangaDex extends Source {
          .replace(/&dollar;/g, '$')
          .replace(/&percnt;/g, '%')
          .replace(/&commat;/g, '@')
+         .replace(/&ldquo;/g, '“')
+         .replace(/&rdquo;/g, '”')
+         .replace(/&hellip;/g, '…')
     }
 }
