@@ -593,20 +593,20 @@ export class MangaDex extends Source {
   async getViewMoreItems(homepageSectionId: string, metadata: any): Promise<PagedResults | null> {
     let offset: number = metadata?.offset ?? 0
     let collectedIds: string[] = metadata?.collectedIds ?? []
-    let results = []
+    let results: MangaTile[] = []
     let url: string = ''
 
     switch(homepageSectionId) {
       case 'recently_updated': {
-        url = `${MANGADEX_API}/manga?limit=25&offset=${offset}`
+        url = `${MANGADEX_API}/manga?limit=100&offset=${offset}`
         break
       }
       case 'shounen': {
-        url = `${MANGADEX_API}/manga?limit=25&publicationDemographic[0]=shounen&offset=${offset}`
+        url = `${MANGADEX_API}/manga?limit=100&publicationDemographic[0]=shounen&offset=${offset}`
         break
       }
       case 'action': {
-        url = `${MANGADEX_API}/manga?limit=25&includedTags[0]=391b0423-d847-456f-aff0-8b0cfc03066b&offset=${offset}`
+        url = `${MANGADEX_API}/manga?limit=100&includedTags[0]=391b0423-d847-456f-aff0-8b0cfc03066b&offset=${offset}`
         break
       }
     }
@@ -619,24 +619,27 @@ export class MangaDex extends Source {
     const response = await this.requestManager.schedule(request, 1)
     const json = typeof response.data === "string" ? JSON.parse(response.data) : response.data
 
+    const promises: Promise<void>[] = []
+
     for (const manga of json.results) {
       const mangaId = manga.data.id
       const mangaDetails = manga.data.attributes
       const title = this.decodeHTMLEntity(mangaDetails.title[Object.keys(mangaDetails.title)[0]])
 
       if (!collectedIds.includes(mangaId)) {
-        results.push(createMangaTile({
-          id: mangaId,
-          title: createIconText({text: title}),
-          image: await this.getImageLink(mangaDetails.links, true)
+        promises.push(this.getImageLink(mangaDetails.links, true).then(imageLink => {
+          results.push(createMangaTile({
+            id: mangaId,
+            title: createIconText({text: title}),
+            image: imageLink
+          }))
         }))
-        collectedIds.push(mangaId)
       }
     }
 
     return createPagedResults({
       results,
-      metadata: {offset: offset + 25, collectedIds}
+      metadata: {offset: offset + 100, collectedIds}
   })
   }
 
