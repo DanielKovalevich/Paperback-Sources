@@ -227,8 +227,10 @@ export class MangaDex extends Source {
     
     // Kitsu
     if (links.kt !== undefined) {
-      // Available sizes: tiny, small, medium, large
-      return `https://media.kitsu.io/manga/poster_images/${links.kt}/small.jpg`
+      if (!isNaN(Number(links.kt))) {
+        // Available sizes: tiny, small, medium, large
+        return `https://media.kitsu.io/manga/poster_images/${links.kt}/small.jpg`
+      }
     }
     
     if (extraResults) {
