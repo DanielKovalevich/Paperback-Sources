@@ -633,6 +633,7 @@ export class MangaDex extends Source {
             title: createIconText({text: title}),
             image: imageLink
           }))
+          collectedIds.push(mangaId)
         }))
       }
     }
