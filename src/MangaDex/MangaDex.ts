@@ -721,5 +721,8 @@ export class MangaDex extends Source {
          .replace(/&dollar;/g, '$')
          .replace(/&percnt;/g, '%')
          .replace(/&commat;/g, '@')
+         .replace(/&ldquo;/g, '“')
+         .replace(/&rdquo;/g, '”')
+         .replace(/&hellip;/g, '…')
     }
 }
