@@ -123,7 +123,8 @@ export class Parser {
             
             let language = $('.emoji').attr('data-lang') ?? 'gb'
             let time = source.convertTime($('i.ps-3', $(obj)).text())
-            if (!(typeof chapterId === 'undefined')) 
+            if ((typeof chapterId === 'undefined')) return;
+            
             chapters.push(createChapter({
                 id: chapterId,
                 mangaId: mangaId,
