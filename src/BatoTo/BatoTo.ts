@@ -64,7 +64,7 @@ export class BatoTo extends Source {
         let $ = this.cheerio.load(pageData.data)
         chapters = chapters.concat(this.parser.parseChapterList($, mangaId, this))
 
-        return this.parser.sortChapters(chapters)
+        return (chapters)
     }
 
 

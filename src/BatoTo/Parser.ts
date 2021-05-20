@@ -131,21 +131,12 @@ export class Parser {
                 chapNum: Number(chapNum),
                 group: this.decodeHTMLEntity(chapGroup ?? ''),
                 langCode: reverseLangCode[language] ?? reverseLangCode['_unknown'],
-                name: chapNamePart1 + this.decodeHTMLEntity(chapNamePart2),
+                name: chapNamePart1 + " " + this.decodeHTMLEntity(chapNamePart2),
                 time: time
             }))
         })
         return chapters
     }
-
-
-    sortChapters(chapters: Chapter[]): Chapter[] {
-        let sortedChapters: Chapter[] = []
-        
-        sortedChapters = chapters.reverse()
-        return sortedChapters
-    }
-
 
     parseChapterDetails($: CheerioSelector): string[] {
         let pages: string[] = []
