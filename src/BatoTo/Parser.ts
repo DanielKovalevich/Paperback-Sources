@@ -108,6 +108,8 @@ export class Parser {
 
     parseChapterList($: CheerioSelector, mangaId: string, source: any): Chapter[] {
         let chapters: Chapter[] = []
+        //let testArray: $('.item', $('.main')).toArray();)
+        //let testArrayReverse = testArray.reverse();
 
         for (let obj of $('.item', $('.main')).toArray()) {
             let chapterTile: Cheerio = $('a', $(obj))
@@ -115,7 +117,7 @@ export class Parser {
             let chapGroup = $(chapterTile).text().trim().split('\n').pop()?.trim()
             let chapName = $('span', $(chapterTile)).first().text().replace(':', '').trim()
             if (chapName == chapGroup) chapName = ''
-            let chapter = $('b', chapterTile).text().toLowerCase()
+            let chapter = $('b', chapterTile).text()
             let chapNum = Number((/(\d+)/).test(chapter) ? chapter.match(/(\d+)/)![0] : 0)
             let volume = Number(chapter?.split('chapter')[0]?.replace('volume', '').trim())
             
@@ -126,7 +128,7 @@ export class Parser {
                 id: chapterId,
                 mangaId: mangaId,
                 volume: Number.isNaN(volume) ? 0 : volume,
-                chapNum: Number(chapNum),
+                chapNum: String(chapNum),
                 group: this.decodeHTMLEntity(chapGroup ?? ''),
                 langCode: reverseLangCode[language] ?? reverseLangCode['_unknown'],
                 name: this.decodeHTMLEntity(chapName),
@@ -139,12 +141,13 @@ export class Parser {
 
     sortChapters(chapters: Chapter[]): Chapter[] {
         let sortedChapters: Chapter[] = []
-        chapters.forEach((c) => {
-            if (sortedChapters[sortedChapters.indexOf(c)]?.id !== c?.id) {
-                sortedChapters.push(c)
-            }
-        })
-        sortedChapters.sort((a, b) => (a.id > b.id) ? 1 : -1)
+        //chapters.forEach((c) => {
+            //if (sortedChapters[sortedChapters.indexOf(c)]?.id !== c?.id) {
+                //sortedChapters.push(c)
+            //}
+        //})
+        //sortedChapters.sort((a, b) => (a.id > b.id) ? 1 : -1)
+        sortedChapters = chapters.reverse()
         return sortedChapters
     }
 
