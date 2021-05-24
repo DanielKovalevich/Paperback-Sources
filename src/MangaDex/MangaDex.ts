@@ -582,65 +582,65 @@ export class MangaDex extends Source {
   })
   }
 
-  async filterUpdatedManga(mangaUpdatesFoundCallback: (updates: MangaUpdates) => void, time: Date, ids: string[]): Promise<void> {
-    let legacyIds: string[] = ids.filter(x => !x.includes('-'))
-    let conversionDict: {[id: string]: string} = {}
-    if (legacyIds.length != 0 ) {
-      conversionDict = await this.getMangaUUIDs(legacyIds)
-      for (const key of Object.keys(conversionDict)) {
-        conversionDict[conversionDict[key]] = key
-      }
-    }
+  // async filterUpdatedManga(mangaUpdatesFoundCallback: (updates: MangaUpdates) => void, time: Date, ids: string[]): Promise<void> {
+  //   let legacyIds: string[] = ids.filter(x => !x.includes('-'))
+  //   let conversionDict: {[id: string]: string} = {}
+  //   if (legacyIds.length != 0 ) {
+  //     conversionDict = await this.getMangaUUIDs(legacyIds)
+  //     for (const key of Object.keys(conversionDict)) {
+  //       conversionDict[conversionDict[key]] = key
+  //     }
+  //   }
 
-    let offset = 0
-    let loadNextPage = true
-    let updatedManga: string[] = []
-    while (loadNextPage) {
+  //   let offset = 0
+  //   let loadNextPage = true
+  //   let updatedManga: string[] = []
+  //   while (loadNextPage) {
 
-      const updatedAt = time.toISOString().substr(0, time.toISOString().length - 5) // They support a weirdly truncated version of an ISO timestamp. A magic number of '5' seems to be always valid
+  //     const updatedAt = time.toISOString().substr(0, time.toISOString().length - 5) // They support a weirdly truncated version of an ISO timestamp. A magic number of '5' seems to be always valid
 
-      const request = createRequestObject({
-        url: `${MANGADEX_API}/manga?limit=100&offset=${offset}&updatedAtSince=${updatedAt}`,
-        method: 'GET',
-      })
+  //     const request = createRequestObject({
+  //       url: `${MANGADEX_API}/manga?limit=100&offset=${offset}&updatedAtSince=${updatedAt}`,
+  //       method: 'GET',
+  //     })
 
-      const response = await this.requestManager.schedule(request, 1)
+  //     const response = await this.requestManager.schedule(request, 1)
 
-      // If we have no content, there are no updates available
-      if(response.status == 204) {
-        return
-      }
+  //     // If we have no content, there are no updates available
+  //     if(response.status == 204) {
+  //       return
+  //     }
 
-      const json = typeof response.data === "string" ? JSON.parse(response.data) : response.data
+  //     const json = typeof response.data === "string" ? JSON.parse(response.data) : response.data
 
-      if(json.results === undefined) {
-        // Log this, no need to throw.
-        console.log(`Failed to parse JSON results for filterUpdatedManga using the date ${updatedAt} and the offset ${offset}`)
-        return
-      }
+  //     if(json.results === undefined) {
+  //       // Log this, no need to throw.
+  //       console.log(`Failed to parse JSON results for filterUpdatedManga using the date ${updatedAt} and the offset ${offset}`)
+  //       return
+  //     }
 
-      for (const manga of json.results) {
-        const mangaId = manga.data.id
-        const mangaTime = new Date(manga.data.attributes.updatedAt)
+  //     for (const manga of json.results) {
+  //       const mangaId = manga.data.id
+  //       const mangaTime = new Date(manga.data.attributes.updatedAt)
 
-        if (mangaTime <= time) {
-          loadNextPage = false
-        } else if (ids.includes(mangaId)) {
-          updatedManga.push(mangaId)
-        } else if (ids.includes(conversionDict[mangaId])) {
-          updatedManga.push(conversionDict[mangaId])
-        }
-      }
-      if (loadNextPage) {
-        offset = offset + 100
-      }
-    }
-    if (updatedManga.length > 0) {
-      mangaUpdatesFoundCallback(createMangaUpdates({
-          ids: updatedManga
-      }))
-    }
-  }
+  //       if (mangaTime <= time) {
+  //         loadNextPage = false
+  //       } else if (ids.includes(mangaId)) {
+  //         updatedManga.push(mangaId)
+  //       } else if (ids.includes(conversionDict[mangaId])) {
+  //         updatedManga.push(conversionDict[mangaId])
+  //       }
+  //     }
+  //     if (loadNextPage) {
+  //       offset = offset + 100
+  //     }
+  //   }
+  //   if (updatedManga.length > 0) {
+  //     mangaUpdatesFoundCallback(createMangaUpdates({
+  //         ids: updatedManga
+  //     }))
+  //   }
+  // }
 
   decodeHTMLEntity(str: string): string {
     return entities.decodeHTML(str)
