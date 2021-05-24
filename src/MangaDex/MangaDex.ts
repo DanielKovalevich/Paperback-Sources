@@ -427,7 +427,7 @@ export class MangaDex extends Source {
       const mangaDetails = manga.data.attributes
       const title = this.decodeHTMLEntity(mangaDetails.title[Object.keys(mangaDetails.title)[0]])
       const coverId = manga.relationships.filter((x: any) => x.type == 'cover_art').map((x: any) => x.id)[0]
-      const image = Object.keys(coversDict).includes(coverId) ? `${COVER_BASE_URL}/${mangaId}/${coversDict[coverId]}` : 'https://i.imgur.com/6TrIues.jpg'
+      const image = Object.keys(coversDict).includes(coverId) ? `${COVER_BASE_URL}/${mangaId}/${coversDict[coverId]}.256.jpg` : 'https://i.imgur.com/6TrIues.jpg'
 
       results.push(createMangaTile({
         id: mangaId,
@@ -503,7 +503,7 @@ export class MangaDex extends Source {
             const mangaDetails = manga.data.attributes
             const title = this.decodeHTMLEntity(mangaDetails.title[Object.keys(mangaDetails.title)[0]])
             const coverId = manga.relationships.filter((x: any) => x.type == 'cover_art').map((x: any) => x.id)[0]
-            const image = Object.keys(coversDict).includes(coverId) ? `${COVER_BASE_URL}/${mangaId}/${coversDict[coverId]}` : 'https://i.imgur.com/6TrIues.jpg'
+            const image = Object.keys(coversDict).includes(coverId) ? `${COVER_BASE_URL}/${mangaId}/${coversDict[coverId]}.256.jpg` : 'https://i.imgur.com/6TrIues.jpg'
 
             results.push(createMangaTile({
               id: mangaId,
@@ -564,7 +564,7 @@ export class MangaDex extends Source {
       const mangaDetails = manga.data.attributes
       const title = this.decodeHTMLEntity(mangaDetails.title[Object.keys(mangaDetails.title)[0]])
       const coverId = manga.relationships.filter((x: any) => x.type == 'cover_art').map((x: any) => x.id)[0]
-      const image = Object.keys(coversDict).includes(coverId) ? `${COVER_BASE_URL}/${mangaId}/${coversDict[coverId]}` : 'https://i.imgur.com/6TrIues.jpg'
+      const image = Object.keys(coversDict).includes(coverId) ? `${COVER_BASE_URL}/${mangaId}/${coversDict[coverId]}.256.jpg` : 'https://i.imgur.com/6TrIues.jpg'
 
       if (!collectedIds.includes(mangaId)) {
         results.push(createMangaTile({
