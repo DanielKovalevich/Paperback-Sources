@@ -98,13 +98,6 @@ export class MangaDex extends Source {
     return `${MANGADEX_DOMAIN}/manga/${mangaId}`
   }
 
-  getCloudflareBypassRequest() {
-    return createRequestObject({
-      url: 'https://uploads.mangadex.org',
-      method: 'GET'
-    })
-  }
-
   async getMangaUUIDs(numericIds: string[], type: string = 'manga'): Promise<{[id: string]: string}> {
     const length = numericIds.length
     let offset = 0
