@@ -109,19 +109,22 @@ export class Parser {
     parseChapterList($: CheerioSelector, mangaId: string, source: any): Chapter[] {
         let chapters: Chapter[] = []
 
-        for (let obj of $('.item', $('.main')).toArray()) {
+        let theArray = $('.item', $('.main')).toArray().reverse()
+        theArray.forEach((obj, i) =>  {    
             let chapterTile: Cheerio = $('a', $(obj))
             let chapterId = chapterTile.attr('href')?.replace(`/chapter/`, '')
             let chapGroup = $(chapterTile).text().trim().split('\n').pop()?.trim()
-            let chapName = $('span', $(chapterTile)).first().text().replace(':', '').trim()
-            if (chapName == chapGroup) chapName = ''
-            let chapter = $('b', chapterTile).text().toLowerCase()
-            let chapNum = Number((/(\d+)/).test(chapter) ? chapter.match(/(\d+)/)![0] : 0)
+            let chapNamePart1 = $('b', chapterTile).text()
+            let chapNamePart2 = $('span', $(chapterTile)).first().text().replace(':', '').trim()
+            if (chapNamePart2 == chapGroup) chapNamePart2 = ''
+            let chapter = $('b', chapterTile).text()
+            let chapNum = i+1
             let volume = Number(chapter?.split('chapter')[0]?.replace('volume', '').trim())
             
             let language = $('.emoji').attr('data-lang') ?? 'gb'
-            let time = source.convertTime($('i', $(obj)).text())
-            if (typeof chapterId === 'undefined') continue
+            let time = source.convertTime($('i.ps-3', $(obj)).text())
+            if ((typeof chapterId === 'undefined')) return;
+            
             chapters.push(createChapter({
                 id: chapterId,
                 mangaId: mangaId,
@@ -129,25 +132,12 @@ export class Parser {
                 chapNum: Number(chapNum),
                 group: this.decodeHTMLEntity(chapGroup ?? ''),
                 langCode: reverseLangCode[language] ?? reverseLangCode['_unknown'],
-                name: this.decodeHTMLEntity(chapName),
+                name: chapNamePart1 + " " + this.decodeHTMLEntity(chapNamePart2),
                 time: time
             }))
-        }
+        })
         return chapters
     }
-
-
-    sortChapters(chapters: Chapter[]): Chapter[] {
-        let sortedChapters: Chapter[] = []
-        chapters.forEach((c) => {
-            if (sortedChapters[sortedChapters.indexOf(c)]?.id !== c?.id) {
-                sortedChapters.push(c)
-            }
-        })
-        sortedChapters.sort((a, b) => (a.id > b.id) ? 1 : -1)
-        return sortedChapters
-    }
-
 
     parseChapterDetails($: CheerioSelector): string[] {
         let pages: string[] = []

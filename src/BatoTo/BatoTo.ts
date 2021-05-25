@@ -17,7 +17,7 @@ import {Parser,} from './Parser'
 const BATOTO_DOMAIN = 'https://bato.to'
 
 export const BatoToInfo: SourceInfo = {
-    version: '1.1.7',
+    version: '1.1.8',
     name: 'Bato.To',
     description: 'Extension that pulls western comics from bato.to',
     author: 'GameFuzzy',
@@ -64,7 +64,7 @@ export class BatoTo extends Source {
         let $ = this.cheerio.load(pageData.data)
         chapters = chapters.concat(this.parser.parseChapterList($, mangaId, this))
 
-        return this.parser.sortChapters(chapters)
+        return (chapters)
     }
 
 
