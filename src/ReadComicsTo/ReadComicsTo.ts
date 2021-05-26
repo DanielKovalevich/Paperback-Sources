@@ -294,7 +294,7 @@ export class ReadComicsTo extends Source {
 
     getCloudflareBypassRequest() {
         return createRequestObject({
-            url: `https://readcomiconline.li/Comic/The-Walking-Dead/Issue-1?id=1715`,
+            url: `${READCOMICSTO_DOMAIN}/Comic/The-Walking-Dead/Issue-1?id=1715`,
             method: 'GET',
         })
     }
