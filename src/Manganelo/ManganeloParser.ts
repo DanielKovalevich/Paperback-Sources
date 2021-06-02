@@ -59,7 +59,7 @@ export const parseMangaDetails = ($: CheerioStatic, mangaId: string): Manga => {
     author: author,
     artist: author ?? "",
     tags: tagSections,
-    desc: description,
+    desc: description ?? "",
     //hentai: hentai
     hentai: false //MangaDex down
   });
