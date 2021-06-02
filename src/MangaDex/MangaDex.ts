@@ -13,7 +13,8 @@ import {
   MangaUpdates,
   MangaStatus,
   MangaTile,
-  Tag
+  Tag,
+  RequestHeaders
 } from 'paperback-extensions-common'
 
 const entities = require("entities")
@@ -95,7 +96,13 @@ export class MangaDex extends Source {
   })
 
   getMangaShareUrl(mangaId: string): string {
-    return `${MANGADEX_DOMAIN}/manga/${mangaId}`
+    return `${MANGADEX_DOMAIN}/title/${mangaId}`
+  }
+
+  globalRequestHeaders(): RequestHeaders {
+    return {
+      referer: MANGADEX_DOMAIN
+    }
   }
 
   async getMangaUUIDs(numericIds: string[], type: string = 'manga'): Promise<{[id: string]: string}> {
