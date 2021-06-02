@@ -56,7 +56,7 @@ export const parseMangaDetails = ($: CheerioStatic, mangaId: string): Manga => {
     image: image == "" ? "https://i.imgur.com/GYUxEX8.png" : image,
     rating: 0,
     status: status,
-    author: author,
+    author: author ?? "",
     artist: author ?? "",
     tags: tagSections,
     desc: description ?? "",
