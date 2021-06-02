@@ -50,7 +50,12 @@ export class Manganelo extends Source {
     const response = await this.requestManager.schedule(request, 1);
     const $ = this.cheerio.load(response.data);
 
-    return $('link[rel=canonical]').first().attr('href')?.split('/').pop() ?? ''
+    const newMangaId = $('link[rel=canonical]').first().attr('href')?.split('/').pop()
+    if (!newMangaId) {
+      throw new Error(`Failed to get new id for ${oldMangaId}`)
+    }
+
+    return newMangaId
   }
 
   async getMangaDetails(mangaId: string): Promise<Manga> {
