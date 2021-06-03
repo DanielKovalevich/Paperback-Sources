@@ -14,29 +14,41 @@ export const parseMangaDetails = ($: CheerioStatic, mangaId: string): Manga => {
 
   const titles = [];
   titles.push(decodeHTMLEntity($(".img-loading", panel).attr("title") ?? "")); //Main English title
-  const altTitles = $("i.info-alternative").parent().next().text()?.split(/,|;/)
-  for (const title of altTitles) {
-    if (title == "") continue;
-    titles.push(decodeHTMLEntity(title.trim()));
+
+  if ($("i.info-alternative")?.parent()?.next().length) { //Check if .parent() and .next() aren't null
+    const altTitles = $("i.info-alternative").parent().next().text()?.split(/,|;/)
+    for (const title of altTitles) {
+      if (title == "") continue;
+      titles.push(decodeHTMLEntity(title.trim()));
+    }
   }
 
-  const author = $("i.info-author").parent().next().text().replace(/\s-\s/g, ", ").trim();
+  let author = "Unknown";
+  if ($("i.info-author")?.parent()?.next().length) {
+    author = $("i.info-author").parent().next().text().replace(/\s-\s/g, ", ").trim();
+  }
   const image = $(".img-loading", panel).attr("src") ?? "";
   const description = decodeHTMLEntity($("div.panel-story-info-description", panel).contents().remove().last().text().trim());
 
   let hentai = false;
 
   const arrayTags: Tag[] = [];
-  for (const tag of $("a", $("i.info-genres").parent().next()).toArray()) {
-    const label = $(tag).text().trim();
-    const id = encodeURI($(tag).attr("href")?.replace(`${MN_DOMAIN}/`, "")?.replace(/\/$/, "") ?? "");
-    if (!id || !label) continue;
-    if (["ADULT", "SMUT", "MATURE"].includes(label.toUpperCase())) hentai = true;
-    arrayTags.push({ id: id, label: label });
+  if ($("a", $("i.info-genres").parent().next()).length) {
+    for (const tag of $("a", $("i.info-genres").parent().next()).toArray()) {
+      const label = $(tag).text().trim();
+      const id = encodeURI($(tag).attr("href")?.split('/').pop()?.replace(/\/$/, "") ?? "");
+      if (!id || !label) continue;
+      if (["ADULT", "SMUT", "MATURE"].includes(label.toUpperCase())) hentai = true;
+      arrayTags.push({ id: id, label: label });
+    }
   }
   const tagSections: TagSection[] = [createTagSection({ id: '0', label: 'genres', tags: arrayTags.map(x => createTag(x)) })];
 
-  const rawStatus = $("i.info-status").parent().next().text().trim();
+  let rawStatus = "ONGOING";
+  if ($("i.info-status").parent().next().length) {
+    rawStatus = $("i.info-status").parent().next().text().trim();
+  }
+
   let status = MangaStatus.ONGOING;
   switch (rawStatus.toUpperCase()) {
     case 'ONGOING':
@@ -53,7 +65,7 @@ export const parseMangaDetails = ($: CheerioStatic, mangaId: string): Manga => {
   return createManga({
     id: mangaId,
     titles: titles,
-    image: image == "" ? "https://i.imgur.com/GYUxEX8.png" : image,
+    image: !image ? "https://i.imgur.com/GYUxEX8.png" : image,
     rating: 0,
     status: status,
     author: author ?? "",
@@ -139,7 +151,7 @@ export const parseHomeSections = ($: CheerioStatic, sections: HomeSection[], sec
     if (!id || !title) continue;
     TopWeek.push(createMangaTile({
       id: id,
-      image: image,
+      image: !image ? "https://i.imgur.com/GYUxEX8.png" : image,
       title: createIconText({ text: decodeHTMLEntity(title) }),
       subtitleText: createIconText({ text: subtitle }),
     }));
@@ -157,7 +169,7 @@ export const parseHomeSections = ($: CheerioStatic, sections: HomeSection[], sec
     if (!id || !title) continue;
     LatestUpdate.push(createMangaTile({
       id: id,
-      image: image,
+      image: !image ? "https://i.imgur.com/GYUxEX8.png" : image,
       title: createIconText({ text: decodeHTMLEntity(title) }),
       subtitleText: createIconText({ text: subtitle }),
     }));
@@ -174,7 +186,7 @@ export const parseHomeSections = ($: CheerioStatic, sections: HomeSection[], sec
     if (!id || !title) continue;
     NewManga.push(createMangaTile({
       id: id,
-      image: image,
+      image: !image ? "https://i.imgur.com/GYUxEX8.png" : image,
       title: createIconText({ text: decodeHTMLEntity(title) }),
     }));
   }
@@ -194,7 +206,7 @@ export const parseViewMore = ($: CheerioStatic): MangaTile[] => {
     if (!id || !title) continue;
     mangas.push(createMangaTile({
       id: id,
-      image: image,
+      image: !image ? "https://i.imgur.com/GYUxEX8.png" : image,
       title: createIconText({ text: decodeHTMLEntity(title) }),
       subtitleText: createIconText({ text: subtitle }),
     }));
@@ -220,7 +232,7 @@ export const parseSearch = ($: CheerioStatic): MangaTile[] => {
     if (collectedIds.includes(id) || !id || !title) continue;
     mangas.push(createMangaTile({
       id,
-      image: image,
+      image: !image ? "https://i.imgur.com/GYUxEX8.png" : image,
       title: createIconText({ text: decodeHTMLEntity(title) }),
       subtitleText: createIconText({ text: subtitle }),
     }));
@@ -234,7 +246,7 @@ export const parseTags = ($: CheerioStatic): TagSection[] | null => {
   const arrayTags: Tag[] = [];
   for (const tag of $("a.a-h.text-nowrap", "div.panel-category").toArray()) {
     const label = $(tag).text().trim();
-    const id = encodeURI($(tag).attr("href")?.replace(`${MN_DOMAIN}/`, "")?.replace(/\/$/, "") ?? "");
+    const id = encodeURI($(tag).attr("href")?.split('/').pop()?.replace(/\/$/, "") ?? "");
     if (!id || !label) continue;
     arrayTags.push({ id: id, label: label });
   }
