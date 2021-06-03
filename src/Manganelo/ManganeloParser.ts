@@ -2,8 +2,6 @@ import { Chapter, ChapterDetails, Tag, HomeSection, LanguageCode, Manga, MangaSt
 
 const entities = require("entities");
 
-const MN_DOMAIN = 'https://manganelo.com'
-
 export interface UpdatedManga {
   ids: string[],
   loadMore: boolean;
@@ -16,7 +14,7 @@ export const parseMangaDetails = ($: CheerioStatic, mangaId: string): Manga => {
   titles.push(decodeHTMLEntity($(".img-loading", panel).attr("title") ?? "")); //Main English title
 
   if ($("i.info-alternative")?.parent()?.next().length) { //Check if .parent() and .next() aren't null
-    const altTitles = $("i.info-alternative").parent().next().text()?.split(/,|;/)
+    const altTitles = $("i.info-alternative").parent().next().text()?.split(/,|;/);
     for (const title of altTitles) {
       if (title == "") continue;
       titles.push(decodeHTMLEntity(title.trim()));
@@ -87,6 +85,7 @@ export const parseChapters = ($: CheerioStatic, mangaId: string): Chapter[] => {
     const chapRegex = title.match(/(\d+\.?\_?\d?)/);
     let chapterNumber: number = 0;
     if (chapRegex && chapRegex[1]) chapterNumber = Number(chapRegex[1].replace(/\\/g, "."));
+    if (!id) continue;
     chapters.push(createChapter({
       id: id,
       mangaId,
@@ -105,6 +104,7 @@ export const parseChapterDetails = ($: CheerioStatic, mangaId: string, chapterId
   for (const p of $("img", "div.container-chapter-reader").toArray()) {
     let image = $(p).attr("src") ?? "";
     if (!image) image = $(p).attr("data-src") ?? "";
+    if (!image) throw new Error(`Unable to parse image(s) for chapterID: ${chapterId}`);
     pages.push(image);
   }
   const chapterDetails = createChapterDetails({
@@ -122,8 +122,9 @@ export const parseUpdatedManga = ($: CheerioStatic, time: Date, ids: string[]): 
   let loadMore = true;
 
   for (const manga of $("div.content-genres-item", "div.panel-content-genres").toArray()) {
-    const id = $("a", manga).attr('href')?.replace(`${MN_DOMAIN}/manga/`, "")?.replace(/\/$/, "") ?? "";
+    const id = $("a", manga).attr('href')?.split('/').pop()?.replace(/\/$/, "") ?? "";
     const mangaDate = new Date($("span.genres-item-time", manga).text().trim() ?? "");
+    if (!id) continue;
     if (mangaDate > time) {
       if (ids.includes(id)) {
         updatedManga.push(id);
