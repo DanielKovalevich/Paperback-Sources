@@ -82,7 +82,7 @@ export const parseChapters = ($: CheerioStatic, mangaId: string): Chapter[] => {
     const title = decodeHTMLEntity($("a.chapter-name", chapter).text().trim());
     const id = $("a", chapter).attr('href')?.split('/').pop() ?? "";
     const date = new Date($('span.chapter-time', chapter).attr("title") ?? "");
-    const chapRegex = title.match(/(\d+\.?\_?\d?)/);
+    const chapRegex = title.match(/(?:[Cc]hapter)\s(\d+\.?\d?)/);
     let chapterNumber: number = 0;
     if (chapRegex && chapRegex[1]) chapterNumber = Number(chapRegex[1].replace(/\\/g, "."));
     if (!id) continue;
