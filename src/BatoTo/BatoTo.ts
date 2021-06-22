@@ -17,7 +17,7 @@ import {Parser,} from './Parser'
 const BATOTO_DOMAIN = 'https://bato.to'
 
 export const BatoToInfo: SourceInfo = {
-    version: '1.1.8',
+    version: '1.1.9',
     name: 'Bato.To',
     description: 'Extension that pulls western comics from bato.to',
     author: 'GameFuzzy',
@@ -29,6 +29,10 @@ export const BatoToInfo: SourceInfo = {
         {
             text: "Notifications",
             type: TagType.GREEN
+        },
+        {
+            text: "Cloudflare",
+            type: TagType.RED
         }
     ]
 }
@@ -218,7 +222,7 @@ export class BatoTo extends Source {
         let page: number = metadata?.page ?? 1
         switch (homepageSectionId) {
             case '0': {
-                webPage = `?sort=views_a&page=${page}`
+                webPage = `?sort=create&page=${page}`
                 break
             }
             case '1': {
@@ -226,7 +230,7 @@ export class BatoTo extends Source {
                 break
             }
             case '2': {
-                webPage = `?sort=create&page=${page}`
+                webPage = `?sort=views_a&page=${page}`
                 break
             }
             default:
@@ -254,7 +258,7 @@ export class BatoTo extends Source {
         })
     }
 
-    cloudflareBypassRequest() {
+    getCloudflareBypassRequest() {
         return createRequestObject({
             url: `${BATOTO_DOMAIN}`,
             method: 'GET',
