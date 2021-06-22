@@ -318,6 +318,27 @@ export class MangaDex extends Source {
   async searchRequest(query: SearchRequest, metadata: any): Promise<PagedResults> {
     let offset: number = metadata?.offset ?? 0
     let results: MangaTile[] = []
+    
+    query.title = query.title ?? ''
+    
+    if (query.title.length == 36 && query.title.split("-").length == 5 && query.title.split(" ").length == 1){ // UUIDs have 4 dashes making 5 sections and there should be no spaces.
+      const request = createRequestObject({url: `${MANGADEX_API}/manga/${query.title}?includes[]=cover_art`, method: "GET"});
+      const response = await this.requestManager.schedule(request, 1)
+      if (response.status == 200) {
+        const manga = typeof response.data === "string" ? JSON.parse(response.data) : response.data
+        if(manga.results === undefined) {throw new Error(`Failed to parse json for the given UUID: ${query.title}`)}
+        const mangaDetails = manga.data.attributes;
+        const title = this.decodeHTMLEntity(mangaDetails.title[Object.keys(mangaDetails.title)[0]]);
+        const coverFileName = manga.relationships.filter((x: any) => x.type == 'cover_art').map((x: any) => x.attributes?.fileName)[0];
+        const image = `${COVER_BASE_URL}/${query.title}/${coverFileName}.256.jpg`;
+        results.push(createMangaTile({
+          id: mangaId,
+          title: createIconText({text: title}),
+          image
+        }))
+        return createPagedResults({results});
+      }
+    }
 
     const request = createRequestObject({
       url: `${MANGADEX_API}/manga?title=${encodeURIComponent(query.title ?? '')}&limit=100&offset=${offset}&contentRating[]=none&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic&includes[]=cover_art`,
