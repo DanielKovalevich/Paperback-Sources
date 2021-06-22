@@ -321,7 +321,7 @@ export class MangaDex extends Source {
     
     query.title = query.title ?? ''
     
-    if (query.title.length == 36 && query.title.split("-").length == 5 && query.title.split(" ").length == 1){ // UUIDs have 4 dashes making 5 sections and there should be no spaces.
+    if (query.title.match(/[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/i)){
       const request = createRequestObject({url: `${MANGADEX_API}/manga/${query.title}?includes[]=cover_art`, method: "GET"});
       const response = await this.requestManager.schedule(request, 1)
       if (response.status == 200) {
