@@ -15,7 +15,7 @@ describe('Manganelo Tests', function () {
      * Try to choose a manga which is updated frequently, so that the historical checking test can 
      * return proper results, as it is limited to searching 30 days back due to extremely long processing times otherwise.
      */
-    var mangaId = "zt922734";   // Mashle
+    var mangaId = "zt922734"; // Legacy Mashle
 
     it("Retrieve Manga Details", async () => {
         let details = await wrapper.getMangaDetails(source, mangaId);

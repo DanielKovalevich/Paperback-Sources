@@ -19,7 +19,7 @@ const headers = { "content-type": "application/x-www-form-urlencoded" }
 const method = 'GET'
 
 export const MangaLifeInfo: SourceInfo = {
-  version: '2.1.8',
+  version: '2.1.9',
   name: 'Manga4Life',
   icon: 'icon.png',
   author: 'Daniel Kovalevich',
@@ -138,7 +138,7 @@ export class MangaLife extends Source {
 
   globalRequestHeaders(): RequestHeaders {
     return {
-      referer: ML_DOMAIN
+      referer: ML_DOMAIN + '/'
     }
   }
 
