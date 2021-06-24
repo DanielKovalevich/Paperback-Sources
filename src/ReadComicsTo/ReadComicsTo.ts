@@ -18,7 +18,7 @@ import {Parser,} from './Parser'
 const READCOMICSTO_DOMAIN = 'https://readcomiconline.li'
 
 export const ReadComicsToInfo: SourceInfo = {
-    version: '1.0.6',
+    version: '1.0.7',
     name: 'ReadComicsOnlineLi',
     description: 'Extension that pulls western comics from readcomiconline.li',
     author: 'Aurora',
@@ -26,7 +26,12 @@ export const ReadComicsToInfo: SourceInfo = {
     icon: "logo.png",
     hentaiSource: false,
     websiteBaseURL: READCOMICSTO_DOMAIN,
-    sourceTags: []
+    sourceTags: [
+        {
+            text: "Buggy",
+            type: TagType.RED
+        }
+    ]
 }
 
 export class ReadComicsTo extends Source {
