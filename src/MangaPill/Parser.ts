@@ -1,12 +1,14 @@
 import {Chapter, LanguageCode, Manga, MangaStatus, MangaTile, Tag, TagSection} from 'paperback-extensions-common'
 
+const entities = require('entities')
+
 export class Parser {
 
 
     parseMangaDetails($: CheerioSelector, mangaId: string): Manga {
 
 
-        let titles = [$('.font-bold.text-lg').text().trim()]
+        let titles = [this.decodeHTMLEntity($('.font-bold.text-lg').text().trim())]
         let image = $('.lazy').attr('data-src')
         let summary = $('p.text-sm.text-color-text-secondary').text().trim()
 
@@ -258,7 +260,7 @@ export class Parser {
     
     decodeHTMLEntity(str: string): string {
         return str.replace(/&#(\d+);/g, function (match, dec) {
-            return String.fromCharCode(dec);
+            return entities.decodeHTML(String.fromCharCode(dec));
         })
     }
 }
