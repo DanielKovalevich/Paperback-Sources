@@ -17,7 +17,7 @@ import {Parser,} from './Parser'
 const MANGAPILL_DOMAIN = 'https://www.mangapill.com'
 
 export const MangaPillInfo: SourceInfo = {
-    version: '1.1.5',
+    version: '1.1.6',
     name: 'MangaPill',
     description: 'Extension that pulls manga from mangapill.com. It has a lot of officially translated manga but can sometimes miss manga notifications',
     author: 'GameFuzzy',
@@ -94,7 +94,7 @@ export class MangaPill extends Source {
     async filterUpdatedManga(mangaUpdatesFoundCallback: (updates: MangaUpdates) => void, time: Date, ids: string[]): Promise<void> {
 
         let request = createRequestObject({
-            url: `${MANGAPILL_DOMAIN}`,
+            url: `${MANGAPILL_DOMAIN}/chapters`,
             method: 'GET'
         })
 
@@ -173,7 +173,7 @@ export class MangaPill extends Source {
         const sections = [
             {
                 request: createRequestObject({
-                    url: `${MANGAPILL_DOMAIN}`,
+                    url: `${MANGAPILL_DOMAIN}/chapters`,
                     method: 'GET'
                 }),
                 section: createHomeSection({
@@ -223,7 +223,7 @@ export class MangaPill extends Source {
 
             case '1': {
                 let request = createRequestObject({
-                    url: `${MANGAPILL_DOMAIN}`,
+                    url: `${MANGAPILL_DOMAIN}/chapters`,
                     method: 'GET'
                 })
 
