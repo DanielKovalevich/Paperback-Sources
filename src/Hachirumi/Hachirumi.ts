@@ -10,6 +10,7 @@ import {
   MangaUpdates,
   PagedResults,
   SourceInfo,
+  MangaTile,
 } from "paperback-extensions-common";
 
 const HACHIRUMI_DOMAIN = "https://hachirumi.com";
@@ -144,7 +145,46 @@ export class Hachirumi extends Source {
     });
   }
 
-  searchRequest(query: SearchRequest, metadata: any): Promise<PagedResults> {
-    throw new Error("Method not implemented.");
+  /*
+  This method doesn't query anything, instead finds a specific title from `get_all_series` endpoint
+   */
+  async searchRequest(
+    query: SearchRequest,
+    metadata: any
+  ): Promise<PagedResults> {
+    let request = createRequestObject({
+      url: HACHIRUMI_API + "/get_all_series",
+      method: "GET",
+      headers: {
+        "accept-encoding": "application/json",
+      },
+    });
+
+    let response = await this.requestManager.schedule(request, 1);
+    let result =
+      typeof response.data === "string" || typeof response.data !== "object"
+        ? JSON.parse(response.data)
+        : response.data;
+
+    // Checks for the query title and pushes it to lowercase.
+    let queryTitle: string = query.title ? query.title.toLowerCase() : "";
+    // Takes the response array and checks for titles that matches the query string.
+    let filterer = (titles: object[]) =>
+      Object.keys(titles).filter((title) =>
+        title.replace("-", "").toLowerCase().includes(queryTitle)
+      );
+
+    let filteredRequest = filterer(result).map((title) => {
+      let metadata = result[title];
+      return createMangaTile({
+        id: metadata.slug,
+        image: HACHIRUMI_DOMAIN + metadata.cover,
+        title: createIconText({ text: title }),
+      });
+    });
+
+    return createPagedResults({
+      results: filteredRequest,
+    });
   }
 }
