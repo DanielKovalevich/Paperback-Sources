@@ -366,8 +366,8 @@ export class MangaDex extends Source {
           method: 'GET',
         }),
         section: createHomeSection({
-          id: 'featured',
-          title: 'FEATURED TITLES',
+          id: 'seasonal',
+          title: 'SEASONAL',
           view_more: true,
         }),
       },
@@ -444,7 +444,7 @@ export class MangaDex extends Source {
     let url: string = ''
 
     switch(homepageSectionId) {
-      case 'featured': {
+      case 'seasonal': {
         url = await this.getCustomListRequestURL('8018a70b-1492-4f91-a584-7451d7787f7a')
         break
       }
