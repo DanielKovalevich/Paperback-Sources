@@ -3,14 +3,11 @@ import {
   Manga,
   Chapter,
   ChapterDetails,
-  HomeSection,
   SearchRequest,
   LanguageCode,
   MangaStatus,
-  MangaUpdates,
   PagedResults,
   SourceInfo,
-  MangaTile,
 } from "paperback-extensions-common";
 
 const HACHIRUMI_DOMAIN = "https://hachirumi.com";
