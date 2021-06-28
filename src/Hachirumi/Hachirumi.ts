@@ -14,6 +14,13 @@ import {
 
 const HACHIRUMI_DOMAIN = "https://hachirumi.com";
 const HACHIRUMI_API = `${HACHIRUMI_DOMAIN}/api`;
+const HACHIRUMI_IMAGES = (
+  slug: string,
+  folder: string,
+  group: string,
+  ext: string
+) =>
+  `https://hachirumi.com/media/manga/${slug}/chapters/${folder}/${group}/${ext}`;
 
 export const HachirumiInfo: SourceInfo = {
   version: "1.0.0",
@@ -84,11 +91,10 @@ export class Hachirumi extends Source {
 
     for (let key in chapterObject) {
       let metadata = chapterObject[key];
-
       for (let groupKey in metadata["groups"]) {
         chapters.push(
           createChapter({
-            id: metadata["folder"],
+            id: `${key}|${groupKey}|${metadata["folder"]}`, // Moved to this format as it is easier to find the `key, groupkey, folder`.
             mangaId: result.slug,
             chapNum: parseInt(key),
             langCode: LanguageCode.ENGLISH,
@@ -102,12 +108,42 @@ export class Hachirumi extends Source {
     }
     return chapters;
   }
-  getChapterDetails(
+
+  /*
+   * Follows the chapterId format used  in `getChapter` method.
+   * `chapterKey|groupKey|folderId`
+   */
+  async getChapterDetails(
     mangaId: string,
     chapterId: string
   ): Promise<ChapterDetails> {
-    throw new Error("Method not implemented.");
+    let request = createRequestObject({
+      url: HACHIRUMI_API + "/series/" + mangaId,
+      method: "GET",
+      headers: {
+        "accept-encoding": "application/json",
+      },
+    });
+
+    let response = await this.requestManager.schedule(request, 1);
+    let result =
+      typeof response.data === "string" || typeof response.data !== "object"
+        ? JSON.parse(response.data)
+        : response.data;
+
+    let chapterObject = result["chapters"];
+    let [chapterKey, groupKey, folder] = chapterId.split("|"); // Splits the given generic chapter id to chapterkey and such.
+
+    return createChapterDetails({
+      id: chapterId,
+      longStrip: false, // Not implemented.
+      mangaId: mangaId,
+      pages: chapterObject[chapterKey]["groups"][groupKey].map((ext: string) =>
+        HACHIRUMI_IMAGES(mangaId, folder, groupKey, ext)
+      ),
+    });
   }
+
   searchRequest(query: SearchRequest, metadata: any): Promise<PagedResults> {
     throw new Error("Method not implemented.");
   }
