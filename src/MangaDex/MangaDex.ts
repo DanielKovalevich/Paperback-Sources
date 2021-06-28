@@ -507,7 +507,7 @@ export class MangaDex extends Source {
     }
 
     let offset = 0
-    const maxRequests = 500
+    const maxRequests = 100
     let loadNextPage = true
     let updatedManga: string[] = []
     const updatedAt = time.toISOString().split('.')[0] // They support a weirdly truncated version of an ISO timestamp
