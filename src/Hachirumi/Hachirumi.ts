@@ -94,7 +94,7 @@ export class Hachirumi extends Source {
   Hachirumi serves both chapters and manga in single request.
   */
   async getChapters(mangaId: string): Promise<Chapter[]> {
-    let request = createRequestObject({
+    const request = createRequestObject({
       url: HACHIRUMI_API + "/series/" + mangaId,
       method: "GET",
       headers: {
@@ -102,8 +102,8 @@ export class Hachirumi extends Source {
       },
     });
 
-    let response = await this.requestManager.schedule(request, 1);
-    let result =
+    const response = await this.requestManager.schedule(request, 1);
+    const result =
       typeof response.data === "string" || typeof response.data !== "object"
         ? JSON.parse(response.data)
         : response.data;
@@ -113,8 +113,8 @@ export class Hachirumi extends Source {
         "Failed to parse the response. @getChapters() on result."
       );
 
-    let chapterObject = result["chapters"];
-    let groupObject = result["groups"];
+    const chapterObject = result["chapters"];
+    const groupObject = result["groups"];
 
     if (!chapterObject || !groupObject)
       throw new Error(
@@ -210,15 +210,21 @@ export class Hachirumi extends Source {
     query: SearchRequest,
     metadata: any
   ): Promise<PagedResults> {
-    let request = createRequestObject({
+    if (metadata?.limitReached)
+      return createPagedResults({
+        results: [],
+        metadata: { limitReached: true },
+      }); // Prevents title duplication.
+
+    const request = createRequestObject({
       url: HACHIRUMI_API + "/get_all_series",
       method: "GET",
       headers: {
         "accept-encoding": "application/json",
       },
     });
-    let response = await this.requestManager.schedule(request, 1);
-    let result =
+    const response = await this.requestManager.schedule(request, 1);
+    const result =
       typeof response.data === "string" || typeof response.data !== "object"
         ? JSON.parse(response.data)
         : response.data;
@@ -234,7 +240,7 @@ export class Hachirumi extends Source {
     // Takes the response array and checks for titles that matches the query string.
     const filterer = (titles: object[]) =>
       Object.keys(titles).filter((title) =>
-        title.replace("-", "").toLowerCase().includes(queryTitle)
+        title.replace("-", " ").toLowerCase().includes(queryTitle)
       );
 
     const filteredRequest = filterer(result).map((title) => {
@@ -254,6 +260,9 @@ export class Hachirumi extends Source {
 
     return createPagedResults({
       results: filteredRequest,
+      metadata: {
+        limitReached: true,
+      },
     });
   }
 }
