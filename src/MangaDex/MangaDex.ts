@@ -555,6 +555,7 @@ export class MangaDex extends Source {
             ids: updatedManga
         }))
       }
+      updatedManga = []
     }
   }
 
