@@ -124,7 +124,7 @@ export class MangaDex extends Source {
       offset += 500
     
       const response = await this.requestManager.schedule(request, 1)
-      const json = typeof response.data === "string" ? JSON.parse(response.data) : response.data
+      const json = (typeof response.data) === "string" ? JSON.parse(response.data) : response.data
 
       for (const mapping of json) {
         UUIDsDict[mapping.data.attributes.legacyId] = mapping.data.attributes.newId
@@ -145,7 +145,7 @@ export class MangaDex extends Source {
     })
     
     const response = await this.requestManager.schedule(request, 1)
-    const json = typeof response.data === "string" ? JSON.parse(response.data) : response.data
+    const json = (typeof response.data) === "string" ? JSON.parse(response.data) : response.data
 
     return json.baseUrl
   }
@@ -157,7 +157,7 @@ export class MangaDex extends Source {
     })
     
     const response = await this.requestManager.schedule(request, 1)
-    const json = typeof response.data === "string" ? JSON.parse(response.data) : response.data
+    const json = (typeof response.data) === "string" ? JSON.parse(response.data) : response.data
 
     return `${MANGADEX_API}/manga?limit=100&contentRating[]=none&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic&includes[]=cover_art&ids[]=${json.relationships.filter((x: any) => x.type == 'manga').map((x: any) => x.id).join('&ids[]=')}`
   }
@@ -178,7 +178,7 @@ export class MangaDex extends Source {
     })
     
     const response = await this.requestManager.schedule(request, 1)
-    const json = typeof response.data === "string" ? JSON.parse(response.data) : response.data
+    const json = (typeof response.data) === "string" ? JSON.parse(response.data) : response.data
 
     const mangaDetails = json.data.attributes
     const titles = [mangaDetails.title[Object.keys(mangaDetails.title)[0]]].concat(mangaDetails.altTitles.map((x: any)  => this.decodeHTMLEntity(x[Object.keys(x)[0]])))
@@ -244,7 +244,7 @@ export class MangaDex extends Source {
       method: 'GET',
       })
       const response = await this.requestManager.schedule(request, 1)
-      const json = typeof response.data === "string" ? JSON.parse(response.data) : response.data
+      const json = (typeof response.data) === "string" ? JSON.parse(response.data) : response.data
       offset += 500
 
       if(json.results === undefined) throw new Error(`Failed to parse json results for ${newMangaId}`)
@@ -300,7 +300,7 @@ export class MangaDex extends Source {
     })
 
     const response = await this.requestManager.schedule(request, 1)
-    const json = typeof response.data === "string" ? JSON.parse(response.data) : response.data
+    const json = (typeof response.data) === "string" ? JSON.parse(response.data) : response.data
 
     const chapterDetails = json.data.attributes
     const pages = chapterDetails.data.map(
@@ -329,7 +329,7 @@ export class MangaDex extends Source {
       return createPagedResults({results})
     }
 
-    const json = typeof response.data === "string" ? JSON.parse(response.data) : response.data
+    const json = (typeof response.data) === "string" ? JSON.parse(response.data) : response.data
 
     if(json.results === undefined) {throw new Error(`Failed to parse json for the given search`)}
 
@@ -403,7 +403,7 @@ export class MangaDex extends Source {
       // Get the section data
       promises.push(
         this.requestManager.schedule(section.request, 1).then(async response => {
-          const json = typeof response.data === "string" ? JSON.parse(response.data) : response.data
+          const json = (typeof response.data) === "string" ? JSON.parse(response.data) : response.data
           let results = []
 
           if(json.results === undefined) throw new Error(`Failed to parse json results for section ${section.section.title}`)
@@ -464,7 +464,7 @@ export class MangaDex extends Source {
     })
 
     const response = await this.requestManager.schedule(request, 1)
-    const json = typeof response.data === "string" ? JSON.parse(response.data) : response.data
+    const json = (typeof response.data) === "string" ? JSON.parse(response.data) : response.data
 
     if(json.results === undefined) throw new Error(`Failed to parse json results for getViewMoreItems`)
 
@@ -525,7 +525,7 @@ export class MangaDex extends Source {
         return
       }
 
-      const json = typeof response.data === "string" ? JSON.parse(response.data) : response.data
+      const json = (typeof response.data) === "string" ? JSON.parse(response.data) : response.data
 
       if(json.results === undefined) {
         // Log this, no need to throw.
