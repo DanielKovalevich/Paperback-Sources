@@ -8,7 +8,8 @@ import {
   MangaStatus,
   PagedResults,
   SourceInfo,
-} from "paperback-extensions-common";
+  HomeSection,
+} from 'paperback-extensions-common'
 
 import {
   chapId,
@@ -17,17 +18,17 @@ import {
   chapVol,
   chapGroup,
   unixToDate,
-} from "./Functions";
+} from './Functions'
 
-const HACHIRUMI_DOMAIN = "https://hachirumi.com";
-const HACHIRUMI_API = `${HACHIRUMI_DOMAIN}/api`;
+const HACHIRUMI_DOMAIN = 'https://hachirumi.com'
+const HACHIRUMI_API = `${HACHIRUMI_DOMAIN}/api`
 const HACHIRUMI_IMAGES = (
   slug: string,
   folder: string,
   group: string,
   ext: string
 ) =>
-  `https://hachirumi.com/media/manga/${slug}/chapters/${folder}/${group}/${ext}`;
+  `https://hachirumi.com/media/manga/${slug}/chapters/${folder}/${group}/${ext}`
 
 /*
  * # Error Methods
@@ -41,16 +42,16 @@ const HACHIRUMI_IMAGES = (
  */
 
 export const HachirumiInfo: SourceInfo = {
-  version: "1.0.0",
-  name: "Hachirumi",
-  icon: "icon.png",
-  author: "Curstantine",
-  authorWebsite: "https://github.com/Curstantine",
-  description: "Extension that pulls manga from Hachirumi.",
+  version: '1.0.0',
+  name: 'Hachirumi',
+  icon: 'icon.png',
+  author: 'Curstantine',
+  authorWebsite: 'https://github.com/Curstantine',
+  description: 'Extension that pulls manga from Hachirumi.',
   language: LanguageCode.ENGLISH,
   hentaiSource: false,
   websiteBaseURL: HACHIRUMI_DOMAIN,
-};
+}
 
 export class Hachirumi extends Source {
   /* 
@@ -58,24 +59,31 @@ export class Hachirumi extends Source {
   eg: the-story-about-living
   */
   async getMangaDetails(mangaId: string): Promise<Manga> {
-    let request = createRequestObject({
-      url: HACHIRUMI_API + "/series/" + mangaId,
-      method: "GET",
-      headers: {
-        "accept-encoding": "application/json",
-      },
-    });
+    const methodName = this.getMangaDetails.name
 
-    let response = await this.requestManager.schedule(request, 1);
-    let result =
-      typeof response.data === "string" || typeof response.data !== "object"
+    const request = createRequestObject({
+      url: HACHIRUMI_API + '/series/' + mangaId,
+      method: 'GET',
+      headers: {
+        'accept-encoding': 'application/json',
+      },
+    })
+
+    const response = await this.requestManager.schedule(request, 1)
+    if (response.status > 400) {
+      throw new Error(
+        `Failed to fetch data on ${methodName} with status code: ` +
+          response.status
+      )
+    }
+
+    const result =
+      typeof response.data === 'string' || typeof response.data !== 'object'
         ? JSON.parse(response.data)
-        : response.data;
+        : response.data
 
     if (!result || result === undefined)
-      throw new Error(
-        "Failed to parse the response. @getMangaDetails() on result."
-      );
+      throw new Error(`Failed to parse the response on ${methodName}.`)
 
     return createManga({
       id: result.slug,
@@ -86,7 +94,7 @@ export class Hachirumi extends Source {
       artist: result.artist,
       author: result.author,
       desc: result.description,
-    });
+    })
   }
 
   /*
@@ -94,43 +102,48 @@ export class Hachirumi extends Source {
   Hachirumi serves both chapters and manga in single request.
   */
   async getChapters(mangaId: string): Promise<Chapter[]> {
-    const request = createRequestObject({
-      url: HACHIRUMI_API + "/series/" + mangaId,
-      method: "GET",
-      headers: {
-        "accept-encoding": "application/json",
-      },
-    });
+    const methodName: string = this.getChapters.name
 
-    const response = await this.requestManager.schedule(request, 1);
+    const request = createRequestObject({
+      url: HACHIRUMI_API + '/series/' + mangaId,
+      method: 'GET',
+      headers: {
+        'accept-encoding': 'application/json',
+      },
+    })
+
+    const response = await this.requestManager.schedule(request, 1)
+    if (response.status > 400) {
+      throw new Error(
+        `Failed to fetch data on ${methodName} with status code: ` +
+          response.status
+      )
+    }
+
     const result =
-      typeof response.data === "string" || typeof response.data !== "object"
+      typeof response.data === 'string' || typeof response.data !== 'object'
         ? JSON.parse(response.data)
-        : response.data;
+        : response.data
 
     if (!result || result === undefined)
-      throw new Error(
-        "Failed to parse the response. @getChapters() on result."
-      );
+      throw new Error(`Failed to parse the response on ${methodName}.`)
 
-    const chapterObject = result["chapters"];
-    const groupObject = result["groups"];
+    const chapterObject = result['chapters']
+    const groupObject = result['groups']
 
     if (!chapterObject || !groupObject)
-      throw new Error(
-        "Failed to read chapter/group data. @getChapters() on chapterObject."
-      );
+      throw new Error(`Failed to read chapter/group data on ${methodName}.`)
 
-    let chapters = [];
+    let chapters = []
     for (const key in chapterObject) {
-      let metadata = chapterObject[key];
+      const metadata = chapterObject[key]
 
       if (!metadata || metadata === undefined)
-        throw new Error("Failed to read metadata. @getChapters() on metadata.");
+        throw new Error(`Failed to read metadata on ${methodName}.`)
 
-      for (const groupKey in metadata["groups"]) {
-        // Id taken seperately because it's used for error codes.
-        const id = chapId(key, groupKey, metadata.folder, result.slug);
+      for (const groupKey in metadata.groups) {
+        const id = chapId(key, groupKey, metadata.folder, result.slug)
+
         chapters.push(
           createChapter({
             id: id,
@@ -142,10 +155,10 @@ export class Hachirumi extends Source {
             group: chapGroup(groupObject[groupKey]),
             time: unixToDate(metadata.release_date[groupKey]),
           })
-        );
+        )
       }
     }
-    return chapters;
+    return chapters
   }
 
   /*
@@ -156,42 +169,43 @@ export class Hachirumi extends Source {
     mangaId: string,
     chapterId: string
   ): Promise<ChapterDetails> {
-    const request = createRequestObject({
-      url: HACHIRUMI_API + "/series/" + mangaId,
-      method: "GET",
-      headers: {
-        "accept-encoding": "application/json",
-      },
-    });
+    const methodName = this.getChapterDetails.name
 
-    const response = await this.requestManager.schedule(request, 1);
+    const request = createRequestObject({
+      url: HACHIRUMI_API + '/series/' + mangaId,
+      method: 'GET',
+      headers: {
+        'accept-encoding': 'application/json',
+      },
+    })
+
+    const response = await this.requestManager.schedule(request, 1)
+    if (response.status > 400) {
+      throw new Error(
+        `Failed to fetch data on ${methodName} with status code: ` +
+          response.status
+      )
+    }
+
     const result =
-      typeof response.data === "string" || typeof response.data !== "object"
+      typeof response.data === 'string' || typeof response.data !== 'object'
         ? JSON.parse(response.data)
-        : response.data;
+        : response.data
 
     if (!result || result === undefined)
-      throw new Error(
-        "Failed to parse the response. @getChapterDetails() on result."
-      );
+      throw new Error(`Failed to parse the response on ${methodName}.`)
 
-    const [chapterKey, groupKey, folder] = chapterId.split("|"); // Splits the given generic chapter id to chapterkey and such.
+    const [chapterKey, groupKey, folder] = chapterId.split('|') // Splits the given generic chapter id to chapterkey and such.
     if (!chapterKey || !groupKey || !folder)
-      throw new Error(
-        `ChapterId is malformed. @getChapterDetails() on chapterId.split().`
-      );
+      throw new Error(`ChapterId is malformed on ${methodName}.`)
 
-    const chapterObject = result["chapters"];
-    if (!chapterObject)
-      throw new Error(
-        "Failed to read chapter data. @getChapterDetails() on chapterObject."
-      );
+    const chapterObject = result.chapters
+    if (!chapterObject || chapterObject === undefined)
+      throw new Error(`Failed to read chapter data on ${methodName}.`)
 
-    const groupObject = chapterObject[chapterKey].groups[groupKey];
+    const groupObject = chapterObject[chapterKey].groups[groupKey]
     if (!groupObject || groupObject === undefined)
-      throw new Error(
-        `Failed to read chapter metadata. @getChapterDetails() on groupObject.`
-      );
+      throw new Error(`Failed to read chapter metadata on ${methodName}.`)
 
     return createChapterDetails({
       id: chapterId,
@@ -200,7 +214,7 @@ export class Hachirumi extends Source {
       pages: groupObject.map((ext: string) =>
         HACHIRUMI_IMAGES(mangaId, folder, groupKey, ext)
       ),
-    });
+    })
   }
 
   /*
@@ -210,59 +224,138 @@ export class Hachirumi extends Source {
     query: SearchRequest,
     metadata: any
   ): Promise<PagedResults> {
+    const methodName = this.searchRequest.name
+
     if (metadata?.limitReached)
       return createPagedResults({
         results: [],
         metadata: { limitReached: true },
-      }); // Prevents title duplication.
+      }) // Prevents title duplication.
 
     const request = createRequestObject({
-      url: HACHIRUMI_API + "/get_all_series",
-      method: "GET",
+      url: HACHIRUMI_API + '/get_all_series',
+      method: 'GET',
       headers: {
-        "accept-encoding": "application/json",
+        'accept-encoding': 'application/json',
       },
-    });
-    const response = await this.requestManager.schedule(request, 1);
+    })
+
+    const response = await this.requestManager.schedule(request, 1)
+    if (response.status > 400) {
+      throw new Error(
+        `Failed to fetch data on ${methodName} with status code: ` +
+          response.status
+      )
+    }
+
     const result =
-      typeof response.data === "string" || typeof response.data !== "object"
+      typeof response.data === 'string' || typeof response.data !== 'object'
         ? JSON.parse(response.data)
-        : response.data;
+        : response.data
 
     if (!result || result === undefined)
-      throw new Error(
-        "Failed to parse the response. @searchRequest() on result."
-      );
+      throw new Error(`Failed to parse the response on ${methodName}.`)
 
-    // Checks for the query title and pushes it to lowercase.
-    const queryTitle: string = query.title ? query.title.toLowerCase() : "";
+    const queryTitle: string = query.title ? query.title.toLowerCase() : ''
 
-    // Takes the response array and checks for titles that matches the query string.
     const filterer = (titles: object[]) =>
       Object.keys(titles).filter((title) =>
-        title.replace("-", " ").toLowerCase().includes(queryTitle)
-      );
+        title.replace('-', ' ').toLowerCase().includes(queryTitle)
+      )
 
     const filteredRequest = filterer(result).map((title) => {
-      const metadata = result[title];
+      const metadata = result[title]
 
       if (!metadata || metadata === undefined)
-        throw new Error(
-          "Failed to read chapter metadata. @searchRequest() on metadata."
-        );
+        throw new Error(`Failed to read chapter metadata on ${methodName}.`)
 
       return createMangaTile({
         id: metadata.slug,
         image: HACHIRUMI_DOMAIN + metadata.cover,
         title: createIconText({ text: title }),
-      });
-    });
+      })
+    })
 
     return createPagedResults({
       results: filteredRequest,
       metadata: {
         limitReached: true,
       },
-    });
+    })
+  }
+
+  async getAllTitles() {
+    const methodName = this.getAllTitles.name
+
+    const request = createRequestObject({
+      url: HACHIRUMI_API + '/get_all_series',
+      method: 'GET',
+      headers: {
+        'accept-encoding': 'application/json',
+      },
+    })
+
+    const response = await this.requestManager.schedule(request, 1)
+    if (!response || response === undefined)
+      throw new Error(`Failed to fetch data from the server on ${methodName}.`)
+
+    const result =
+      typeof response.data === 'string' || typeof response.data !== 'object'
+        ? JSON.parse(response.data)
+        : response.data
+
+    if (!result || result === undefined)
+      throw new Error(`Failed to parse the response on ${methodName}.`)
+
+    return Object.keys(result).map((title) => {
+      const metadata = result[title]
+
+      if (!metadata || metadata === undefined)
+        throw new Error(`Failed to read chapter metadata on ${methodName}.`)
+
+      return {
+        mangaId: metadata.slug,
+        title: title,
+        author: metadata.author,
+        artist: metadata.artist,
+        desc: metadata.description,
+        cover: metadata.cover,
+        group: Object.keys(metadata.groups).map((key) => metadata.groups[key]),
+        last: metadata.last_updated,
+      }
+    })
+  }
+
+  async getHomePageSections(
+    sectionCallback: (section: HomeSection) => void
+  ): Promise<void> {
+    const allTitles = await this.getAllTitles()
+
+    // Sorts all titles in descending order using unix timestamp
+    // And pops out all of the other results until there's only 3.
+    const latestSort = allTitles.sort((a, b) => b.last - a.last)
+    while (latestSort.length > 3) latestSort.pop()
+
+    sectionCallback(
+      createHomeSection({
+        id: 'latest',
+        title: 'Latest Updates',
+        view_more: true,
+        items: latestSort.map((title) =>
+          createMangaTile({
+            id: title.mangaId,
+            image: HACHIRUMI_DOMAIN + title.cover,
+            title: createIconText({ text: title.title }),
+          })
+        ),
+      })
+    )
+  }
+
+  getCloudflareBypassRequest() {
+    return createRequestObject({
+      url: HACHIRUMI_DOMAIN,
+      method: 'GET',
+    })
   }
 }
