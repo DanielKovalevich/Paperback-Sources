@@ -41,6 +41,43 @@ const HACHIRUMI_IMAGES = (
  * ```
  */
 
+// Types for no reason
+
+interface getAllTitlesType {
+  /**
+   * MangaID/ slug of this object.
+   */
+  mangaId: string
+  /**
+   * Title of this object.
+   */
+  title: string
+  /**
+   * Author of this object.
+   */
+  author: string
+  /**
+   * Artist of this object.
+   */
+  artist: string
+  /**
+   * Description of this object.
+   */
+  desc: string
+  /**
+   * Cover of this object.
+   */
+  cover: string
+  /**
+   * Array of groups of this object.
+   */
+  group: string[]
+  /**
+   * Unix time stamp of this object.
+   */
+  last: number
+}
+
 export const HachirumiInfo: SourceInfo = {
   version: '1.0.0',
   name: 'Hachirumi',
@@ -128,8 +165,8 @@ export class Hachirumi extends Source {
     if (!result || result === undefined)
       throw new Error(`Failed to parse the response on ${methodName}.`)
 
-    const chapterObject = result['chapters']
-    const groupObject = result['groups']
+    const chapterObject = result.chapters
+    const groupObject = result.groups
 
     if (!chapterObject || !groupObject)
       throw new Error(`Failed to read chapter/group data on ${methodName}.`)
@@ -284,7 +321,8 @@ export class Hachirumi extends Source {
     })
   }
 
-  async getAllTitles() {
+  // Makes my life easier. <(￣︶￣)>
+  async getAllTitles(): Promise<getAllTitlesType[]> {
     const methodName = this.getAllTitles.name
 
     const request = createRequestObject({
@@ -329,27 +367,74 @@ export class Hachirumi extends Source {
   async getHomePageSections(
     sectionCallback: (section: HomeSection) => void
   ): Promise<void> {
+    // Initiates the section before updating.
+    let latestSection = createHomeSection({
+      id: 'latest',
+      title: 'Latest Updates',
+      view_more: false,
+    })
+    let allSection = createHomeSection({
+      id: 'all',
+      title: 'All Titles',
+      view_more: true,
+    })
+    sectionCallback(latestSection)
+    sectionCallback(allSection)
+
     const allTitles = await this.getAllTitles()
 
     // Sorts all titles in descending order using unix timestamp
     // And pops out all of the other results until there's only 9.
-    const latestSort = allTitles.sort((a, b) => b.last - a.last)
+    let latestSort = allTitles.sort((a, b) => b.last - a.last)
     while (latestSort.length > 9) latestSort.pop()
 
-    sectionCallback(
-      createHomeSection({
-        id: 'latest',
-        title: 'Latest Updates',
-        view_more: true,
-        items: latestSort.map((title) =>
-          createMangaTile({
-            id: title.mangaId,
-            image: HACHIRUMI_DOMAIN + title.cover,
-            title: createIconText({ text: title.title }),
-          })
-        ),
+    // This feels odd but does the job.
+    let allSort = allTitles
+    while (allSort.length > 9) allSort.pop()
+
+    latestSection.items = latestSort.map((title) =>
+      createMangaTile({
+        id: title.mangaId,
+        image: HACHIRUMI_DOMAIN + title.cover,
+        title: createIconText({ text: title.title }),
       })
     )
+    sectionCallback(latestSection)
+
+    allSection.items = allSort.map((title) =>
+      createMangaTile({
+        id: title.mangaId,
+        image: HACHIRUMI_DOMAIN + title.cover,
+        title: createIconText({ text: title.title }),
+      })
+    )
+    sectionCallback(allSection)
+  }
+
+  async getViewMoreItems(
+    homepageSectionId: string,
+    metadata: any
+  ): Promise<PagedResults | null> {
+    if (metadata?.limitReached)
+      return createPagedResults({
+        results: [],
+        metadata: { limitReached: true },
+      }) // Prevents title duplication.
+
+    const allTitles = await this.getAllTitles()
+
+    return createPagedResults({
+      results: allTitles.map((title) =>
+        createMangaTile({
+          id: title.mangaId,
+          image: HACHIRUMI_DOMAIN + title.cover,
+          title: createIconText({ text: title.title }),
+        })
+      ),
+      metadata: {
+        limitReached: true,
+      },
+    })
   }
 
   getMangaShareUrl(mangaId: string) {
