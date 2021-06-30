@@ -332,9 +332,9 @@ export class Hachirumi extends Source {
     const allTitles = await this.getAllTitles()
 
     // Sorts all titles in descending order using unix timestamp
-    // And pops out all of the other results until there's only 3.
+    // And pops out all of the other results until there's only 9.
     const latestSort = allTitles.sort((a, b) => b.last - a.last)
-    while (latestSort.length > 3) latestSort.pop()
+    while (latestSort.length > 9) latestSort.pop()
 
     sectionCallback(
       createHomeSection({
@@ -350,6 +350,10 @@ export class Hachirumi extends Source {
         ),
       })
     )
+  }
+
+  getMangaShareUrl(mangaId: string) {
+    return `${HACHIRUMI_DOMAIN}/read/manga/${mangaId}/`
   }
 
   getCloudflareBypassRequest() {
