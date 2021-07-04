@@ -130,7 +130,8 @@ export class Hachirumi extends Source {
       status: MangaStatus.ONGOING,
       artist: result.artist,
       author: result.author,
-      desc: result.description,
+      desc: "Hachirumi doesn't support descriptions!",
+      // Description has html tags, even if we remove those there are useless information such as "arthor's twitter/pixiv" which doesn't make sense if it doesn't redirect upon click/press
     })
   }
 
