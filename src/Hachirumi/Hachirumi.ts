@@ -9,7 +9,7 @@ import {
   PagedResults,
   SourceInfo,
   HomeSection,
-} from 'paperback-extensions-common'
+} from "paperback-extensions-common"
 
 import {
   chapId,
@@ -18,9 +18,9 @@ import {
   chapVol,
   chapGroup,
   unixToDate,
-} from './Functions'
+} from "./Functions"
 
-const HACHIRUMI_DOMAIN = 'https://hachirumi.com'
+const HACHIRUMI_DOMAIN = "https://hachirumi.com"
 const HACHIRUMI_API = `${HACHIRUMI_DOMAIN}/api`
 const HACHIRUMI_IMAGES = (
   slug: string,
@@ -79,12 +79,12 @@ interface getAllTitlesType {
 }
 
 export const HachirumiInfo: SourceInfo = {
-  version: '1.0.0',
-  name: 'Hachirumi',
-  icon: 'icon.png',
-  author: 'Curstantine',
-  authorWebsite: 'https://github.com/Curstantine',
-  description: 'Extension that pulls manga from Hachirumi.',
+  version: "1.0.0",
+  name: "Hachirumi",
+  icon: "icon.png",
+  author: "Curstantine",
+  authorWebsite: "https://github.com/Curstantine",
+  description: "Extension that pulls manga from Hachirumi.",
   language: LanguageCode.ENGLISH,
   hentaiSource: false,
   websiteBaseURL: HACHIRUMI_DOMAIN,
@@ -99,10 +99,10 @@ export class Hachirumi extends Source {
     const methodName = this.getMangaDetails.name
 
     const request = createRequestObject({
-      url: HACHIRUMI_API + '/series/' + mangaId,
-      method: 'GET',
+      url: HACHIRUMI_API + "/series/" + mangaId,
+      method: "GET",
       headers: {
-        'accept-encoding': 'application/json',
+        "accept-encoding": "application/json",
       },
     })
 
@@ -115,7 +115,7 @@ export class Hachirumi extends Source {
     }
 
     const result =
-      typeof response.data === 'string' || typeof response.data !== 'object'
+      typeof response.data === "string" || typeof response.data !== "object"
         ? JSON.parse(response.data)
         : response.data
 
@@ -142,10 +142,10 @@ export class Hachirumi extends Source {
     const methodName: string = this.getChapters.name
 
     const request = createRequestObject({
-      url: HACHIRUMI_API + '/series/' + mangaId,
-      method: 'GET',
+      url: HACHIRUMI_API + "/series/" + mangaId,
+      method: "GET",
       headers: {
-        'accept-encoding': 'application/json',
+        "accept-encoding": "application/json",
       },
     })
 
@@ -158,7 +158,7 @@ export class Hachirumi extends Source {
     }
 
     const result =
-      typeof response.data === 'string' || typeof response.data !== 'object'
+      typeof response.data === "string" || typeof response.data !== "object"
         ? JSON.parse(response.data)
         : response.data
 
@@ -209,10 +209,10 @@ export class Hachirumi extends Source {
     const methodName = this.getChapterDetails.name
 
     const request = createRequestObject({
-      url: HACHIRUMI_API + '/series/' + mangaId,
-      method: 'GET',
+      url: HACHIRUMI_API + "/series/" + mangaId,
+      method: "GET",
       headers: {
-        'accept-encoding': 'application/json',
+        "accept-encoding": "application/json",
       },
     })
 
@@ -225,14 +225,14 @@ export class Hachirumi extends Source {
     }
 
     const result =
-      typeof response.data === 'string' || typeof response.data !== 'object'
+      typeof response.data === "string" || typeof response.data !== "object"
         ? JSON.parse(response.data)
         : response.data
 
     if (!result || result === undefined)
       throw new Error(`Failed to parse the response on ${methodName}.`)
 
-    const [chapterKey, groupKey, folder] = chapterId.split('|') // Splits the given generic chapter id to chapterkey and such.
+    const [chapterKey, groupKey, folder] = chapterId.split("|") // Splits the given generic chapter id to chapterkey and such.
     if (!chapterKey || !groupKey || !folder)
       throw new Error(`ChapterId is malformed on ${methodName}.`)
 
@@ -270,10 +270,10 @@ export class Hachirumi extends Source {
       }) // Prevents title duplication.
 
     const request = createRequestObject({
-      url: HACHIRUMI_API + '/get_all_series',
-      method: 'GET',
+      url: HACHIRUMI_API + "/get_all_series",
+      method: "GET",
       headers: {
-        'accept-encoding': 'application/json',
+        "accept-encoding": "application/json",
       },
     })
 
@@ -286,18 +286,18 @@ export class Hachirumi extends Source {
     }
 
     const result =
-      typeof response.data === 'string' || typeof response.data !== 'object'
+      typeof response.data === "string" || typeof response.data !== "object"
         ? JSON.parse(response.data)
         : response.data
 
     if (!result || result === undefined)
       throw new Error(`Failed to parse the response on ${methodName}.`)
 
-    const queryTitle: string = query.title ? query.title.toLowerCase() : ''
+    const queryTitle: string = query.title ? query.title.toLowerCase() : ""
 
     const filterer = (titles: object[]) =>
       Object.keys(titles).filter((title) =>
-        title.replace('-', ' ').toLowerCase().includes(queryTitle)
+        title.replace("-", " ").toLowerCase().includes(queryTitle)
       )
 
     const filteredRequest = filterer(result).map((title) => {
@@ -326,10 +326,10 @@ export class Hachirumi extends Source {
     const methodName = this.getAllTitles.name
 
     const request = createRequestObject({
-      url: HACHIRUMI_API + '/get_all_series',
-      method: 'GET',
+      url: HACHIRUMI_API + "/get_all_series",
+      method: "GET",
       headers: {
-        'accept-encoding': 'application/json',
+        "accept-encoding": "application/json",
       },
     })
 
@@ -338,7 +338,7 @@ export class Hachirumi extends Source {
       throw new Error(`Failed to fetch data from the server on ${methodName}.`)
 
     const result =
-      typeof response.data === 'string' || typeof response.data !== 'object'
+      typeof response.data === "string" || typeof response.data !== "object"
         ? JSON.parse(response.data)
         : response.data
 
@@ -367,15 +367,14 @@ export class Hachirumi extends Source {
   async getHomePageSections(
     sectionCallback: (section: HomeSection) => void
   ): Promise<void> {
-    // Initiates the section before updating.
     let latestSection = createHomeSection({
-      id: 'latest',
-      title: 'Latest Updates',
+      id: "latest",
+      title: "Latest Updates",
       view_more: false,
     })
     let allSection = createHomeSection({
-      id: 'all',
-      title: 'All Titles',
+      id: "all",
+      title: "All Titles",
       view_more: true,
     })
     sectionCallback(latestSection)
@@ -383,25 +382,7 @@ export class Hachirumi extends Source {
 
     const allTitles = await this.getAllTitles()
 
-    // Sorts all titles in descending order using unix timestamp
-    // And pops out all of the other results until there's only 9.
-    let latestSort = allTitles.sort((a, b) => b.last - a.last)
-    while (latestSort.length > 9) latestSort.pop()
-
-    // This feels odd but does the job.
-    let allSort = allTitles
-    while (allSort.length > 9) allSort.pop()
-
-    latestSection.items = latestSort.map((title) =>
-      createMangaTile({
-        id: title.mangaId,
-        image: HACHIRUMI_DOMAIN + title.cover,
-        title: createIconText({ text: title.title }),
-      })
-    )
-    sectionCallback(latestSection)
-
-    allSection.items = allSort.map((title) =>
+    allSection.items = allTitles.map((title) =>
       createMangaTile({
         id: title.mangaId,
         image: HACHIRUMI_DOMAIN + title.cover,
@@ -409,6 +390,20 @@ export class Hachirumi extends Source {
       })
     )
     sectionCallback(allSection)
+
+    const sortedTitles = allTitles.sort((a, b) => b.last - a.last)
+
+    while (sortedTitles.length > 9) sortedTitles.pop()
+    while (allTitles.length > 9) allTitles.pop()
+
+    latestSection.items = sortedTitles.map((title) =>
+      createMangaTile({
+        id: title.mangaId,
+        image: HACHIRUMI_DOMAIN + title.cover,
+        title: createIconText({ text: title.title }),
+      })
+    )
+    sectionCallback(latestSection)
   }
 
   async getViewMoreItems(
@@ -444,7 +439,7 @@ export class Hachirumi extends Source {
   getCloudflareBypassRequest() {
     return createRequestObject({
       url: HACHIRUMI_DOMAIN,
-      method: 'GET',
+      method: "GET",
     })
   }
 }
