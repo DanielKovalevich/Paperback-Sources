@@ -507,55 +507,26 @@ export class MangaDex extends Source {
     }
 
     let offset = 0
-    const maxRequests = 100
-    let loadNextPage = true
-    let updatedManga: string[] = []
-    const updatedAt = time.toISOString().split('.')[0] // They support a weirdly truncated version of an ISO timestamp
+    const length = ids.length
 
-    while (loadNextPage) {
+    while (true) {
       const request = createRequestObject({
-        url: `${MANGADEX_API}/manga?limit=100&offset=${offset}&updatedAtSince=${updatedAt}&contentRating[]=none&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic&includes[]=cover_art&order[updatedAt]=desc`,
+        url: `${MANGADEX_API}/manga?limit=100&ids[]=${ids.slice(offset, offset + 100).map(x => conversionDict[x] ?? x).join('&ids[]=')}&contentRating[]=none&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic`,
         method: 'GET',
       })
 
       const response = await this.requestManager.schedule(request, 1)
-
-      // If we have no content, there are no updates available
-      if(response.status == 204) {
-        return
-      }
-
       const json = (typeof response.data) === "string" ? JSON.parse(response.data) : response.data
+      const updatedManga: string[] = json.results.filter((x: any) => (new Date(x.data.attributes.updatedAt)) > time).map((x: any) => conversionDict[x.data.id] ?? x.data.id)
 
-      if(json.results === undefined) {
-        // Log this, no need to throw.
-        console.log(`Failed to parse JSON results for filterUpdatedManga using the date ${updatedAt} and the offset ${offset}`)
-        return
-      }
-
-      for (const manga of json.results) {
-        const mangaId = manga.data.id
-        const mangaTime = new Date(manga.data.attributes.updatedAt)
-
-        if (mangaTime <= time) {
-          loadNextPage = false
-        } else if (ids.includes(mangaId)) {
-          updatedManga.push(mangaId)
-        } else if (ids.includes(conversionDict[mangaId])) {
-          updatedManga.push(conversionDict[mangaId])
-        }
-      }
-      
-      offset = offset + 100
-      if (json.total <= offset || offset >= 100 * maxRequests) {
-        loadNextPage = false
-      }
       if (updatedManga.length > 0) {
-        mangaUpdatesFoundCallback(createMangaUpdates({
-            ids: updatedManga
-        }))
+        mangaUpdatesFoundCallback(createMangaUpdates({ids: updatedManga}))
       }
-      updatedManga = []
+
+      offset = offset + 100
+      if (offset >= length) {
+        break
+      }
     }
   }
 
