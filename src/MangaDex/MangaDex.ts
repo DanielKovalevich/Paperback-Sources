@@ -509,12 +509,13 @@ export class MangaDex extends Source {
     let offset = 0
     const maxRequests = 100
     let loadNextPage = true
+    let mangaToUpdate: string[] = []
     let updatedManga: string[] = []
     const updatedAt = time.toISOString().split('.')[0] // They support a weirdly truncated version of an ISO timestamp
 
     while (loadNextPage) {
       const request = createRequestObject({
-        url: `${MANGADEX_API}/manga?limit=100&offset=${offset}&updatedAtSince=${updatedAt}&contentRating[]=none&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic&includes[]=cover_art&order[updatedAt]=desc`,
+        url: `${MANGADEX_API}/chapter?limit=100&offset=${offset}&publishAtSince=${updatedAt}&order[publishAt]=desc`,
         method: 'GET',
       })
 
@@ -533,16 +534,15 @@ export class MangaDex extends Source {
         return
       }
 
-      for (const manga of json.results) {
-        const mangaId = manga.data.id
-        const mangaTime = new Date(manga.data.attributes.updatedAt)
+      for (const chapter of json.results) {
+        const mangaId = chapter.relationships.filter((x: any)=> x.type == 'manga')[0]?.id
 
-        if (mangaTime <= time) {
-          loadNextPage = false
-        } else if (ids.includes(mangaId)) {
+        if (ids.includes(mangaId) && !updatedManga.includes(mangaId)) {
+          mangaToUpdate.push(mangaId)
           updatedManga.push(mangaId)
         } else if (ids.includes(conversionDict[mangaId])) {
-          updatedManga.push(conversionDict[mangaId])
+          mangaToUpdate.push(conversionDict[mangaId])
+          updatedManga.push(mangaId)
         }
       }
       
