@@ -509,7 +509,7 @@ export class MangaDex extends Source {
     let offset = 0
     const length = ids.length
 
-    while (true) {
+    while (offset < length) {
       const request = createRequestObject({
         url: `${MANGADEX_API}/manga?limit=100&ids[]=${ids.slice(offset, offset + 100).map(x => conversionDict[x] ?? x).join('&ids[]=')}&contentRating[]=none&contentRating[]=safe&contentRating[]=suggestive&contentRating[]=erotica&contentRating[]=pornographic`,
         method: 'GET',
@@ -524,9 +524,6 @@ export class MangaDex extends Source {
       }
 
       offset = offset + 100
-      if (offset >= length) {
-        break
-      }
     }
   }
 
