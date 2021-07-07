@@ -550,12 +550,12 @@ export class MangaDex extends Source {
       if (json.total <= offset || offset >= 100 * maxRequests) {
         loadNextPage = false
       }
-      if (updatedManga.length > 0) {
+      if (mangaToUpdate.length > 0) {
         mangaUpdatesFoundCallback(createMangaUpdates({
-            ids: updatedManga
+            ids: mangaToUpdate
         }))
       }
-      updatedManga = []
+      mangaToUpdate = []
     }
   }
 
