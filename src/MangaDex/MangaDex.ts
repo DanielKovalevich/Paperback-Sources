@@ -28,7 +28,7 @@ export const MangaDexInfo: SourceInfo = {
   description: 'Extension that pulls manga from MangaDex',
   icon: 'icon.png',
   name: 'MangaDex',
-  version: '1.1.1',
+  version: '1.1.2',
   authorWebsite: 'https://github.com/nar1n',
   websiteBaseURL: MANGADEX_DOMAIN,
   hentaiSource: false,
